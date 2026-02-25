@@ -120,15 +120,18 @@ h2 {
 
 .nav-row,
 .cta-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+  width: 100%;
 }
 
 .cta,
 .ghost {
   border-radius: 6px;
-  padding: 0.6rem 1.1rem;
+  padding: 0.45rem 1rem;
+  min-height: 34px;
+  width: 100%;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
