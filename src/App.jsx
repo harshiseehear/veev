@@ -165,6 +165,41 @@ function App() {
   }, [theme])
 
   useEffect(() => {
+    const updateViewportVars = () => {
+      const doc = document.documentElement
+      const layoutWidth = doc.clientWidth || window.innerWidth
+      const layoutHeight = doc.clientHeight || window.innerHeight
+      const viewport = window.visualViewport
+
+      const width = Math.min(layoutWidth, window.innerWidth)
+      const height = viewport
+        ? Math.min(layoutHeight, Math.round(viewport.height))
+        : layoutHeight
+
+      doc.style.setProperty('--viewport-w', `${width}px`)
+      doc.style.setProperty('--viewport-h', `${height}px`)
+    }
+
+    updateViewportVars()
+    window.addEventListener('resize', updateViewportVars)
+    window.addEventListener('orientationchange', updateViewportVars)
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportVars)
+      window.visualViewport.addEventListener('scroll', updateViewportVars)
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateViewportVars)
+      window.removeEventListener('orientationchange', updateViewportVars)
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateViewportVars)
+        window.visualViewport.removeEventListener('scroll', updateViewportVars)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (!(isQuestion || currentStep === 'result')) {
       clearTimers()
       return

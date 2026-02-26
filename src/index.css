@@ -10,6 +10,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --viewport-w: 100vw;
   --viewport-h: 100vh;
 
   --page-bg: #ffffff;
@@ -76,14 +77,14 @@ body {
   min-width: 320px;
   min-height: var(--viewport-h);
   background: var(--page-bg);
-  overflow: hidden;
+  overflow: auto;
 }
 
 html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #root {
