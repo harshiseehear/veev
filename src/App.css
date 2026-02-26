@@ -369,7 +369,22 @@ h2 {
 }
 
 @media (max-width: 640px) {
+  .app {
+    padding: 24px 16px;
+  }
+
+  .tablet-frame {
+    --tablet-scale: min(
+      calc((100vw - 32px) / 650px),
+      calc((100vh - 32px) / 1000px)
+    );
+    width: calc(650px * var(--tablet-scale));
+    height: calc(1000px * var(--tablet-scale));
+  }
+
   .tablet {
     min-height: auto;
+    border-radius: 28px;
+    padding: 24px;
   }
 }
