@@ -128,6 +128,7 @@ function App() {
   })
   const [device, setDevice] = useState('')
   const [isFadingOut, setIsFadingOut] = useState(false)
+  const appRef = useRef(null)
   const transitionTimeoutRef = useRef(null)
   const autoResetTimeoutRef = useRef(null)
   const [timerKey, setTimerKey] = useState(0)
@@ -178,6 +179,31 @@ function App() {
 
       doc.style.setProperty('--viewport-w', `${width}px`)
       doc.style.setProperty('--viewport-h', `${height}px`)
+
+      const appEl = appRef.current
+      const isPhoneViewport = window.matchMedia('(max-width: 640px)').matches
+
+      if (appEl && isPhoneViewport) {
+        const appStyles = window.getComputedStyle(appEl)
+        const padLeft = parseFloat(appStyles.paddingLeft) || 0
+        const padRight = parseFloat(appStyles.paddingRight) || 0
+        const padTop = parseFloat(appStyles.paddingTop) || 0
+        const padBottom = parseFloat(appStyles.paddingBottom) || 0
+
+        const availableWidth = Math.max(0, appEl.clientWidth - padLeft - padRight)
+        const availableHeight = Math.max(0, height - padTop - padBottom)
+        const safetyFactor = 0.9
+        const calibratedScale = Math.min(
+          1,
+          Math.max(0.25, Math.min(availableWidth / 650, availableHeight / 1000) * safetyFactor),
+        )
+
+        doc.style.setProperty('--device-available-w', `${availableWidth}px`)
+        doc.style.setProperty('--device-tablet-scale', `${calibratedScale}`)
+      } else {
+        doc.style.removeProperty('--device-available-w')
+        doc.style.removeProperty('--device-tablet-scale')
+      }
     }
 
     updateViewportVars()
@@ -297,7 +323,7 @@ function App() {
   const logoSrc = theme === 'dark' ? 'white.png' : 'black.png'
 
   return (
-    <div className="app">
+    <div className="app" ref={appRef}>
       <div className="tablet-frame">
         <div className="tablet">
           <button
