@@ -1,6 +1,9 @@
 .app {
-  min-height: 100vh;
-  padding: 120px 80px;
+  min-height: var(--viewport-h);
+  padding: calc(120px + env(safe-area-inset-top))
+    calc(80px + env(safe-area-inset-right))
+    calc(120px + env(safe-area-inset-bottom))
+    calc(80px + env(safe-area-inset-left));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,7 +15,7 @@
     0.6,
     min(
       calc((100vw - 160px) / 650px),
-      calc((100vh - 240px) / 1000px)
+      calc((var(--viewport-h) - 240px) / 1000px)
     ),
     1
   );
@@ -370,13 +373,16 @@ h2 {
 
 @media (max-width: 640px) {
   .app {
-    padding: 24px 16px;
+    padding: calc(24px + env(safe-area-inset-top))
+      calc(16px + env(safe-area-inset-right))
+      calc(24px + env(safe-area-inset-bottom))
+      calc(16px + env(safe-area-inset-left));
   }
 
   .tablet-frame {
     --tablet-scale: min(
       calc((100vw - 32px) / 650px),
-      calc((100vh - 32px) / 1000px)
+      calc((var(--viewport-h) - 32px) / 1000px)
     );
     width: calc(650px * var(--tablet-scale));
     height: calc(1000px * var(--tablet-scale));
