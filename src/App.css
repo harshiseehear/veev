@@ -7,15 +7,37 @@
   font-family: var(--font-display);
 }
 
+.tablet-frame {
+  --tablet-scale: clamp(
+    0.6,
+    min(
+      calc((100vw - 160px) / 650px),
+      calc((100vh - 240px) / 1000px)
+    ),
+    1
+  );
+  width: calc(650px * var(--tablet-scale));
+  height: calc(1000px * var(--tablet-scale));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .tablet {
-  width: min(650px, calc(100vw - 160px));
-  height: min(1000px, calc(100vh - 240px));
+  width: 650px;
+  height: 1000px;
   background: var(--surface);
   border-radius: 40px;
-  border: 2px solid var(--border-strong);
+  /* border: 2px solid var(--border-strong); */
+  border: none;
   padding: 35px;
   display: flex;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(var(--tablet-scale));
+  transform-origin: top left;
 }
 
 .theme-toggle {
@@ -86,6 +108,10 @@
   gap: 3rem;
   text-align: center;
   align-items: center;
+}
+
+.panel:not(.result-panel) .welcome-text .lead {
+  margin-top: 1.5rem;
 }
 
 .result-panel {

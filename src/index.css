@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap');
+
 :root {
-  font-family: 'Avenir', 'Avenir Next', 'Segoe UI', sans-serif;
+  font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 400;
   line-height: 1.6;
   color: #111111;
@@ -29,7 +31,7 @@
   --toggle-ink: #ffffff;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
-  --font-display: 'Avenir', 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-display: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 body[data-theme='dark'] {
@@ -67,6 +69,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: var(--page-bg);
+  overflow: hidden;
+}
+
+html {
+  overflow: hidden;
 }
 
 #root {
