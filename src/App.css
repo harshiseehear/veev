@@ -46,8 +46,9 @@
 
 .theme-toggle {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 5;
   border-radius: 999px;
   padding: 0.4rem;
@@ -66,7 +67,7 @@
 }
 
 .theme-toggle:active {
-  transform: scale(0.98);
+  transform: translateX(-50%) scale(0.98);
 }
 
 .theme-icon {
