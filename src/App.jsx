@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import './App.css'
 
 const QUESTIONS = {
@@ -118,6 +118,7 @@ const checkAnswerCombination = (q1Array) => {
 }
 
 function App() {
+  const [theme, setTheme] = useState('light')
   const [stepIndex, setStepIndex] = useState(0)
   const [answers, setAnswers] = useState({
     q1: [],
@@ -126,6 +127,10 @@ function App() {
     q4: '',
   })
   const [device, setDevice] = useState('')
+  const [isFadingOut, setIsFadingOut] = useState(false)
+  const transitionTimeoutRef = useRef(null)
+  const autoResetTimeoutRef = useRef(null)
+  const [timerKey, setTimerKey] = useState(0)
 
   const currentStep = STEPS[stepIndex]
   const isQuestion = ['q1', 'q2', 'q3', 'q4'].includes(currentStep)
@@ -136,18 +141,72 @@ function App() {
     return RECOMMENDATIONS[device]?.[answers.q3]?.[answers.q4] || ''
   }, [answers.q3, answers.q4, device])
 
+  const clearTimers = () => {
+    if (transitionTimeoutRef.current) {
+      clearTimeout(transitionTimeoutRef.current)
+      transitionTimeoutRef.current = null
+    }
+    if (autoResetTimeoutRef.current) {
+      clearTimeout(autoResetTimeoutRef.current)
+      autoResetTimeoutRef.current = null
+    }
+  }
+
   const resetFlow = () => {
+    clearTimers()
     setStepIndex(0)
     setAnswers({ q1: [], q2: [], q3: '', q4: '' })
     setDevice('')
+    setIsFadingOut(false)
   }
 
+  useEffect(() => {
+    document.body.dataset.theme = theme
+  }, [theme])
+
+  useEffect(() => {
+    if (!(isQuestion || currentStep === 'result')) {
+      clearTimers()
+      return
+    }
+
+    clearTimers()
+    setTimerKey((prev) => prev + 1)
+    autoResetTimeoutRef.current = setTimeout(() => {
+      setIsFadingOut(true)
+      transitionTimeoutRef.current = setTimeout(() => {
+        resetFlow()
+      }, 500)
+    }, 10000)
+
+    return () => {
+      clearTimers()
+    }
+  }, [currentStep, isQuestion])
+
   const goNext = () => {
+    setIsFadingOut(false)
     setStepIndex((prev) => Math.min(prev + 1, STEPS.length - 1))
   }
 
   const goBack = () => {
     setStepIndex((prev) => Math.max(prev - 1, 0))
+  }
+
+  const handleStart = () => {
+    clearTimers()
+    setIsFadingOut(true)
+    setTimeout(() => {
+      goNext()
+    }, 500)
+  }
+
+  const handleReset = () => {
+    clearTimers()
+    setIsFadingOut(true)
+    setTimeout(() => {
+      resetFlow()
+    }, 500)
   }
 
   const handleMultiSelect = (id, value, maxSelect) => {
@@ -166,7 +225,18 @@ function App() {
         if (id === 'q1') {
           setDevice(checkAnswerCombination(next))
         }
-        goNext()
+        if (autoResetTimeoutRef.current) {
+          clearTimeout(autoResetTimeoutRef.current)
+          autoResetTimeoutRef.current = null
+        }
+        if (transitionTimeoutRef.current) {
+          clearTimeout(transitionTimeoutRef.current)
+        }
+        setIsFadingOut(true)
+        transitionTimeoutRef.current = setTimeout(() => {
+          goNext()
+          transitionTimeoutRef.current = null
+        }, 500)
       }
 
       return { ...prev, [id]: next }
@@ -175,35 +245,84 @@ function App() {
 
   const handleSingleSelect = (id, value) => {
     setAnswers((prev) => ({ ...prev, [id]: value }))
-    goNext()
+    if (autoResetTimeoutRef.current) {
+      clearTimeout(autoResetTimeoutRef.current)
+      autoResetTimeoutRef.current = null
+    }
+    if (transitionTimeoutRef.current) {
+      clearTimeout(transitionTimeoutRef.current)
+    }
+    setIsFadingOut(true)
+    transitionTimeoutRef.current = setTimeout(() => {
+      goNext()
+      transitionTimeoutRef.current = null
+    }, 500)
   }
+
+  const logoSrc = theme === 'dark' ? 'white.png' : 'black.png'
 
   return (
     <div className="app">
       <div className="tablet">
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? (
+            <svg
+              className="theme-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="4" fill="currentColor" />
+              <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="12" y1="2" x2="12" y2="5" />
+                <line x1="12" y1="19" x2="12" y2="22" />
+                <line x1="2" y1="12" x2="5" y2="12" />
+                <line x1="19" y1="12" x2="22" y2="12" />
+                <line x1="4.2" y1="4.2" x2="6.5" y2="6.5" />
+                <line x1="17.5" y1="17.5" x2="19.8" y2="19.8" />
+                <line x1="4.2" y1="19.8" x2="6.5" y2="17.5" />
+                <line x1="17.5" y1="6.5" x2="19.8" y2="4.2" />
+              </g>
+            </svg>
+          ) : (
+            <svg
+              className="theme-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M21 14.5C19.7 15.2 18.2 15.6 16.6 15.6C12.3 15.6 8.8 12.1 8.8 7.8C8.8 6.2 9.2 4.7 9.9 3.4C6.2 4.5 3.6 8 3.6 12.1C3.6 17.1 7.7 21.2 12.7 21.2C16.9 21.2 20.4 18.6 21 14.5Z"
+                fill="currentColor"
+              />
+            </svg>
+          )}
+        </button>
         <main className="content">
           {currentStep === 'welcome' && (
-            <section className="panel">
-              <p className="eyebrow">Welcome</p>
-              <h1>Find the VEEV vape and flavour for your adult customers!</h1>
-              <p className="lead">
-                Answer a few quick questions to match the right device and
-                flavour package.
-              </p>
-              <button className="cta" onClick={goNext}>
+            <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key="welcome">
+              <img src={logoSrc} alt="VEEV" className="welcome-logo" />
+              <div className="welcome-text">
+                <h1>Find the VEEV vape and flavour for your adult customers!</h1>
+                <p className="lead">
+                  Answer a few quick questions to match the right device and
+                  flavour package.
+                </p>
+              </div>
+              <button className="cta" onClick={handleStart}>
                 Start
               </button>
             </section>
           )}
 
           {isQuestion && (
-            <section className="panel">
-              <div className="progress">
-                <span>
-                  Question {stepIndex} of 4
-                </span>
-                <span className="pill">{question.subtitle}</span>
-              </div>
+            <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
               <h2>{question.title}</h2>
               <div className="option-grid">
                 {question.options.map((option) => {
@@ -232,28 +351,35 @@ function App() {
                   )
                 })}
               </div>
-              <div className="nav-row">
-                <button className="ghost" type="button" onClick={goBack}>
-                  Back
-                </button>
-                <button className="ghost" type="button" onClick={resetFlow}>
-                  Start over
-                </button>
+              <div className="instruction-footer">
+                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`}>
+                  <span className="pill-text">{question.subtitle}</span>
+                </span>
               </div>
             </section>
           )}
 
           {currentStep === 'result' && (
-            <section className="panel">
-              <p className="eyebrow">Suggested product and flavour package</p>
-              <h2>{device || 'VEEV'}</h2>
-              <p className="result-flavors">{recommendation}</p>
+            <section className={`panel result-panel ${isFadingOut ? 'fade-out' : ''}`} key="result">
+              <img src={logoSrc} alt="VEEV" className="result-logo" />
+              <div className="welcome-text result-text">
+                <p className="eyebrow">
+                  Suggested product and<br />
+                  flavour package
+                </p>
+                <h2>
+                  {device || 'VEEV'}{' '}
+                  {recommendation.replace(/^(18 mL|V1) /, '')}
+                </h2>
+              </div>
               <div className="cta-row">
-                <button className="cta" type="button">
-                  Shop Now
-                </button>
-                <button className="ghost" type="button" onClick={resetFlow}>
-                  Start Over
+                <button
+                  className="ghost timer-pill"
+                  type="button"
+                  onClick={handleReset}
+                  key={`timer-${currentStep}-${timerKey}`}
+                >
+                  <span className="pill-text">Start Over</span>
                 </button>
               </div>
             </section>

@@ -1,26 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
-  font-family: 'Space Mono', 'Segoe UI', sans-serif;
+  font-family: 'Avenir', 'Avenir Next', 'Segoe UI', sans-serif;
   font-weight: 400;
   line-height: 1.6;
   color: #111111;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --page-bg: #ffffff;
   --ink: #111111;
   --muted: #6a6a6a;
   --accent: #111111;
   --teal: #1a9b9b;
   --surface: #ffffff;
+  --panel-bg: #ffffff;
+  --pill-bg: #f2f2f2;
   --border: #e4e4e4;
   --hairline: #dcdcdc;
+  --border-strong: #111111;
+  --timer-fill: #111111;
+  --button-bg: #ffffff;
+  --button-border: #111111;
+  --button-active-bg: #111111;
+  --button-active-ink: #ffffff;
+  --toggle-bg: #111111;
+  --toggle-ink: #ffffff;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
-  --font-display: 'Libre Baskerville', 'Times New Roman', serif;
+  --font-display: 'Avenir', 'Avenir Next', 'Segoe UI', sans-serif;
+}
+
+body[data-theme='dark'] {
+  color: #eeeeee;
+  background-color: #000000;
+
+  --page-bg: #000000;
+  --ink: #eeeeee;
+  --muted: #959595;
+  --accent: #eeeeee;
+  --teal: #e56464;
+  --surface: #000000;
+  --panel-bg: #000000;
+  --pill-bg: #0d0d0d;
+  --border: #1b1b1b;
+  --hairline: #232323;
+  --border-strong: #eeeeee;
+  --timer-fill: #eeeeee;
+  --button-bg: #000000;
+  --button-border: #eeeeee;
+  --button-active-bg: #eeeeee;
+  --button-active-ink: #000000;
+  --toggle-bg: #eeeeee;
+  --toggle-ink: #000000;
+  --shadow-soft: 0 8px 24px rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 20px 50px rgba(255, 255, 255, 0.12);
 }
 
 * {
@@ -31,7 +66,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--page-bg);
 }
 
 #root {
