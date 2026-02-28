@@ -87,11 +87,14 @@
 }
 
 .panel > h2,
+.panel > .question-header,
 .panel > .welcome-text,
 .panel > .option-grid,
 .panel > .instruction-footer,
 .panel > .cta,
-.panel > .cta-row {
+.panel > .cta-row,
+.panel > .result-header,
+.panel > .result-options {
   position: relative;
   z-index: 1;
 }
@@ -120,19 +123,77 @@
 
 .result-panel {
   text-align: center;
+  grid-template-rows: auto 1fr auto !important;
+  gap: 13rem;
 }
 
-.result-panel .eyebrow {
+.result-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30rem;
   text-align: center;
+  grid-row: 1;
+}
+
+.result-prompt {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4.0rem, 6vw, 7.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
 }
 
-.result-text {
-  gap: 4rem;
+.result-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5rem;
+  margin-left: 9rem;
+  margin-right: 9rem;
+  align-self: start;
+  grid-row: 2;
 }
 
-.result-panel h2 {
+.result-panel > .instruction-footer {
+  grid-row: 3;
+}
+
+.result-button {
+  border: none;
+  border-radius: 22px;
+  padding: 2rem 1.8rem;
+  background: var(--button-bg);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 2.5rem;
+  font-family: var(--font-display);
   text-align: center;
+  width: 100%;
+  min-height: 110px;
+  max-height: 170px;
+  animation: floatIn 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-button:hover {
+  box-shadow: none;
+}
+
+.result-button:active {
+  background: var(--button-active-bg);
+  color: var(--button-active-ink);
+}
+
+.result-label {
+  display: block;
 }
 
 .eyebrow {
@@ -189,6 +250,36 @@ h2 {
   line-height: 1.15;
 }
 
+.question-header {
+  display: grid;
+  gap: 4.5rem;
+  text-align: center;
+  align-content: start;
+  margin-left: 5rem;
+  margin-right: 5rem;
+  margin-top: 15rem;
+}
+
+.question-prompt {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4.0rem, 6vw, 7.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.question-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 3rem;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
 .lead {
   font-size: 1.8rem;
   color: var(--ink);
@@ -225,26 +316,32 @@ h2 {
 .option-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-top: 0;
+  gap: 5rem;
+  margin-top: 5rem;
   align-self: end;
+  margin-left: 9rem;
+  margin-right: 9rem;
 }
 
 .timer-pill {
   position: relative;
   overflow: hidden;
-  background: var(--button-bg);
+  background: transparent;
+  height: 14px;
+  border-radius: 999px;
 }
 
 .timer-pill::after {
   content: '';
   position: absolute;
   top: 0;
-  right: 0;
   bottom: 0;
-  left: 0;
-  background: var(--timer-fill);
-  animation: timerDrain 10s linear forwards;
+  left: 50%;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  animation: timerDrain 30s linear forwards;
   z-index: 0;
 }
 
@@ -256,20 +353,20 @@ h2 {
 }
 
 .option-button {
-  border: 2px solid var(--button-border);
+  border: none;
   border-radius: 22px;
-  padding: 1.4rem 1.8rem;
+  padding: 2rem 1.8rem;
   background: var(--button-bg);
   color: var(--ink);
   font-weight: 700;
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   font-family: var(--font-display);
   text-align: left;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
   width: 100%;
-  min-height: 70px;
-  max-height: 110px;
+  min-height: 110px;
+  max-height: 170px;
   animation: floatIn 0.5s ease;
 }
 
@@ -304,6 +401,8 @@ h2 {
   justify-content: center;
   padding-top: 1rem;
   margin-top: auto;
+  margin-left: 9rem;
+  margin-right: 9rem;
 }
 
 .instruction-footer .pill {
@@ -314,13 +413,22 @@ h2 {
   font-weight: 700;
   font-size: 1.8rem;
   font-family: var(--font-display);
-  border: 2px solid var(--button-border);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   animation: floatIn 0.5s ease;
   max-height: 86px;
+}
+
+.instruction-footer .timer-pill {
+  padding: 0;
+  background: transparent;
+  border: none;
+  width: 100%;
+  height: 14px;
+  max-height: 14px;
 }
 
 .cta,
@@ -337,7 +445,7 @@ h2 {
   font-family: var(--font-display);
   cursor: pointer;
   border: 2px solid var(--button-border);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   text-align: center;
   color: var(--ink);
   display: flex;
@@ -361,6 +469,12 @@ h2 {
 
 .cta:hover {
   box-shadow: none;
+}
+
+.cta:active {
+  background: var(--button-active-bg);
+  color: var(--button-active-ink);
+  border-color: var(--button-active-bg);
 }
 
 .ghost {
@@ -393,10 +507,10 @@ h2 {
 
 @keyframes timerDrain {
   from {
-    right: 0;
+    width: 100%;
   }
   to {
-    right: 100%;
+    width: 0%;
   }
 }
 

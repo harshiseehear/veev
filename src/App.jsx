@@ -233,12 +233,18 @@ function App() {
       transitionTimeoutRef.current = setTimeout(() => {
         resetFlow()
       }, 500)
-    }, 10000)
+    }, 30000)
 
     return () => {
       clearTimers()
     }
   }, [currentStep, isQuestion])
+
+  useEffect(() => {
+    if (currentStep === 'result') {
+      setIsFadingOut(false)
+    }
+  }, [currentStep])
 
   const goNext = () => {
     setIsFadingOut(false)
@@ -356,9 +362,17 @@ function App() {
           {isQuestion && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
               <img src={getScreenImage()} alt={`Screen ${stepIndex + 1}`} className="screen-image" />
-              <h2>{question.title}</h2>
+              <div className="question-header">
+                {question.maxSelect === 2 && (
+                  <h2 className="question-prompt">PICK 2 OF THE<br />FOLLOWING OPTIONS</h2>
+                )}
+                {question.maxSelect === 1 && (
+                  <h2 className="question-prompt">PICK 1 OF THE<br />FOLLOWING OPTIONS</h2>
+                )}
+                <p className="question-title">Q{currentStep.slice(1)}: {question.title}</p>
+              </div>
               <div className="option-grid">
-                {question.options.map((option) => {
+                {question.options.map((option, index) => {
                   const selected = Array.isArray(answers[currentStep])
                     ? answers[currentStep].includes(option.value)
                     : answers[currentStep] === option.value
@@ -379,15 +393,13 @@ function App() {
                       className={`option-button ${selected ? 'selected' : ''}`}
                       onClick={onClick}
                     >
-                      <span className="option-label">{option.label}</span>
+                      <span className="option-label">{String.fromCharCode(65 + index)}) {option.label}</span>
                     </button>
                   )
                 })}
               </div>
               <div className="instruction-footer">
-                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`}>
-                  <span className="pill-text">{question.subtitle}</span>
-                </span>
+                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
           )}
@@ -395,25 +407,24 @@ function App() {
           {currentStep === 'result' && (
             <section className={`panel result-panel ${isFadingOut ? 'fade-out' : ''}`} key="result">
               <img src={getScreenImage()} alt="Screen 6" className="screen-image" />
-              <div className="welcome-text result-text">
-                <p className="eyebrow">
-                  Suggested product and<br />
-                  flavour package
-                </p>
-                <h2>
-                  {device || 'VEEV'}{' '}
-                  {recommendation.replace(/^(18 mL|V1) /, '')}
+              <div className="result-header">
+                <h2 className="result-prompt">
+                  SUGGESTED PRODUCT<br />
+                  AND FLAVOUR PACKAGE:
                 </h2>
               </div>
-              <div className="cta-row">
-                <button
-                  className="ghost timer-pill"
-                  type="button"
-                  onClick={handleReset}
-                  key={`timer-${currentStep}-${timerKey}`}
-                >
-                  <span className="pill-text">Start Over</span>
-                </button>
+              <div className="result-options">
+                {(recommendation || '18 mL Watermelon, Grape, Blue Mint').replace(/^(18 mL|V1) /, '').split(', ').map((flavor, index) => {
+                  const prefix = (recommendation || '18 mL Watermelon, Grape, Blue Mint').match(/^(18 mL|V1)/)?.[0] || '18 mL'
+                  return (
+                    <button key={index} type="button" className="result-button" onClick={handleReset}>
+                      <span className="result-label">{String.fromCharCode(65 + index)}) {prefix} {flavor}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="instruction-footer">
+                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
           )}
