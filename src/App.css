@@ -55,7 +55,6 @@
   grid-template-rows: 1fr auto 1fr;
   gap: var(--panel-gap);
   min-height: 100%;
-  animation: floatIn 0.5s ease;
   position: relative;
   overflow: hidden;
 }
@@ -72,7 +71,50 @@
   border-radius: 0;
 }
 
-.panel.fade-out {
+.panel > h2,
+.panel > .question-header,
+.panel > .welcome-text,
+.panel > .option-grid,
+.panel > .instruction-footer:not(.timer-persistent),
+.panel > .cta,
+.panel > .cta-row,
+.panel > .result-header,
+.panel > .result-options {
+  animation: floatIn 0.5s ease;
+}
+
+.panel > .instruction-footer:not(.timer-persistent) {
+  animation-duration: 1s;
+}
+
+.panel > .instruction-footer.timer-persistent {
+  animation: none;
+  opacity: 1;
+}
+
+.panel.fade-out > h2,
+.panel.fade-out > .question-header,
+.panel.fade-out > .welcome-text,
+.panel.fade-out > .option-grid,
+.panel.fade-out > .cta,
+.panel.fade-out > .cta-row,
+.panel.fade-out > .result-header,
+.panel.fade-out > .result-options {
+  animation: floatOut 0.5s ease forwards;
+}
+
+.instruction-footer {
+  opacity: 1;
+  transition: none;
+}
+
+/* Timer expands - footer stays visible */
+.panel.fade-out > .instruction-footer.timer-expanding {
+  animation: none;
+}
+
+/* No expansion - footer fades out with content */
+.panel.fade-out > .instruction-footer:not(.timer-expanding) {
   animation: floatOut 0.5s ease forwards;
 }
 
@@ -85,9 +127,32 @@
   height: 100%;
   display: block;
   border-radius: 0;
-  animation: floatIn 0.5s ease;
   object-fit: cover;
   z-index: 0;
+  opacity: 1;
+}
+
+.screen-image-previous {
+  z-index: 0;
+  opacity: 1;
+}
+
+.screen-image-new {
+  z-index: 1;
+  opacity: 0;
+}
+
+.screen-image-new.screen-image-transitioning {
+  animation: imageFloatIn 0.5s ease forwards;
+}
+
+@keyframes imageFloatIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .panel > h2,
@@ -100,7 +165,7 @@
 .panel > .result-header,
 .panel > .result-options {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .panel > .cta {
@@ -181,7 +246,6 @@
   width: 100%;
   min-height: 110px;
   max-height: 170px;
-  animation: floatIn 0.5s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +269,6 @@
   color: var(--ink);
   font-weight: 700;
   font-family: var(--font-display);
-  animation: floatIn 0.5s ease;
 }
 
 h1,
@@ -214,7 +277,6 @@ h2 {
   font-family: var(--font-display);
   font-weight: 700;
   margin: 0;
-  animation: floatIn 0.5s ease;
 }
 
 h1 {
@@ -290,7 +352,6 @@ h2 {
   font-weight: 700;
   font-family: var(--font-display);
   max-width: 480px;
-  animation: floatIn 0.5s ease;
 }
 
 .progress {
@@ -349,6 +410,10 @@ h2 {
   z-index: 0;
 }
 
+.timer-pill-expanding::after {
+  animation: timerExpand 0.5s ease-out forwards !important;
+}
+
 .timer-pill .pill-text {
   position: relative;
   z-index: 1;
@@ -371,7 +436,6 @@ h2 {
   width: 100%;
   min-height: 110px;
   max-height: 170px;
-  animation: floatIn 0.5s ease;
 }
 
 .option-button:hover {
@@ -422,7 +486,6 @@ h2 {
   align-items: center;
   justify-content: center;
   width: 100%;
-  animation: floatIn 0.5s ease;
   max-height: 86px;
 }
 
@@ -455,7 +518,6 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: floatIn 0.5s ease;
   flex-shrink: 0;
 }
 
@@ -515,6 +577,15 @@ h2 {
   }
   to {
     width: 0%;
+  }
+}
+
+@keyframes timerExpand {
+  from {
+    width: var(--current-width, 50%);
+  }
+  to {
+    width: 100%;
   }
 }
 

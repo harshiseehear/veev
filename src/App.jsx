@@ -133,9 +133,13 @@ function App() {
   })
   const [device, setDevice] = useState('')
   const [isFadingOut, setIsFadingOut] = useState(false)
+  const [shouldExpandTimer, setShouldExpandTimer] = useState(false)
+  const [previousImage, setPreviousImage] = useState(null)
+  const [isImageTransitioning, setIsImageTransitioning] = useState(false)
   const appRef = useRef(null)
   const transitionTimeoutRef = useRef(null)
   const autoResetTimeoutRef = useRef(null)
+  const imageTransitionTimeoutRef = useRef(null)
   const [timerKey, setTimerKey] = useState(0)
 
   const currentStep = STEPS[stepIndex]
@@ -156,6 +160,10 @@ function App() {
       clearTimeout(autoResetTimeoutRef.current)
       autoResetTimeoutRef.current = null
     }
+    if (imageTransitionTimeoutRef.current) {
+      clearTimeout(imageTransitionTimeoutRef.current)
+      imageTransitionTimeoutRef.current = null
+    }
   }
 
   const resetFlow = () => {
@@ -164,6 +172,9 @@ function App() {
     setAnswers({ q1: [], q2: [], q3: '', q4: '' })
     setDevice('')
     setIsFadingOut(false)
+    setShouldExpandTimer(false)
+    setPreviousImage(null)
+    setIsImageTransitioning(false)
   }
 
   useEffect(() => {
@@ -235,10 +246,7 @@ function App() {
     clearTimers()
     setTimerKey((prev) => prev + 1)
     autoResetTimeoutRef.current = setTimeout(() => {
-      setIsFadingOut(true)
-      transitionTimeoutRef.current = setTimeout(() => {
-        resetFlow()
-      }, 500)
+      transitionToWelcome()
     }, 30000)
 
     return () => {
@@ -252,9 +260,62 @@ function App() {
     }
   }, [currentStep])
 
+  const captureTimerState = () => {
+    // Find the timer pill element and capture its current width
+    const timerPill = document.querySelector('.timer-pill')
+    if (timerPill) {
+      const afterElement = window.getComputedStyle(timerPill, '::after')
+      const currentWidth = afterElement.getPropertyValue('width')
+      const containerWidth = timerPill.offsetWidth
+      // Calculate percentage
+      const widthPx = parseFloat(currentWidth)
+      const widthPercent = (widthPx / containerWidth) * 100
+      timerPill.style.setProperty('--current-width', `${widthPercent}%`)
+    }
+  }
+
+  const startImageTransition = () => {
+    const currentImage = getScreenImage()
+    setPreviousImage(currentImage)
+  }
+
+  const runImageCrossfade = () => {
+    setTimeout(() => {
+      setIsImageTransitioning(true)
+
+      if (imageTransitionTimeoutRef.current) {
+        clearTimeout(imageTransitionTimeoutRef.current)
+      }
+      imageTransitionTimeoutRef.current = setTimeout(() => {
+        setPreviousImage(null)
+        setIsImageTransitioning(false)
+      }, 500)
+    }, 50)
+  }
+
   const goNext = () => {
     setIsFadingOut(false)
-    setStepIndex((prev) => Math.min(prev + 1, STEPS.length - 1))
+    setShouldExpandTimer(false)
+    const nextIndex = Math.min(stepIndex + 1, STEPS.length - 1)
+    setStepIndex(nextIndex)
+    runImageCrossfade()
+  }
+
+  const transitionToWelcome = () => {
+    clearTimers()
+    startImageTransition()
+    setIsFadingOut(true)
+    setShouldExpandTimer(false)
+
+    transitionTimeoutRef.current = setTimeout(() => {
+      setStepIndex(0)
+      setAnswers({ q1: [], q2: [], q3: '', q4: '' })
+      setDevice('')
+      setIsFadingOut(false)
+      setShouldExpandTimer(false)
+      runImageCrossfade()
+      transitionTimeoutRef.current = null
+    }, 500)
   }
 
   const goBack = () => {
@@ -263,6 +324,8 @@ function App() {
 
   const handleStart = () => {
     clearTimers()
+    // Don't capture timer state from welcome screen since it doesn't have a timer
+    startImageTransition()
     setIsFadingOut(true)
     setTimeout(() => {
       goNext()
@@ -270,11 +333,7 @@ function App() {
   }
 
   const handleReset = () => {
-    clearTimers()
-    setIsFadingOut(true)
-    setTimeout(() => {
-      resetFlow()
-    }, 500)
+    transitionToWelcome()
   }
 
   const handleMultiSelect = (id, value, maxSelect) => {
@@ -300,6 +359,9 @@ function App() {
         if (transitionTimeoutRef.current) {
           clearTimeout(transitionTimeoutRef.current)
         }
+        captureTimerState()
+        startImageTransition()
+        setShouldExpandTimer(true)
         setIsFadingOut(true)
         transitionTimeoutRef.current = setTimeout(() => {
           goNext()
@@ -320,6 +382,9 @@ function App() {
     if (transitionTimeoutRef.current) {
       clearTimeout(transitionTimeoutRef.current)
     }
+    captureTimerState()
+    startImageTransition()
+    setShouldExpandTimer(true)
     setIsFadingOut(true)
     transitionTimeoutRef.current = setTimeout(() => {
       goNext()
@@ -346,7 +411,12 @@ function App() {
           <main className="content">
           {currentStep === 'welcome' && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key="welcome">
-              <img src={getScreenImage()} alt="Screen 1" className="screen-image" />
+              {previousImage && <img src={previousImage} alt="Previous screen" className="screen-image screen-image-previous" />}
+              <img 
+                src={getScreenImage()} 
+                alt="Screen 1" 
+                className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`} 
+              />
               <div className="welcome-text">
                 <h1 className="welcome-title">
                   <span className="welcome-title-main">
@@ -367,7 +437,12 @@ function App() {
 
           {isQuestion && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
-              <img src={getScreenImage()} alt={`Screen ${stepIndex + 1}`} className="screen-image" />
+              {previousImage && <img src={previousImage} alt="Previous screen" className="screen-image screen-image-previous" />}
+              <img 
+                src={getScreenImage()} 
+                alt={`Screen ${stepIndex + 1}`} 
+                className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`}
+              />
               <div className="question-header">
                 {question.maxSelect === 2 && (
                   <h2 className="question-prompt">PICK 2 OF THE<br />FOLLOWING OPTIONS</h2>
@@ -404,15 +479,20 @@ function App() {
                   )
                 })}
               </div>
-              <div className="instruction-footer">
-                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
+                <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
           )}
 
           {currentStep === 'result' && (
             <section className={`panel result-panel ${isFadingOut ? 'fade-out' : ''}`} key="result">
-              <img src={getScreenImage()} alt="Screen 6" className="screen-image" />
+              {previousImage && <img src={previousImage} alt="Previous screen" className="screen-image screen-image-previous" />}
+              <img 
+                src={getScreenImage()} 
+                alt="Screen 6" 
+                className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`}
+              />
               <div className="result-header">
                 <h2 className="result-prompt">
                   SUGGESTED PRODUCT<br />
@@ -429,8 +509,8 @@ function App() {
                   )
                 })}
               </div>
-              <div className="instruction-footer">
-                <span className="pill timer-pill" key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
+                <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
           )}
