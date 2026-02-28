@@ -118,7 +118,6 @@ const checkAnswerCombination = (q1Array) => {
 }
 
 function App() {
-  const [theme, setTheme] = useState('light')
   const [stepIndex, setStepIndex] = useState(0)
   const [answers, setAnswers] = useState({
     q1: [],
@@ -160,10 +159,6 @@ function App() {
     setDevice('')
     setIsFadingOut(false)
   }
-
-  useEffect(() => {
-    document.body.dataset.theme = theme
-  }, [theme])
 
   useEffect(() => {
     const updateViewportVars = () => {
@@ -320,71 +315,47 @@ function App() {
     }, 500)
   }
 
-  const logoSrc = theme === 'dark' ? 'white.png' : 'black.png'
+  const getScreenImage = () => {
+    const screenMap = {
+      welcome: 'screen_1.png',
+      q1: 'screen_2.png',
+      q2: 'screen_3.png',
+      q3: 'screen_4.png',
+      q4: 'screen_5.png',
+      result: 'screen_6.png',
+    }
+    return screenMap[currentStep] || null
+  }
 
   return (
     <div className="app" ref={appRef}>
       <div className="tablet-frame">
         <div className="tablet">
-          <button
-            type="button"
-            className="theme-toggle"
-            onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? (
-              <svg
-                className="theme-icon"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <circle cx="12" cy="12" r="4" fill="currentColor" />
-                <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <line x1="12" y1="2" x2="12" y2="5" />
-                  <line x1="12" y1="19" x2="12" y2="22" />
-                  <line x1="2" y1="12" x2="5" y2="12" />
-                  <line x1="19" y1="12" x2="22" y2="12" />
-                  <line x1="4.2" y1="4.2" x2="6.5" y2="6.5" />
-                  <line x1="17.5" y1="17.5" x2="19.8" y2="19.8" />
-                  <line x1="4.2" y1="19.8" x2="6.5" y2="17.5" />
-                  <line x1="17.5" y1="6.5" x2="19.8" y2="4.2" />
-                </g>
-              </svg>
-            ) : (
-              <svg
-                className="theme-icon"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path
-                  d="M21 14.5C19.7 15.2 18.2 15.6 16.6 15.6C12.3 15.6 8.8 12.1 8.8 7.8C8.8 6.2 9.2 4.7 9.9 3.4C6.2 4.5 3.6 8 3.6 12.1C3.6 17.1 7.7 21.2 12.7 21.2C16.9 21.2 20.4 18.6 21 14.5Z"
-                  fill="currentColor"
-                />
-              </svg>
-            )}
-          </button>
           <main className="content">
           {currentStep === 'welcome' && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key="welcome">
-              <img src={logoSrc} alt="VEEV" className="welcome-logo" />
+              <img src={getScreenImage()} alt="Screen 1" className="screen-image" />
               <div className="welcome-text">
-                <h1>Find the VEEV vape and flavour for your adult customers!</h1>
-                <p className="lead">
-                  Answer a few quick questions to match the right device and
-                  flavour package.
-                </p>
+                <h1 className="welcome-title">
+                  <span className="welcome-title-main">
+                    FIND THE
+                    <br />
+                    VEEV VAPE
+                    <br />
+                    AND FLAVOUR
+                  </span>
+                  <span className="welcome-title-sub">FOR YOUR ADULT CUSTOMERS!</span>
+                </h1>
               </div>
               <button className="cta" onClick={handleStart}>
-                Start
+                START
               </button>
             </section>
           )}
 
           {isQuestion && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
+              <img src={getScreenImage()} alt={`Screen ${stepIndex + 1}`} className="screen-image" />
               <h2>{question.title}</h2>
               <div className="option-grid">
                 {question.options.map((option) => {
@@ -423,7 +394,7 @@ function App() {
 
           {currentStep === 'result' && (
             <section className={`panel result-panel ${isFadingOut ? 'fade-out' : ''}`} key="result">
-              <img src={logoSrc} alt="VEEV" className="result-logo" />
+              <img src={getScreenImage()} alt="Screen 6" className="screen-image" />
               <div className="welcome-text result-text">
                 <p className="eyebrow">
                   Suggested product and<br />
