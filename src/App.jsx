@@ -1,5 +1,11 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
 import './App.css'
+import screen1 from './assets/screen_1.png'
+import screen2 from './assets/screen_2.png'
+import screen3 from './assets/screen_3.png'
+import screen4 from './assets/screen_4.png'
+import screen5 from './assets/screen_5.png'
+import screen6 from './assets/screen_6.png'
 
 const QUESTIONS = {
   q1: {
@@ -323,12 +329,12 @@ function App() {
 
   const getScreenImage = () => {
     const screenMap = {
-      welcome: 'screen_1.png',
-      q1: 'screen_2.png',
-      q2: 'screen_3.png',
-      q3: 'screen_4.png',
-      q4: 'screen_5.png',
-      result: 'screen_6.png',
+      welcome: screen1,
+      q1: screen2,
+      q2: screen3,
+      q3: screen4,
+      q4: screen5,
+      result: screen6,
     }
     return screenMap[currentStep] || null
   }
