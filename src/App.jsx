@@ -20,7 +20,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What are adult customers' main pain points with their vape?",
+    title: "What're their main pain points with their vape?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -31,7 +31,7 @@ const QUESTIONS = {
     ],
   },
   q3: {
-    title: 'What appeals to your adult customers most?',
+    title: 'What appeals most to your adult customers?',
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
@@ -42,7 +42,7 @@ const QUESTIONS = {
     ],
   },
   q4: {
-    title: 'Which flavour mood do your customers gravitate toward?',
+    title: 'Which flavour mood do they gravitate towards?',
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
@@ -57,54 +57,54 @@ const QUESTIONS = {
 const RECOMMENDATIONS = {
   'VEEV NOW 18mL': {
     A: {
-      A: '18 mL Watermelon, Grape, Blue Mint',
-      B: '18 mL Watermelon, Grape',
-      C: '18 mL Watermelon, Grape, Classic Tobacco',
-      D: '18 mL Watermelon, Grape, Blueberry',
+      A: 'VEEV ONE 18mL Watermelon, Grape, Blue Mint',
+      B: 'VEEV ONE 18mL Watermelon, Grape',
+      C: 'VEEV ONE 18mL Watermelon, Grape, Classic Tobacco',
+      D: 'VEEV ONE 18mL Watermelon, Grape, Blueberry',
     },
     B: {
-      A: '18 mL Spearmint, Blue Mint',
-      B: '18 mL Spearmint, Blue Mint, Watermelon',
-      C: '18 mL Spearmint, Blue Mint, Classic Tobacco',
-      D: '18 mL Spearmint, Blue Mint, Blueberry',
+      A: 'VEEV ONE 18mL Spearmint, Blue Mint',
+      B: 'VEEV ONE 18mL Spearmint, Blue Mint, Watermelon',
+      C: 'VEEV ONE 18mL Spearmint, Blue Mint, Classic Tobacco',
+      D: 'VEEV ONE 18mL Spearmint, Blue Mint, Blueberry',
     },
     C: {
-      A: '18 mL Classic Tobacco, Blue Mint, Spearmint',
-      B: '18 mL Classic Tobacco, Watermelon, Grape',
-      C: '18 mL Classic Tobacco',
-      D: '18 mL Classic Tobacco, Blueberry',
+      A: 'VEEV ONE 18mL Classic Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV ONE 18mL Classic Tobacco, Watermelon, Grape',
+      C: 'VEEV ONE 18mL Classic Tobacco',
+      D: 'VEEV ONE 18mL Classic Tobacco, Blueberry',
     },
     D: {
-      A: '18 mL Blueberry, Blue Mint, Spearmint',
-      B: '18 mL Blueberry, Watermelon, Grape',
-      C: '18 mL Blueberry, Classic Tobacco',
-      D: '18 mL Blueberry',
+      A: 'VEEV ONE 18mL Blueberry, Blue Mint, Spearmint',
+      B: 'VEEV ONE 18mL Blueberry, Watermelon, Grape',
+      C: 'VEEV ONE 18mL Blueberry, Classic Tobacco',
+      D: 'VEEV ONE 18mL Blueberry',
     },
   },
   'VEEV ONE': {
     A: {
-      A: 'V1 Watermelon, Mango, Blue Mint',
-      B: 'V1 Watermelon, Mango',
-      C: 'V1 Watermelon, Mango, Classic Tobacco',
-      D: 'V1 Watermelon, Mango, Blue Raspberry',
+      A: 'VEEV ONE Watermelon, Mango, Blue Mint',
+      B: 'VEEV ONE Watermelon, Mango',
+      C: 'VEEV ONE Watermelon, Mango, Classic Tobacco',
+      D: 'VEEV ONE Watermelon, Mango, Blue Raspberry',
     },
     B: {
-      A: 'V1 Blue Mint, Spearmint',
-      B: 'V1 Blue Mint, Spearmint, Mango',
-      C: 'V1 Blue Mint, Spearmint, Classic Tobacco',
-      D: 'V1 Blue Mint, Spearmint, Blueberry',
+      A: 'VEEV ONE Blue Mint, Spearmint',
+      B: 'VEEV ONE Blue Mint, Spearmint, Mango',
+      C: 'VEEV ONE Blue Mint, Spearmint, Classic Tobacco',
+      D: 'VEEV ONE Blue Mint, Spearmint, Blueberry',
     },
     C: {
-      A: 'V1 Classic Tobacco, Blue Mint, Spearmint',
-      B: 'V1 Classic Tobacco, Watermelon, Mango',
-      C: 'V1 Classic Tobacco',
-      D: 'V1 Classic Tobacco, Blueberry, Blue Raspberry',
+      A: 'VEEV ONE Classic Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV ONE Classic Tobacco, Watermelon, Mango',
+      C: 'VEEV ONE Classic Tobacco',
+      D: 'VEEV ONE Classic Tobacco, Blueberry, Blue Raspberry',
     },
     D: {
-      A: 'V1 Blueberry, Blue Raspberry, Spearmint',
-      B: 'V1 Blueberry, Blue Raspberry, Watermelon',
-      C: 'V1 Blueberry, Blue Raspberry, Classic Tobacco',
-      D: 'V1 Blueberry, Blue Raspberry',
+      A: 'VEEV ONE Blueberry, Blue Raspberry, Spearmint',
+      B: 'VEEV ONE Blueberry, Blue Raspberry, Watermelon',
+      C: 'VEEV ONE Blueberry, Blue Raspberry, Classic Tobacco',
+      D: 'VEEV ONE Blueberry, Blue Raspberry',
     },
   },
 }
@@ -176,6 +176,28 @@ function App() {
     setPreviousImage(null)
     setIsImageTransitioning(false)
   }
+
+  useEffect(() => {
+    const preloadImages = async () => {
+      const imageUrls = [screen1, screen2, screen3, screen4, screen5, screen6]
+      const preloadPromises = imageUrls.map((src) => {
+        return new Promise((resolve) => {
+          const img = new Image()
+          img.onload = () => {
+            if (img.decode) {
+              img.decode().then(resolve).catch(resolve)
+            } else {
+              resolve()
+            }
+          }
+          img.onerror = resolve
+          img.src = src
+        })
+      })
+      await Promise.all(preloadPromises)
+    }
+    preloadImages()
+  }, [])
 
   useEffect(() => {
     const updateViewportVars = () => {
@@ -419,9 +441,10 @@ function App() {
               />
               <div className="welcome-text">
                 <h1 className="welcome-title">
-                  <span className="welcome-title-main">
+                  <span className="welcome-title-sub">
                     FIND THE
-                    <br />
+                  </span>
+                  <span className="welcome-title-main">
                     VEEV VAPE
                     <br />
                     AND FLAVOUR
@@ -445,10 +468,10 @@ function App() {
               />
               <div className="question-header">
                 {question.maxSelect === 2 && (
-                  <h2 className="question-prompt">PICK 2 OF THE<br />FOLLOWING OPTIONS</h2>
+                  <h2 className="question-prompt">PICK 2 OF THE FOLLOWING</h2>
                 )}
                 {question.maxSelect === 1 && (
-                  <h2 className="question-prompt">PICK 1 OF THE<br />FOLLOWING OPTIONS</h2>
+                  <h2 className="question-prompt">PICK 1 OF THE FOLLOWING</h2>
                 )}
                 <p className="question-title">Q{currentStep.slice(1)}: {question.title}</p>
               </div>
@@ -500,8 +523,8 @@ function App() {
                 </h2>
               </div>
               <div className="result-options">
-                {(recommendation || '18 mL Watermelon, Grape, Blue Mint').replace(/^(18 mL|V1) /, '').split(', ').map((flavor, index) => {
-                  const prefix = (recommendation || '18 mL Watermelon, Grape, Blue Mint').match(/^(18 mL|V1)/)?.[0] || '18 mL'
+                {(recommendation || 'VEEV ONE 18mL Watermelon, Grape, Blue Mint').replace(/^(VEEV ONE 18mL|VEEV ONE) /, '').split(', ').map((flavor, index) => {
+                  const prefix = (recommendation || 'VEEV ONE 18mL Watermelon, Grape, Blue Mint').match(/^(VEEV ONE 18mL|VEEV ONE)/)?.[0] || 'VEEV ONE 18mL'
                   return (
                     <button key={index} type="button" className="result-button" onClick={handleReset}>
                       <span className="result-label">{String.fromCharCode(65 + index)}) {prefix} {flavor}</span>

@@ -77,14 +77,14 @@ body {
   min-width: 320px;
   min-height: var(--viewport-h);
   background: var(--page-bg);
-  overflow: auto;
+  overflow: hidden;
 }
 
 html,
 body,
 #root {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 #root {

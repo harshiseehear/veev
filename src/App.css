@@ -291,6 +291,7 @@ h1 {
   align-items: center;
   gap: 1.25rem;
   text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .welcome-title-main {
@@ -301,6 +302,8 @@ h1 {
   letter-spacing: 0.01em;
   max-width: 12ch;
   color: #ffffff;
+  opacity: 0.92;
+  margin-bottom: 1rem;
 }
 
 .welcome-title-sub {
@@ -309,6 +312,7 @@ h1 {
   line-height: 1.05;
   letter-spacing: 0.02em;
   color: #ffffff;
+  opacity: 0.9;
 }
 
 h2 {
