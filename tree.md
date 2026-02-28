@@ -75,28 +75,28 @@ d. Bright and punchy
 # IF DEVICE = VEEV NOW 18 mL
 
 ## Q3 = Bold and Fruity
-- a → VEEV ONE 18mL Watermelon, Grape, Blue Mint  
-- b → VEEV ONE 18mL Watermelon, Grape  
-- c → VEEV ONE 18mL Watermelon, Grape, Classic Tobacco  
-- d → VEEV ONE 18mL Watermelon, Grape, Blueberry  
+- a → VEEV NOW 18mL Watermelon, Grape, Blue Mint  
+- b → VEEV NOW 18mL Watermelon, Grape  
+- c → VEEV NOW 18mL Watermelon, Grape, Classic Tobacco  
+- d → VEEV NOW 18mL Watermelon, Grape, Blueberry  
 
 ## Q3 = Crisp and Fresh
-- a → VEEV ONE 18mL Spearmint, Blue Mint  
-- b → VEEV ONE 18mL Spearmint, Blue Mint, Watermelon  
-- c → VEEV ONE 18mL Spearmint, Blue Mint, Classic Tobacco  
-- d → VEEV ONE 18mL Spearmint, Blue Mint, Blueberry  
+- a → VEEV NOW 18mL Spearmint, Blue Mint  
+- b → VEEV NOW 18mL Spearmint, Blue Mint, Watermelon  
+- c → VEEV NOW 18mL Spearmint, Blue Mint, Classic Tobacco  
+- d → VEEV NOW 18mL Spearmint, Blue Mint, Blueberry  
 
 ## Q3 = Classic and Toasty
-- a → VEEV ONE 18mL Classic Tobacco, Blue Mint, Spearmint  
-- b → VEEV ONE 18mL Classic Tobacco, Watermelon, Grape  
-- c → VEEV ONE 18mL Classic Tobacco  
-- d → VEEV ONE 18mL Classic Tobacco, Blueberry  
+- a → VEEV NOW 18mL Classic Tobacco, Blue Mint, Spearmint  
+- b → VEEV NOW 18mL Classic Tobacco, Watermelon, Grape  
+- c → VEEV NOW 18mL Classic Tobacco  
+- d → VEEV NOW 18mL Classic Tobacco, Blueberry  
 
 ## Q3 = Berrylicious
-- a → VEEV ONE 18mL Blueberry, Blue Mint, Spearmint  
-- b → VEEV ONE 18mL Blueberry, Watermelon, Grape  
-- c → VEEV ONE 18mL Blueberry, Classic Tobacco  
-- d → VEEV ONE 18mL Blueberry  
+- a → VEEV NOW 18mL Blueberry, Blue Mint, Spearmint  
+- b → VEEV NOW 18mL Blueberry, Watermelon, Grape  
+- c → VEEV NOW 18mL Blueberry, Classic Tobacco  
+- d → VEEV NOW 18mL Blueberry  
 
 ---
 

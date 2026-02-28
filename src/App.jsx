@@ -20,7 +20,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What're their main pain points with their vape?",
+    title: "What're the main pain points with their vape?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -57,28 +57,28 @@ const QUESTIONS = {
 const RECOMMENDATIONS = {
   'VEEV NOW 18mL': {
     A: {
-      A: 'VEEV ONE 18mL Watermelon, Grape, Blue Mint',
-      B: 'VEEV ONE 18mL Watermelon, Grape',
-      C: 'VEEV ONE 18mL Watermelon, Grape, Classic Tobacco',
-      D: 'VEEV ONE 18mL Watermelon, Grape, Blueberry',
+      A: 'VEEV NOW 18mL Watermelon, Grape, Blue Mint',
+      B: 'VEEV NOW 18mL Watermelon, Grape',
+      C: 'VEEV NOW 18mL Watermelon, Grape, Classic Tobacco',
+      D: 'VEEV NOW 18mL Watermelon, Grape, Blueberry',
     },
     B: {
-      A: 'VEEV ONE 18mL Spearmint, Blue Mint',
-      B: 'VEEV ONE 18mL Spearmint, Blue Mint, Watermelon',
-      C: 'VEEV ONE 18mL Spearmint, Blue Mint, Classic Tobacco',
-      D: 'VEEV ONE 18mL Spearmint, Blue Mint, Blueberry',
+      A: 'VEEV NOW 18mL Spearmint, Blue Mint',
+      B: 'VEEV NOW 18mL Spearmint, Blue Mint, Watermelon',
+      C: 'VEEV NOW 18mL Spearmint, Blue Mint, Classic Tobacco',
+      D: 'VEEV NOW 18mL Spearmint, Blue Mint, Blueberry',
     },
     C: {
-      A: 'VEEV ONE 18mL Classic Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV ONE 18mL Classic Tobacco, Watermelon, Grape',
-      C: 'VEEV ONE 18mL Classic Tobacco',
-      D: 'VEEV ONE 18mL Classic Tobacco, Blueberry',
+      A: 'VEEV NOW 18mL Classic Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV NOW 18mL Classic Tobacco, Watermelon, Grape',
+      C: 'VEEV NOW 18mL Classic Tobacco',
+      D: 'VEEV NOW 18mL Classic Tobacco, Blueberry',
     },
     D: {
-      A: 'VEEV ONE 18mL Blueberry, Blue Mint, Spearmint',
-      B: 'VEEV ONE 18mL Blueberry, Watermelon, Grape',
-      C: 'VEEV ONE 18mL Blueberry, Classic Tobacco',
-      D: 'VEEV ONE 18mL Blueberry',
+      A: 'VEEV NOW 18mL Blueberry, Blue Mint, Spearmint',
+      B: 'VEEV NOW 18mL Blueberry, Watermelon, Grape',
+      C: 'VEEV NOW 18mL Blueberry, Classic Tobacco',
+      D: 'VEEV NOW 18mL Blueberry',
     },
   },
   'VEEV ONE': {
@@ -109,7 +109,7 @@ const RECOMMENDATIONS = {
   },
 }
 
-const STEPS = ['welcome', 'q1', 'q2', 'q3', 'q4', 'result']
+const STEPS = ['welcome', 'q3', 'q4', 'q1', 'q2', 'result']
 
 const checkAnswerCombination = (q1Array) => {
   if (q1Array.length < 2) return ''
@@ -143,6 +143,7 @@ function App() {
   const [timerKey, setTimerKey] = useState(0)
 
   const currentStep = STEPS[stepIndex]
+  const firstQuestionStep = STEPS[1]
   const isQuestion = ['q1', 'q2', 'q3', 'q4'].includes(currentStep)
   const question = isQuestion ? QUESTIONS[currentStep] : null
 
@@ -415,15 +416,8 @@ function App() {
   }
 
   const getScreenImage = () => {
-    const screenMap = {
-      welcome: screen1,
-      q1: screen2,
-      q2: screen3,
-      q3: screen4,
-      q4: screen5,
-      result: screen6,
-    }
-    return screenMap[currentStep] || null
+    const screenByStep = [screen1, screen2, screen3, screen4, screen5, screen6]
+    return screenByStep[stepIndex] || null
   }
 
   return (
@@ -468,12 +462,12 @@ function App() {
               />
               <div className="question-header">
                 {question.maxSelect === 2 && (
-                  <h2 className="question-prompt">PICK 2 OF THE FOLLOWING</h2>
+                  <h2 className="question-prompt">PICK 2 OF<br />THE FOLLOWING</h2>
                 )}
                 {question.maxSelect === 1 && (
-                  <h2 className="question-prompt">PICK 1 OF THE FOLLOWING</h2>
+                  <h2 className="question-prompt">PICK 1 OF<br />THE FOLLOWING</h2>
                 )}
-                <p className="question-title">Q{currentStep.slice(1)}: {question.title}</p>
+                <p className="question-title">Q{stepIndex}: {question.title}</p>
               </div>
               <div className="option-grid">
                 {question.options.map((option, index) => {
@@ -502,7 +496,7 @@ function App() {
                   )
                 })}
               </div>
-              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== firstQuestionStep ? ' timer-persistent' : ''}`}>
                 <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
@@ -523,8 +517,8 @@ function App() {
                 </h2>
               </div>
               <div className="result-options">
-                {(recommendation || 'VEEV ONE 18mL Watermelon, Grape, Blue Mint').replace(/^(VEEV ONE 18mL|VEEV ONE) /, '').split(', ').map((flavor, index) => {
-                  const prefix = (recommendation || 'VEEV ONE 18mL Watermelon, Grape, Blue Mint').match(/^(VEEV ONE 18mL|VEEV ONE)/)?.[0] || 'VEEV ONE 18mL'
+                {(recommendation || 'VEEV NOW 18mL Watermelon, Grape, Blue Mint').replace(/^(VEEV NOW 18mL|VEEV ONE) /, '').split(', ').map((flavor, index) => {
+                  const prefix = (recommendation || 'VEEV NOW 18mL Watermelon, Grape, Blue Mint').match(/^(VEEV NOW 18mL|VEEV ONE)/)?.[0] || 'VEEV NOW 18mL'
                   return (
                     <button key={index} type="button" className="result-button" onClick={handleReset}>
                       <span className="result-label">{String.fromCharCode(65 + index)}) {prefix} {flavor}</span>
@@ -532,7 +526,7 @@ function App() {
                   )
                 })}
               </div>
-              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== firstQuestionStep ? ' timer-persistent' : ''}`}>
                 <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
