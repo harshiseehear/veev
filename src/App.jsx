@@ -133,6 +133,7 @@ function App() {
   })
   const [device, setDevice] = useState('')
   const [isFadingOut, setIsFadingOut] = useState(false)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
   const appRef = useRef(null)
   const transitionTimeoutRef = useRef(null)
   const autoResetTimeoutRef = useRef(null)
@@ -165,6 +166,26 @@ function App() {
     setDevice('')
     setIsFadingOut(false)
   }
+
+  useEffect(() => {
+    // Preload all images
+    const imagesToLoad = [screen1, screen2, screen3, screen4, screen5, screen6]
+    let loadedCount = 0
+    
+    const checkAllLoaded = () => {
+      loadedCount++
+      if (loadedCount === imagesToLoad.length) {
+        setImagesLoaded(true)
+      }
+    }
+
+    imagesToLoad.forEach((src) => {
+      const img = new Image()
+      img.onload = checkAllLoaded
+      img.onerror = checkAllLoaded // Still mark as loaded even on error
+      img.src = src
+    })
+  }, [])
 
   useEffect(() => {
     const updateViewportVars = () => {
@@ -341,7 +362,8 @@ function App() {
 
   return (
     <div className="app" ref={appRef}>
-      <div className="tablet-frame">
+      {!imagesLoaded && <div className="loading-overlay" />}
+      <div className={`tablet-frame ${imagesLoaded ? 'loaded' : ''}`}>
         <div className="tablet">
           <main className="content">
           {currentStep === 'welcome' && (

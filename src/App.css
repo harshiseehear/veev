@@ -10,6 +10,18 @@
   justify-content: center;
   font-family: var(--font-display);
   overflow: hidden;
+  position: relative;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 9999;
+  pointer-events: all;
 }
 
 .tablet-frame {
@@ -20,6 +32,12 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.tablet-frame.loaded {
+  opacity: 1;
 }
 
 .tablet {
@@ -88,6 +106,8 @@
   animation: floatIn 0.5s ease;
   object-fit: cover;
   z-index: 0;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .panel > h2,
