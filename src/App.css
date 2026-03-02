@@ -334,7 +334,7 @@ h2 {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 4.5rem;
+  font-size: 4rem;
   line-height: 1.05;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -355,7 +355,7 @@ h2 {
   color: var(--ink);
   font-weight: 700;
   font-family: var(--font-display);
-  max-width: 480px;
+  max-width: 520px;
 }
 
 .progress {

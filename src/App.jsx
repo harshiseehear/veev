@@ -9,7 +9,7 @@ import screen6 from './assets/screen_6.png'
 
 const QUESTIONS = {
   q1: {
-    title: 'What do your adult customers look for in a vape?',
+    title: 'What do your<br />adult customers <br />look for in a vape?',
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -20,7 +20,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What're the main pain points with their vape?",
+    title: "What're the main pain points with<br />their vape?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -31,7 +31,7 @@ const QUESTIONS = {
     ],
   },
   q3: {
-    title: 'What appeals most to your adult customers?',
+    title: 'What appeals<br />most to your adult<br />customers?',
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
@@ -109,7 +109,7 @@ const RECOMMENDATIONS = {
   },
 }
 
-const STEPS = ['welcome', 'q3', 'q4', 'q1', 'q2', 'result']
+const STEPS = ['welcome', 'q1', 'q2', 'q3', 'q4', 'result']
 
 const checkAnswerCombination = (q1Array) => {
   if (q1Array.length < 2) return ''
@@ -143,7 +143,6 @@ function App() {
   const [timerKey, setTimerKey] = useState(0)
 
   const currentStep = STEPS[stepIndex]
-  const firstQuestionStep = STEPS[1]
   const isQuestion = ['q1', 'q2', 'q3', 'q4'].includes(currentStep)
   const question = isQuestion ? QUESTIONS[currentStep] : null
 
@@ -416,8 +415,15 @@ function App() {
   }
 
   const getScreenImage = () => {
-    const screenByStep = [screen1, screen2, screen3, screen4, screen5, screen6]
-    return screenByStep[stepIndex] || null
+    const screenMap = {
+      welcome: screen1,
+      q1: screen2,
+      q2: screen3,
+      q3: screen4,
+      q4: screen5,
+      result: screen6,
+    }
+    return screenMap[currentStep] || null
   }
 
   return (
@@ -461,13 +467,13 @@ function App() {
                 className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`}
               />
               <div className="question-header">
+                <h2 className="question-prompt" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
                 {question.maxSelect === 2 && (
-                  <h2 className="question-prompt">PICK 2 OF<br />THE FOLLOWING</h2>
+                  <p className="question-title">Pick 2 of the following</p>
                 )}
                 {question.maxSelect === 1 && (
-                  <h2 className="question-prompt">PICK 1 OF<br />THE FOLLOWING</h2>
+                  <p className="question-title">Pick 1 of the following</p>
                 )}
-                <p className="question-title">Q{stepIndex}: {question.title}</p>
               </div>
               <div className="option-grid">
                 {question.options.map((option, index) => {
@@ -496,7 +502,7 @@ function App() {
                   )
                 })}
               </div>
-              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== firstQuestionStep ? ' timer-persistent' : ''}`}>
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
                 <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
@@ -526,7 +532,7 @@ function App() {
                   )
                 })}
               </div>
-              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== firstQuestionStep ? ' timer-persistent' : ''}`}>
+              <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
                 <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
               </div>
             </section>
