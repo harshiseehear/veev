@@ -1,7 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap');
+@font-face {
+  font-family: 'IQOS Sans';
+  src: url('./assets/iqos_bold.otf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Korolev';
+  src: url('./assets/korolev_heavy.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'IQOS Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 400;
   line-height: 1.6;
   color: #111111;
@@ -33,7 +47,7 @@
   --toggle-ink: #ffffff;
   --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
-  --font-display: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'IQOS Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 @supports (height: 100svh) {

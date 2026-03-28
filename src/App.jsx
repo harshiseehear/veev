@@ -6,10 +6,11 @@ import screen3 from './assets/screen_3.png'
 import screen4 from './assets/screen_4.png'
 import screen5 from './assets/screen_5.png'
 import screen6 from './assets/screen_6.png'
+import warningImg from './assets/warning.png'
 
 const QUESTIONS = {
   q1: {
-    title: 'What do your<br />adult customers <br />look for in a vape?',
+    title: 'What do your adult customers <br />look for in a vape?',
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -20,7 +21,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What're the main pain points with<br />their vape?",
+    title: "What're the main pain points<br />with their vape?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -31,7 +32,7 @@ const QUESTIONS = {
     ],
   },
   q3: {
-    title: 'What appeals<br />most to your adult<br />customers?',
+    title: 'What appeals most to<br />your adult customers?',
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
@@ -430,6 +431,7 @@ function App() {
     <div className="app" ref={appRef}>
       <div className="tablet-frame">
         <div className="tablet">
+          <img src={warningImg} alt="Health warning" className="warning-banner" />
           <main className="content">
           {currentStep === 'welcome' && (
             <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key="welcome">
@@ -467,13 +469,13 @@ function App() {
                 className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`}
               />
               <div className="question-header">
-                <h2 className="question-prompt" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
                 {question.maxSelect === 2 && (
-                  <p className="question-title">Pick 2 of the following</p>
+                  <h2 className="question-prompt">Pick 2 of the<br />following options</h2>
                 )}
                 {question.maxSelect === 1 && (
-                  <p className="question-title">Pick 1 of the following</p>
+                  <h2 className="question-prompt">Pick 1 of the<br />following options</h2>
                 )}
+                <p className="question-title" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
               </div>
               <div className="option-grid">
                 {question.options.map((option, index) => {
