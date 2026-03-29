@@ -9,11 +9,11 @@ import screen6 from './assets/screen_6.png'
 import warningImg from './assets/warning.png'
 
 const SHEETS_WEB_APP_URL = import.meta.env.VITE_SHEETS_WEB_APP_URL || ''
-const FALLBACK_RECOMMENDATION = 'VEEV NOW 18 mL - Watermelon, Grape, Blue Mint'
+const FALLBACK_RECOMMENDATION = 'VEEV NOW ULTRA Classic Mint'
 
 const QUESTIONS = {
   q1: {
-    title: 'What do your adult customers <br />look for in a vape?',
+    title: 'What do you look for in a vape?',
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -21,10 +21,11 @@ const QUESTIONS = {
       { value: 'B', label: 'Fast charging' },
       { value: 'C', label: 'High puff count' },
       { value: 'D', label: 'Aluminum body' },
+      { value: 'E', label: 'Easy pod swaps' },
     ],
   },
   q2: {
-    title: "What're the main pain points<br />with their vape?",
+    title: "What're your main pain points with your current vape?<br />What don't you love about the vape you're using now?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -35,80 +36,80 @@ const QUESTIONS = {
     ],
   },
   q3: {
-    title: 'What appeals most to<br />your adult customers?',
+    title: 'What appeals to you the most?',
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
-      { value: 'A', label: 'Bold and fruity' },
-      { value: 'B', label: 'Crisp and fresh' },
-      { value: 'C', label: 'Classic and toasty' },
-      { value: 'D', label: 'Berrylicious' },
+      { value: 'A', label: 'Bold and Fruity' },
+      { value: 'B', label: 'Crisp and Fresh' },
+      { value: 'C', label: 'Classic and Rich' },
+      { value: 'D', label: 'Roasted and Creamy' },
     ],
   },
   q4: {
-    title: 'Which flavour mood do they gravitate towards?',
+    title: "What's your flavour mood?",
     subtitle: 'Pick 1 option',
     maxSelect: 1,
     options: [
-      { value: 'A', label: 'Cool and smooth' },
-      { value: 'B', label: 'Light and refreshing' },
-      { value: 'C', label: 'Warm and familiar' },
-      { value: 'D', label: 'Bright and punchy' },
+      { value: 'A', label: 'Cool and Smooth' },
+      { value: 'B', label: 'Light and Refreshing' },
+      { value: 'C', label: 'Warm and Familiar' },
+      { value: 'D', label: 'Strong and Punchy' },
     ],
   },
 }
 
 const RECOMMENDATIONS = {
-  'VEEV NOW 18 mL -': {
+  'VEEV NOW ULTRA': {
     A: {
-      A: 'VEEV NOW 18 mL - Watermelon, Grape, Blue Mint',
-      B: 'VEEV NOW 18 mL - Watermelon, Grape',
-      C: 'VEEV NOW 18 mL - Watermelon, Grape, Classic Tobacco',
-      D: 'VEEV NOW 18 mL - Watermelon, Grape, Blueberry',
+      A: 'VEEV NOW ULTRA Classic Mint',
+      B: 'VEEV NOW ULTRA Classic Mint',
+      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco',
+      D: 'VEEV NOW ULTRA Accents Rich Tobacco',
     },
     B: {
-      A: 'VEEV NOW 18 mL - Spearmint, Blue Mint',
-      B: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Watermelon',
-      C: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Classic Tobacco',
-      D: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Blueberry',
+      A: 'VEEV NOW ULTRA Classic Mint',
+      B: 'VEEV NOW ULTRA Classic Mint',
+      C: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
+      D: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
     },
     C: {
-      A: 'VEEV NOW 18 mL - Classic Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV NOW 18 mL - Classic Tobacco, Watermelon, Grape',
-      C: 'VEEV NOW 18 mL - Classic Tobacco',
-      D: 'VEEV NOW 18 mL - Classic Tobacco, Blueberry',
+      A: 'VEEV NOW ULTRA Classic Mint, xc Accents Rich Tobacco',
+      B: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
+      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco, Accents Rich Tobacco',
+      D: 'VEEV NOW ULTRA Accents Rich Tobacco',
     },
     D: {
-      A: 'VEEV NOW 18 mL - Blueberry, Blue Mint, Spearmint',
-      B: 'VEEV NOW 18 mL - Blueberry, Watermelon, Grape',
-      C: 'VEEV NOW 18 mL - Blueberry, Classic Tobacco',
-      D: 'VEEV NOW 18 mL - Blueberry',
+      A: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
+      B: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
+      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco',
+      D: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco, Accents Rich Tobacco',
     },
   },
   'VEEV ONE': {
     A: {
       A: 'VEEV ONE Watermelon, Mango, Blue Mint',
-      B: 'VEEV ONE Watermelon, Mango',
+      B: 'VEEV ONE Watermelon, Mango, Strawberry',
       C: 'VEEV ONE Watermelon, Mango, Classic Tobacco',
       D: 'VEEV ONE Watermelon, Mango, Blue Raspberry',
     },
     B: {
-      A: 'VEEV ONE Blue Mint, Spearmint',
-      B: 'VEEV ONE Blue Mint, Spearmint, Mango',
+      A: 'VEEV ONE Blue Mint, Spearmint, Ice Mint',
+      B: 'VEEV ONE Blue Mint, Spearmint, Strawberry',
       C: 'VEEV ONE Blue Mint, Spearmint, Classic Tobacco',
-      D: 'VEEV ONE Blue Mint, Spearmint, Blueberry',
+      D: 'VEEV ONE Blue Mint, Spearmint, Blue Raspberry',
     },
     C: {
       A: 'VEEV ONE Classic Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV ONE Classic Tobacco, Watermelon, Mango',
-      C: 'VEEV ONE Classic Tobacco',
-      D: 'VEEV ONE Classic Tobacco, Blueberry, Blue Raspberry',
+      B: 'VEEV ONE Classic Tobacco, Strawberry, Watermelon',
+      C: 'VEEV ONE Classic Tobacco, Toasted Tobacco, Bright Tobacco',
+      D: 'VEEV ONE Classic Tobacco, Blue Raspberry, Mango',
     },
     D: {
-      A: 'VEEV ONE Blueberry, Blue Raspberry, Spearmint',
-      B: 'VEEV ONE Blueberry, Blue Raspberry, Watermelon',
-      C: 'VEEV ONE Blueberry, Blue Raspberry, Classic Tobacco',
-      D: 'VEEV ONE Blueberry, Blue Raspberry',
+      A: 'VEEV ONE Mild Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV ONE Mild Tobacco, Strawberry, Classic Mint',
+      C: 'VEEV ONE Classic Tobacco, Mild Tobacco, Bright Tobacco',
+      D: 'VEEV ONE Toasted Tobacco, Classic Tobacco, Blue Raspberry',
     },
   },
 }
@@ -129,8 +130,8 @@ const getOptionLabel = (questionId, value) => {
 
 const getSuggestionItems = (recommendationText) => {
   const text = recommendationText || FALLBACK_RECOMMENDATION
-  const prefix = text.match(/^(VEEV NOW 18 mL -|VEEV ONE)/)?.[0] || 'VEEV NOW 18 mL -'
-  const flavors = text.replace(/^(VEEV NOW 18 mL -|VEEV ONE) /, '').split(', ')
+  const prefix = text.match(/^(VEEV NOW ULTRA|VEEV ONE)/)?.[0] || 'VEEV NOW ULTRA'
+  const flavors = text.replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ')
   return flavors.map((flavor) => `${prefix} ${flavor}`)
 }
 
@@ -236,13 +237,10 @@ const sendResultToGoogleSheet = async ({
 const checkAnswerCombination = (q1Array) => {
   if (q1Array.length < 2) return ''
   const combos = [q1Array[0] + q1Array[1], q1Array[1] + q1Array[0]]
-  if (combos.includes('AB') || combos.includes('BC') || combos.includes('AC')) {
-    return 'VEEV NOW 18 mL -'
+  if (combos.includes('AC') || combos.includes('CD')) {
+    return 'VEEV NOW ULTRA'
   }
-  if (combos.includes('AD') || combos.includes('BD') || combos.includes('CD')) {
-    return 'VEEV ONE'
-  }
-  return ''
+  return 'VEEV ONE'
 }
 
 function App() {
@@ -605,18 +603,18 @@ function App() {
               <div className="welcome-text">
                 <h1 className="welcome-title">
                   <span className="welcome-title-sub">
-                    FIND THE
+                    WHAT'S THE BEST
                   </span>
                   <span className="welcome-title-main">
                     VEEV VAPE
                     <br />
                     AND FLAVOUR
                   </span>
-                  <span className="welcome-title-sub">FOR YOUR ADULT CUSTOMERS!</span>
+                  <span className="welcome-title-sub">FOR YOU?</span>
                 </h1>
               </div>
               <button className="cta" onClick={handleStart}>
-                START
+                LET'S FIND<br />OUT!
               </button>
             </section>
           )}
@@ -686,8 +684,8 @@ function App() {
                 </h2>
               </div>
               <div className="result-options">
-                {(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW 18 mL -|VEEV ONE) /, '').split(', ').map((flavor, index) => {
-                  const prefix = (recommendation || FALLBACK_RECOMMENDATION).match(/^(VEEV NOW 18 mL -|VEEV ONE)/)?.[0] || 'VEEV NOW 18 mL -'
+                {(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ').map((flavor, index) => {
+                  const prefix = (recommendation || FALLBACK_RECOMMENDATION).match(/^(VEEV NOW ULTRA|VEEV ONE)/)?.[0] || 'VEEV NOW ULTRA'
                   const suggestionLabel = `${prefix} ${flavor}`
                   return (
                     <button key={index} type="button" className="result-button" onClick={() => handleReset(suggestionLabel)}>

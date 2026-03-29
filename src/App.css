@@ -197,7 +197,7 @@
 }
 
 .panel:not(.result-panel) > .welcome-text {
-  transform: translateY(8rem);
+  transform: translateY(10rem);
 }
 
 .panel:not(.result-panel) .welcome-text .lead {
@@ -545,7 +545,8 @@ h2 {
   height: 280px;
   min-height: 280px;
   max-height: 280px;
-  font-size: 3rem;
+  font-size: 2.2rem;
+  padding-top: 1rem;
   background: #ffffff;
   border-color: #ffffff;
   color: #3f1d86;
