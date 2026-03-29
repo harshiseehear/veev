@@ -18,7 +18,7 @@ D. Aluminum body
 ### Device Decision Logic
 
 - If selection is:
-  - AB, BC, AC → **VEEV NOW 18 mL**
+  - AB, BC, AC → **VEEV NOW 18 mL -**
   - AD, BD, CD → **VEEV ONE**
 
 ---
@@ -45,7 +45,7 @@ D. Berrylicious
 
 ### Base Flavour Mapping by Device
 
-#### If Device = VEEV NOW 18 mL
+#### If Device = VEEV NOW 18 mL -
 - A → Watermelon & Grape  
 - B → Spearmint & Blue Mint  
 - C → Classic Tobacco  
@@ -72,31 +72,31 @@ d. Bright and punchy
 
 ---
 
-# IF DEVICE = VEEV NOW 18 mL
+# IF DEVICE = VEEV NOW 18 mL -
 
 ## Q3 = Bold and Fruity
-- a → VEEV NOW 18mL Watermelon, Grape, Blue Mint  
-- b → VEEV NOW 18mL Watermelon, Grape  
-- c → VEEV NOW 18mL Watermelon, Grape, Classic Tobacco  
-- d → VEEV NOW 18mL Watermelon, Grape, Blueberry  
+- a → VEEV NOW 18 mL - Watermelon, Grape, Blue Mint  
+- b → VEEV NOW 18 mL - Watermelon, Grape  
+- c → VEEV NOW 18 mL - Watermelon, Grape, Classic Tobacco  
+- d → VEEV NOW 18 mL - Watermelon, Grape, Blueberry  
 
 ## Q3 = Crisp and Fresh
-- a → VEEV NOW 18mL Spearmint, Blue Mint  
-- b → VEEV NOW 18mL Spearmint, Blue Mint, Watermelon  
-- c → VEEV NOW 18mL Spearmint, Blue Mint, Classic Tobacco  
-- d → VEEV NOW 18mL Spearmint, Blue Mint, Blueberry  
+- a → VEEV NOW 18 mL - Spearmint, Blue Mint  
+- b → VEEV NOW 18 mL - Spearmint, Blue Mint, Watermelon  
+- c → VEEV NOW 18 mL - Spearmint, Blue Mint, Classic Tobacco  
+- d → VEEV NOW 18 mL - Spearmint, Blue Mint, Blueberry  
 
 ## Q3 = Classic and Toasty
-- a → VEEV NOW 18mL Classic Tobacco, Blue Mint, Spearmint  
-- b → VEEV NOW 18mL Classic Tobacco, Watermelon, Grape  
-- c → VEEV NOW 18mL Classic Tobacco  
-- d → VEEV NOW 18mL Classic Tobacco, Blueberry  
+- a → VEEV NOW 18 mL - Classic Tobacco, Blue Mint, Spearmint  
+- b → VEEV NOW 18 mL - Classic Tobacco, Watermelon, Grape  
+- c → VEEV NOW 18 mL - Classic Tobacco  
+- d → VEEV NOW 18 mL - Classic Tobacco, Blueberry  
 
 ## Q3 = Berrylicious
-- a → VEEV NOW 18mL Blueberry, Blue Mint, Spearmint  
-- b → VEEV NOW 18mL Blueberry, Watermelon, Grape  
-- c → VEEV NOW 18mL Blueberry, Classic Tobacco  
-- d → VEEV NOW 18mL Blueberry  
+- a → VEEV NOW 18 mL - Blueberry, Blue Mint, Spearmint  
+- b → VEEV NOW 18 mL - Blueberry, Watermelon, Grape  
+- c → VEEV NOW 18 mL - Blueberry, Classic Tobacco  
+- d → VEEV NOW 18 mL - Blueberry  
 
 ---
 

@@ -227,7 +227,7 @@
   font-size: 4.0rem;
   line-height: 1.05;
   letter-spacing: 0.02em;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   color: #ffffff;
 }
 
@@ -248,7 +248,7 @@
 .result-button {
   border: none;
   border-radius: 22px;
-  padding: 2rem 1.8rem;
+  padding: 2rem 1.5rem;
   background: var(--button-bg);
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
