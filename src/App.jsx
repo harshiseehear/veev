@@ -7,6 +7,9 @@ import screen4 from './assets/screen_4.png'
 import screen5 from './assets/screen_5.png'
 import screen6 from './assets/screen_6.png'
 
+const SHEETS_WEB_APP_URL = import.meta.env.VITE_SHEETS_WEB_APP_URL || ''
+const FALLBACK_RECOMMENDATION = 'VEEV NOW 18 mL - Watermelon, Grape, Blue Mint'
+
 const QUESTIONS = {
   q1: {
     title: 'What do your<br />adult customers <br />look for in a vape?',
@@ -55,30 +58,30 @@ const QUESTIONS = {
 }
 
 const RECOMMENDATIONS = {
-  'VEEV NOW 18mL': {
+  'VEEV NOW 18 mL -': {
     A: {
-      A: 'VEEV NOW 18mL Watermelon, Grape, Blue Mint',
-      B: 'VEEV NOW 18mL Watermelon, Grape',
-      C: 'VEEV NOW 18mL Watermelon, Grape, Classic Tobacco',
-      D: 'VEEV NOW 18mL Watermelon, Grape, Blueberry',
+      A: 'VEEV NOW 18 mL - Watermelon, Grape, Blue Mint',
+      B: 'VEEV NOW 18 mL - Watermelon, Grape',
+      C: 'VEEV NOW 18 mL - Watermelon, Grape, Classic Tobacco',
+      D: 'VEEV NOW 18 mL - Watermelon, Grape, Blueberry',
     },
     B: {
-      A: 'VEEV NOW 18mL Spearmint, Blue Mint',
-      B: 'VEEV NOW 18mL Spearmint, Blue Mint, Watermelon',
-      C: 'VEEV NOW 18mL Spearmint, Blue Mint, Classic Tobacco',
-      D: 'VEEV NOW 18mL Spearmint, Blue Mint, Blueberry',
+      A: 'VEEV NOW 18 mL - Spearmint, Blue Mint',
+      B: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Watermelon',
+      C: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Classic Tobacco',
+      D: 'VEEV NOW 18 mL - Spearmint, Blue Mint, Blueberry',
     },
     C: {
-      A: 'VEEV NOW 18mL Classic Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV NOW 18mL Classic Tobacco, Watermelon, Grape',
-      C: 'VEEV NOW 18mL Classic Tobacco',
-      D: 'VEEV NOW 18mL Classic Tobacco, Blueberry',
+      A: 'VEEV NOW 18 mL - Classic Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV NOW 18 mL - Classic Tobacco, Watermelon, Grape',
+      C: 'VEEV NOW 18 mL - Classic Tobacco',
+      D: 'VEEV NOW 18 mL - Classic Tobacco, Blueberry',
     },
     D: {
-      A: 'VEEV NOW 18mL Blueberry, Blue Mint, Spearmint',
-      B: 'VEEV NOW 18mL Blueberry, Watermelon, Grape',
-      C: 'VEEV NOW 18mL Blueberry, Classic Tobacco',
-      D: 'VEEV NOW 18mL Blueberry',
+      A: 'VEEV NOW 18 mL - Blueberry, Blue Mint, Spearmint',
+      B: 'VEEV NOW 18 mL - Blueberry, Watermelon, Grape',
+      C: 'VEEV NOW 18 mL - Blueberry, Classic Tobacco',
+      D: 'VEEV NOW 18 mL - Blueberry',
     },
   },
   'VEEV ONE': {
@@ -111,11 +114,129 @@ const RECOMMENDATIONS = {
 
 const STEPS = ['welcome', 'q1', 'q2', 'q3', 'q4', 'result']
 
+const createFlowId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+const getOptionLabel = (questionId, value) => {
+  const option = QUESTIONS[questionId]?.options?.find((item) => item.value === value)
+  return option?.label || ''
+}
+
+const getSuggestionItems = (recommendationText) => {
+  const text = recommendationText || FALLBACK_RECOMMENDATION
+  const prefix = text.match(/^(VEEV NOW 18 mL -|VEEV ONE)/)?.[0] || 'VEEV NOW 18 mL -'
+  const flavors = text.replace(/^(VEEV NOW 18 mL -|VEEV ONE) /, '').split(', ')
+  return flavors.map((flavor) => `${prefix} ${flavor}`)
+}
+
+const isLikelyDuplicateSubmission = (fingerprint) => {
+  const lastFingerprint = sessionStorage.getItem('veev-last-sheet-fingerprint')
+  const lastAtRaw = sessionStorage.getItem('veev-last-sheet-submission-at')
+  const lastAt = Number(lastAtRaw || 0)
+  const now = Date.now()
+
+  if (lastFingerprint === fingerprint && now - lastAt < 5000) {
+    return true
+  }
+
+  sessionStorage.setItem('veev-last-sheet-fingerprint', fingerprint)
+  sessionStorage.setItem('veev-last-sheet-submission-at', String(now))
+  return false
+}
+
+const sendResultToGoogleSheet = async ({
+  answers,
+  recommendation,
+  suggestionClicked = '',
+  flowId = '',
+  eventType = 'result_reached',
+}) => {
+  if (!SHEETS_WEB_APP_URL) {
+    console.warn('VITE_SHEETS_WEB_APP_URL is not set. Sheet logging is disabled.')
+    return
+  }
+
+  const isCompletedFlow =
+    Array.isArray(answers.q1) &&
+    answers.q1.length === 2 &&
+    Array.isArray(answers.q2) &&
+    answers.q2.length === 2 &&
+    Boolean(answers.q3) &&
+    Boolean(answers.q4)
+
+  if (!isCompletedFlow) {
+    return
+  }
+
+  const q1Answers = (answers.q1 || []).map((value) => getOptionLabel('q1', value))
+  const q2Answers = (answers.q2 || []).map((value) => getOptionLabel('q2', value))
+  const suggestions = getSuggestionItems(recommendation)
+
+  const row = {
+    datetimestamp: new Date().toISOString(),
+    flow_id: flowId,
+    'flow id': flowId,
+    event_type: eventType,
+    'event type': eventType,
+    question_1_answer_1: q1Answers[0] || '',
+    'question 1 answer 1': q1Answers[0] || '',
+    question_1_answer_2: q1Answers[1] || '',
+    'question 1 answer 2': q1Answers[1] || '',
+    question_2_answer_1: q2Answers[0] || '',
+    'question 2 answer 1': q2Answers[0] || '',
+    question_2_answer_2: q2Answers[1] || '',
+    'question 2 answer 2': q2Answers[1] || '',
+    question_3_answer: getOptionLabel('q3', answers.q3),
+    'question 3 answer': getOptionLabel('q3', answers.q3),
+    question_4_answer: getOptionLabel('q4', answers.q4),
+    'question 4 answer': getOptionLabel('q4', answers.q4),
+    final_suggestion_1: suggestions[0] || '',
+    'final suggestion 1': suggestions[0] || '',
+    final_suggestion_2: suggestions[1] || '',
+    'final suggestion 2': suggestions[1] || '',
+    final_suggestion_3: suggestions[2] || '',
+    'final suggestion 3': suggestions[2] || '',
+    final_suggestion_4: suggestions[3] || '',
+    'final suggestion 4': suggestions[3] || '',
+    suggestion_clicked: suggestionClicked,
+    'suggestion clicked': suggestionClicked,
+    suggestionClicked,
+  }
+
+  const fingerprint = JSON.stringify({
+    flowId,
+    eventType,
+    q1: q1Answers,
+    q2: q2Answers,
+    q3: row.question_3_answer,
+    q4: row.question_4_answer,
+    suggestions,
+    suggestionClicked,
+  })
+
+  if (isLikelyDuplicateSubmission(fingerprint)) {
+    return
+  }
+
+  await fetch(SHEETS_WEB_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify(row),
+  })
+}
+
 const checkAnswerCombination = (q1Array) => {
   if (q1Array.length < 2) return ''
   const combos = [q1Array[0] + q1Array[1], q1Array[1] + q1Array[0]]
   if (combos.includes('AB') || combos.includes('BC') || combos.includes('AC')) {
-    return 'VEEV NOW 18mL'
+    return 'VEEV NOW 18 mL -'
   }
   if (combos.includes('AD') || combos.includes('BD') || combos.includes('CD')) {
     return 'VEEV ONE'
@@ -141,6 +262,8 @@ function App() {
   const autoResetTimeoutRef = useRef(null)
   const imageTransitionTimeoutRef = useRef(null)
   const [timerKey, setTimerKey] = useState(0)
+  const hasLoggedCurrentResultRef = useRef(false)
+  const currentResultFlowIdRef = useRef('')
 
   const currentStep = STEPS[stepIndex]
   const isQuestion = ['q1', 'q2', 'q3', 'q4'].includes(currentStep)
@@ -282,6 +405,32 @@ function App() {
     }
   }, [currentStep])
 
+  useEffect(() => {
+    if (currentStep !== 'result') {
+      hasLoggedCurrentResultRef.current = false
+      currentResultFlowIdRef.current = ''
+      return
+    }
+
+    if (hasLoggedCurrentResultRef.current) {
+      return
+    }
+
+    const flowId = createFlowId()
+    hasLoggedCurrentResultRef.current = true
+    currentResultFlowIdRef.current = flowId
+
+    sendResultToGoogleSheet({
+      answers,
+      recommendation,
+      suggestionClicked: '',
+      flowId,
+      eventType: 'result_reached',
+    }).catch((error) => {
+      console.error('Failed to send result reach event to Google Sheet', error)
+    })
+  }, [answers, currentStep, recommendation])
+
   const captureTimerState = () => {
     // Find the timer pill element and capture its current width
     const timerPill = document.querySelector('.timer-pill')
@@ -354,7 +503,19 @@ function App() {
     }, 500)
   }
 
-  const handleReset = () => {
+  const handleReset = (suggestionClicked = '') => {
+    if (currentStep === 'result' && suggestionClicked) {
+      sendResultToGoogleSheet({
+        answers,
+        recommendation,
+        suggestionClicked,
+        flowId: currentResultFlowIdRef.current,
+        eventType: 'suggestion_clicked',
+      }).catch((error) => {
+        console.error('Failed to send suggestion click event to Google Sheet', error)
+      })
+    }
+
     transitionToWelcome()
   }
 
@@ -518,16 +679,17 @@ function App() {
               />
               <div className="result-header">
                 <h2 className="result-prompt">
-                  SUGGESTED PRODUCT<br />
-                  AND FLAVOUR PACKAGE:
+                  SUGGESTED VEEV VAPE<br />
+                  AND FLAVOURS:
                 </h2>
               </div>
               <div className="result-options">
-                {(recommendation || 'VEEV NOW 18mL Watermelon, Grape, Blue Mint').replace(/^(VEEV NOW 18mL|VEEV ONE) /, '').split(', ').map((flavor, index) => {
-                  const prefix = (recommendation || 'VEEV NOW 18mL Watermelon, Grape, Blue Mint').match(/^(VEEV NOW 18mL|VEEV ONE)/)?.[0] || 'VEEV NOW 18mL'
+                {(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW 18 mL -|VEEV ONE) /, '').split(', ').map((flavor, index) => {
+                  const prefix = (recommendation || FALLBACK_RECOMMENDATION).match(/^(VEEV NOW 18 mL -|VEEV ONE)/)?.[0] || 'VEEV NOW 18 mL -'
+                  const suggestionLabel = `${prefix} ${flavor}`
                   return (
-                    <button key={index} type="button" className="result-button" onClick={handleReset}>
-                      <span className="result-label">{String.fromCharCode(65 + index)}) {prefix} {flavor}</span>
+                    <button key={index} type="button" className="result-button" onClick={() => handleReset(suggestionLabel)}>
+                      <span className="result-label">{String.fromCharCode(65 + index)}) {suggestionLabel}</span>
                     </button>
                   )
                 })}
