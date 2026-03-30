@@ -25,7 +25,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What're your main pain points with your current vape?<br />What don't you love about the vape you're using now?",
+    title: "What're your main pain points with your current vape?<br /><span style='font-size:0.65em;font-weight:400;line-height:1.1;display:inline-block;margin-top:0.8em'>What don't you love about the vape<br />you're using now?</span>",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -112,6 +112,13 @@ const RECOMMENDATIONS = {
       D: 'VEEV ONE Toasted Tobacco, Classic Tobacco, Blue Raspberry',
     },
   },
+}
+
+const getLabel = (questionId, value) => {
+  const q = QUESTIONS[questionId]
+  if (!q) return value
+  const opt = q.options.find((o) => o.value === value)
+  return opt ? opt.label : value
 }
 
 const STEPS = ['welcome', 'q1', 'q2', 'q3', 'q4', 'result']
@@ -260,6 +267,7 @@ function App() {
   const transitionTimeoutRef = useRef(null)
   const autoResetTimeoutRef = useRef(null)
   const imageTransitionTimeoutRef = useRef(null)
+  const flowIdRef = useRef('')
   const [timerKey, setTimerKey] = useState(0)
   const hasLoggedCurrentResultRef = useRef(false)
   const currentResultFlowIdRef = useRef('')
