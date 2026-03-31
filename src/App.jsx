@@ -25,7 +25,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What're your main pain points with your current vape?<br /><span style='font-size:0.65em;font-weight:400;line-height:1.1;display:inline-block;margin-top:0.8em'>What don't you love about the vape<br />you're using now?</span>",
+    title: "What don't you like about your current vape?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -74,7 +74,7 @@ const RECOMMENDATIONS = {
       D: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
     },
     C: {
-      A: 'VEEV NOW ULTRA Classic Mint, xc Accents Rich Tobacco',
+      A: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
       B: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
       C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco, Accents Rich Tobacco',
       D: 'VEEV NOW ULTRA Accents Rich Tobacco',
@@ -628,7 +628,7 @@ function App() {
           )}
 
           {isQuestion && (
-            <section className={`panel ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
+            <section className={`panel${currentStep === 'q1' ? ' panel-q1' : ''} ${isFadingOut ? 'fade-out' : ''}`} key={currentStep}>
               {previousImage && <img src={previousImage} alt="Previous screen" className="screen-image screen-image-previous" />}
               <img 
                 src={getScreenImage()} 
@@ -636,13 +636,13 @@ function App() {
                 className={`screen-image${previousImage ? ' screen-image-new' : ''}${isImageTransitioning ? ' screen-image-transitioning' : ''}`}
               />
               <div className="question-header">
+                <p className="question-title" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
                 {question.maxSelect === 2 && (
                   <h2 className="question-prompt">Pick 2 of the<br />following options</h2>
                 )}
                 {question.maxSelect === 1 && (
                   <h2 className="question-prompt">Pick 1 of the<br />following options</h2>
                 )}
-                <p className="question-title" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
               </div>
               <div className="option-grid">
                 {question.options.map((option, index) => {
@@ -687,8 +687,8 @@ function App() {
               />
               <div className="result-header">
                 <h2 className="result-prompt">
-                  SUGGESTED VEEV VAPE<br />
-                  AND FLAVOURS:
+                  Your suggested VEEV Vape<br />
+                  and flavours are
                 </h2>
               </div>
               <div className="result-options">
@@ -697,7 +697,7 @@ function App() {
                   const suggestionLabel = `${prefix} ${flavor}`
                   return (
                     <button key={index} type="button" className="result-button" onClick={() => handleReset(suggestionLabel)}>
-                      <span className="result-label">{String.fromCharCode(65 + index)}) {suggestionLabel}</span>
+                      <span className="result-label">{suggestionLabel}</span>
                     </button>
                   )
                 })}

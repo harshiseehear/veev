@@ -345,13 +345,16 @@ h2 {
   margin-top: 8rem;
 }
 
+.panel-q1 .question-header {
+  margin-top: 5rem;
+}
+
 .question-prompt {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 4rem;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
+  font-weight: 700;
+  font-size: 2.7rem;
+  line-height: 1.25;
   text-transform: uppercase;
   color: #ffffff;
 }
@@ -359,9 +362,10 @@ h2 {
 .question-title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 3rem;
-  line-height: 1.25;
+  font-weight: 900;
+  font-size: 4rem;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
   color: #ffffff;
 }
 
