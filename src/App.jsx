@@ -638,10 +638,10 @@ function App() {
               <div className="question-header">
                 <p className="question-title" dangerouslySetInnerHTML={{__html: `Q${currentStep.slice(1)}: ${question.title}`}} />
                 {question.maxSelect === 2 && (
-                  <h2 className="question-prompt">Pick 2 of the<br />following options</h2>
+                  <h2 className="question-prompt">Pick 2</h2>
                 )}
                 {question.maxSelect === 1 && (
-                  <h2 className="question-prompt">Pick 1 of the<br />following options</h2>
+                  <h2 className="question-prompt">Pick 1</h2>
                 )}
               </div>
               <div className="option-grid">
@@ -688,7 +688,7 @@ function App() {
               <div className="result-header">
                 <h2 className="result-prompt">
                   Your suggested VEEV Vape<br />
-                  and flavours are
+                  and flavour{(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ').length > 1 ? 's are' : ' is'}
                 </h2>
               </div>
               <div className="result-options">
