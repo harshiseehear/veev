@@ -84,6 +84,11 @@ body[data-theme='dark'] {
 
 * {
   box-sizing: border-box;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 }
 
 body {
@@ -99,6 +104,10 @@ body,
 #root {
   height: 100%;
   overflow: hidden;
+  touch-action: none;
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior: none;
+  -ms-touch-action: none;
 }
 
 #root {
