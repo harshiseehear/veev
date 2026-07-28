@@ -9,7 +9,7 @@ import screen6 from './assets/screen_6.png'
 import warningImg from './assets/warning.png'
 
 const SHEETS_WEB_APP_URL = import.meta.env.VITE_SHEETS_WEB_APP_URL || ''
-const FALLBACK_RECOMMENDATION = 'VEEV NOW ULTRA Classic Mint'
+const FALLBACK_RECOMMENDATION = 'VEEV NOW 18 mL Watermelon, Grape, Blue Mint'
 
 const QUESTIONS = {
   q1: {
@@ -25,7 +25,7 @@ const QUESTIONS = {
     ],
   },
   q2: {
-    title: "What don't you like about your current vape?",
+    title: "What don't you love about the vape you're using now?",
     subtitle: 'Pick 2 options',
     maxSelect: 2,
     options: [
@@ -42,8 +42,8 @@ const QUESTIONS = {
     options: [
       { value: 'A', label: 'Bold and Fruity' },
       { value: 'B', label: 'Crisp and Fresh' },
-      { value: 'C', label: 'Classic and Rich' },
-      { value: 'D', label: 'Roasted and Creamy' },
+      { value: 'C', label: 'Classic and Toasty' },
+      { value: 'D', label: 'Berrylicious' },
     ],
   },
   q4: {
@@ -54,62 +54,62 @@ const QUESTIONS = {
       { value: 'A', label: 'Cool and Smooth' },
       { value: 'B', label: 'Light and Refreshing' },
       { value: 'C', label: 'Warm and Familiar' },
-      { value: 'D', label: 'Strong and Punchy' },
+      { value: 'D', label: 'Bright and Punchy' },
     ],
   },
 }
 
 const RECOMMENDATIONS = {
-  'VEEV NOW ULTRA': {
+  'VEEV NOW 18 mL': {
     A: {
-      A: 'VEEV NOW ULTRA Classic Mint',
-      B: 'VEEV NOW ULTRA Classic Mint',
-      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco',
-      D: 'VEEV NOW ULTRA Accents Rich Tobacco',
+      A: 'VEEV NOW 18 mL Watermelon, Grape, Blue Mint',
+      B: 'VEEV NOW 18 mL Watermelon, Grape, Mango',
+      C: 'VEEV NOW 18 mL Watermelon, Grape, Classic Tobacco',
+      D: 'VEEV NOW 18 mL Watermelon, Grape, Blue Raspberry',
     },
     B: {
-      A: 'VEEV NOW ULTRA Classic Mint',
-      B: 'VEEV NOW ULTRA Classic Mint',
-      C: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
-      D: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
+      A: 'VEEV NOW 18 mL Blue Mint, Spearmint, Ice Mint',
+      B: 'VEEV NOW 18 mL Blue Mint, Spearmint, Mango',
+      C: 'VEEV NOW 18 mL Blue Mint, Spearmint, Classic Tobacco',
+      D: 'VEEV NOW 18 mL Blue Mint, Spearmint, Blue Raspberry',
     },
     C: {
-      A: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
-      B: 'VEEV NOW ULTRA Classic Mint, Accents Rich Tobacco',
-      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco, Accents Rich Tobacco',
-      D: 'VEEV NOW ULTRA Accents Rich Tobacco',
+      A: 'VEEV NOW 18 mL Classic Tobacco, Blue Mint, Spearmint',
+      B: 'VEEV NOW 18 mL Classic Tobacco, Mango, Peach',
+      C: 'VEEV NOW 18 mL Classic Tobacco',
+      D: 'VEEV NOW 18 mL Classic Tobacco, Blue Raspberry, Strawberry',
     },
     D: {
-      A: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
-      B: 'VEEV NOW ULTRA Classic Mint, Gold Tobacco, Auburn Tobacco',
-      C: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco',
-      D: 'VEEV NOW ULTRA Gold Tobacco, Auburn Tobacco, Accents Rich Tobacco',
+      A: 'VEEV NOW 18 mL Blue Raspberry, Strawberry, Blue Mint',
+      B: 'VEEV NOW 18 mL Blue Raspberry, Strawberry, Mango',
+      C: 'VEEV NOW 18 mL Blue Raspberry, Strawberry, Classic Tobacco',
+      D: 'VEEV NOW 18 mL Blue Raspberry, Strawberry, Blueberry',
     },
   },
   'VEEV ONE': {
     A: {
-      A: 'VEEV ONE Watermelon, Mango, Blue Mint',
-      B: 'VEEV ONE Watermelon, Mango, Strawberry',
-      C: 'VEEV ONE Watermelon, Mango, Classic Tobacco',
-      D: 'VEEV ONE Watermelon, Mango, Blue Raspberry',
+      A: 'VEEV ONE Watermelon X, Mango X, Ice Mint',
+      B: 'VEEV ONE Watermelon X, Mango X, Strawberry X',
+      C: 'VEEV ONE Watermelon X, Mango X, Classic Tobacco',
+      D: 'VEEV ONE Watermelon X, Mango X, Blueberry X',
     },
     B: {
-      A: 'VEEV ONE Blue Mint, Spearmint, Ice Mint',
-      B: 'VEEV ONE Blue Mint, Spearmint, Strawberry',
-      C: 'VEEV ONE Blue Mint, Spearmint, Classic Tobacco',
-      D: 'VEEV ONE Blue Mint, Spearmint, Blue Raspberry',
+      A: 'VEEV ONE Blue Mint, Ice Mint, Watermelon X',
+      B: 'VEEV ONE Blue Mint, Ice Mint, Strawberry X',
+      C: 'VEEV ONE Blue Mint, Ice Mint, Classic Tobacco',
+      D: 'VEEV ONE Blue Mint, Ice Mint, Blueberry X',
     },
     C: {
-      A: 'VEEV ONE Classic Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV ONE Classic Tobacco, Strawberry, Watermelon',
-      C: 'VEEV ONE Classic Tobacco, Toasted Tobacco, Bright Tobacco',
-      D: 'VEEV ONE Classic Tobacco, Blue Raspberry, Mango',
+      A: 'VEEV ONE Classic Tobacco, Blue Mint, Ice Mint',
+      B: 'VEEV ONE Classic Tobacco, Mango X, Watermelon X',
+      C: 'VEEV ONE Classic Tobacco',
+      D: 'VEEV ONE Classic Tobacco, Blueberry X, Strawberry X',
     },
     D: {
-      A: 'VEEV ONE Mild Tobacco, Blue Mint, Spearmint',
-      B: 'VEEV ONE Mild Tobacco, Strawberry, Classic Mint',
-      C: 'VEEV ONE Classic Tobacco, Mild Tobacco, Bright Tobacco',
-      D: 'VEEV ONE Toasted Tobacco, Classic Tobacco, Blue Raspberry',
+      A: 'VEEV ONE Blueberry X, Strawberry X, Mango X',
+      B: 'VEEV ONE Blueberry X, Strawberry X, Ice Mint',
+      C: 'VEEV ONE Blueberry X, Strawberry X, Classic Tobacco',
+      D: 'VEEV ONE Blueberry X, Strawberry X, Mango X',
     },
   },
 }
@@ -135,11 +135,38 @@ const getOptionLabel = (questionId, value) => {
   return option?.label || ''
 }
 
-const getSuggestionItems = (recommendationText) => {
+const DEVICE_PREFIXES = ['VEEV NOW 18 mL', 'VEEV ONE']
+
+// How each device is labelled on the result buttons (per July designs):
+// VEEV NOW shows the short "18 mL" prefix, VEEV ONE shows its full name.
+const DISPLAY_PREFIX = {
+  'VEEV NOW 18 mL': '18 mL',
+  'VEEV ONE': 'VEEV ONE',
+}
+
+const parseRecommendation = (recommendationText) => {
   const text = recommendationText || FALLBACK_RECOMMENDATION
-  const prefix = text.match(/^(VEEV NOW ULTRA|VEEV ONE)/)?.[0] || 'VEEV NOW ULTRA'
-  const flavors = text.replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ')
-  return flavors.map((flavor) => `${prefix} ${flavor}`)
+  const device = DEVICE_PREFIXES.find((prefix) => text.startsWith(prefix)) || 'VEEV NOW 18 mL'
+  const flavors = text.slice(device.length).trim().split(', ').filter(Boolean)
+  const displayPrefix = DISPLAY_PREFIX[device] || device
+  return { device, displayPrefix, flavors }
+}
+
+// Full product names ("VEEV NOW 18 mL Watermelon") — used for Google Sheet
+// logging so analytics stays unambiguous and consistent with historical rows.
+const getSuggestionItems = (recommendationText) => {
+  const { device, flavors } = parseRecommendation(recommendationText)
+  return flavors.map((flavor) => `${device} ${flavor}`)
+}
+
+// Result buttons pair the on-screen label (short "18 mL" prefix per the July
+// designs) with the full product name that gets logged when it's tapped.
+const getSuggestionButtons = (recommendationText) => {
+  const { device, displayPrefix, flavors } = parseRecommendation(recommendationText)
+  return flavors.map((flavor) => ({
+    display: `${displayPrefix} ${flavor}`,
+    full: `${device} ${flavor}`,
+  }))
 }
 
 const isLikelyDuplicateSubmission = (fingerprint) => {
@@ -241,13 +268,15 @@ const sendResultToGoogleSheet = async ({
   })
 }
 
+// Q1 device mapping (July spec): AB/AC/BC/CD -> VEEV NOW 18 mL,
+// AD/BD/AE/BE/CE/DE -> VEEV ONE. VEEV ONE when the pair contains E, or when D
+// is paired with A or B; everything else maps to VEEV NOW 18 mL.
 const checkAnswerCombination = (q1Array) => {
   if (q1Array.length < 2) return ''
-  const combos = [q1Array[0] + q1Array[1], q1Array[1] + q1Array[0]]
-  if (combos.includes('AC') || combos.includes('CD')) {
-    return 'VEEV NOW ULTRA'
-  }
-  return 'VEEV ONE'
+  const selected = new Set(q1Array)
+  const isVeevOne =
+    selected.has('E') || (selected.has('D') && (selected.has('A') || selected.has('B')))
+  return isVeevOne ? 'VEEV ONE' : 'VEEV NOW 18 mL'
 }
 
 function App() {
@@ -687,20 +716,16 @@ function App() {
               />
               <div className="result-header">
                 <h2 className="result-prompt">
-                  Your suggested VEEV Vape<br />
-                  and flavour{(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ').length > 1 ? 's are' : ' is'}
+                  You might want<br />
+                  to try...
                 </h2>
               </div>
               <div className="result-options">
-                {(recommendation || FALLBACK_RECOMMENDATION).replace(/^(VEEV NOW ULTRA|VEEV ONE) /, '').split(', ').map((flavor, index) => {
-                  const prefix = (recommendation || FALLBACK_RECOMMENDATION).match(/^(VEEV NOW ULTRA|VEEV ONE)/)?.[0] || 'VEEV NOW ULTRA'
-                  const suggestionLabel = `${prefix} ${flavor}`
-                  return (
-                    <button key={index} type="button" className="result-button" onClick={() => handleReset(suggestionLabel)}>
-                      <span className="result-label">{suggestionLabel}</span>
-                    </button>
-                  )
-                })}
+                {getSuggestionButtons(recommendation).map((suggestion, index) => (
+                  <button key={index} type="button" className="result-button" onClick={() => handleReset(suggestion.full)}>
+                    <span className="result-label">{suggestion.display}</span>
+                  </button>
+                ))}
               </div>
               <div className={`instruction-footer${shouldExpandTimer ? ' timer-expanding' : ''}${currentStep !== 'q1' ? ' timer-persistent' : ''}`}>
                 <span className={`pill timer-pill${shouldExpandTimer ? ' timer-pill-expanding' : ''}`} key={`timer-${currentStep}-${timerKey}`} aria-hidden="true" />
