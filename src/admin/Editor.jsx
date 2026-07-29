@@ -1,0 +1,146 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Stage } from '../engine/renderer.jsx'
+import QuizPlayer from '../engine/QuizPlayer.jsx'
+import FontLoader from '../FontLoader.jsx'
+import { resolveAsset } from '../api.js'
+import { getQuestion } from '../engine/quizLogic.js'
+import Inspector from './Inspector.jsx'
+
+export default function Editor({ config, setConfig, token, slug, onSave, onPublish, status }) {
+  const [screenId, setScreenId] = useState(config.screens?.[0]?.id)
+  const [selectedId, setSelectedId] = useState(null)
+  const [preview, setPreview] = useState(false)
+  const dragRef = useRef(null)
+
+  const screen = useMemo(() => config.screens?.find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
+  const firstSetId = config.sets?.[0]?.id
+
+  // --- immutable config mutators ---
+  const patchElement = (sid, eid, patch) =>
+    setConfig((prev) => ({
+      ...prev,
+      screens: prev.screens.map((s) => s.id !== sid ? s : {
+        ...s, elements: s.elements.map((el) => el.id === eid ? { ...el, ...patch } : el),
+      }),
+    }))
+  const patchElementStyle = (sid, eid, stylePatch) =>
+    setConfig((prev) => ({
+      ...prev,
+      screens: prev.screens.map((s) => s.id !== sid ? s : {
+        ...s, elements: s.elements.map((el) => el.id === eid ? { ...el, style: { ...el.style, ...stylePatch } } : el),
+      }),
+    }))
+  const removeElement = (sid, eid) =>
+    setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== sid ? s : { ...s, elements: s.elements.filter((el) => el.id !== eid) }) }))
+  const addElement = (el) =>
+    setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== screenId ? s : { ...s, elements: [...s.elements, el] }) }))
+  const reorder = (eid, dir) =>
+    setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => {
+      if (s.id !== screenId) return s
+      const maxZ = Math.max(1, ...s.elements.map((e) => e.z || 1))
+      const minZ = Math.min(...s.elements.map((e) => e.z || 1))
+      return { ...s, elements: s.elements.map((e) => e.id === eid ? { ...e, z: dir === 'front' ? maxZ + 1 : minZ - 1 } : e) }
+    }) }))
+
+  // --- drag / resize (mounted once, reads latest via dragRef) ---
+  useEffect(() => {
+    const move = (e) => {
+      const d = dragRef.current
+      if (!d) return
+      const dx = (e.clientX - d.sx) / d.scale
+      const dy = (e.clientY - d.sy) / d.scale
+      if (d.handle === 'move') patchElement(d.sid, d.eid, { x: Math.round(d.ox + dx), y: Math.round(d.oy + dy) })
+      else patchElement(d.sid, d.eid, { w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
+    }
+    const up = () => { dragRef.current = null }
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseup', up)
+    return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up) }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onPointerDown = (e, eid, handle) => {
+    e.preventDefault(); e.stopPropagation()
+    setSelectedId(eid)
+    const el = screen.elements.find((x) => x.id === eid)
+    if (!el) return
+    const wrap = document.querySelector('.qw-stage-wrap')
+    const scale = parseFloat(wrap?.dataset.scale || '1') || 1
+    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: el.x, oy: el.y, ow: el.w, oh: el.h }
+  }
+
+  // arrow-key nudge
+  useEffect(() => {
+    const onKey = (e) => {
+      if (!selectedId || preview) return
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
+      const step = e.shiftKey ? 10 : 1
+      const map = { ArrowLeft: ['x', -step], ArrowRight: ['x', step], ArrowUp: ['y', -step], ArrowDown: ['y', step] }
+      const m = map[e.key]
+      if (!m) return
+      e.preventDefault()
+      const el = screen.elements.find((x) => x.id === selectedId)
+      if (el) patchElement(screen.id, selectedId, { [m[0]]: (el[m[0]] || 0) + m[1] })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedId, screen, preview]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const selectedEl = screen?.elements.find((e) => e.id === selectedId) || null
+
+  // preview ctx (static, unselected)
+  const sampleResult = () => {
+    const rl = config.resultLogic || {}
+    if (rl.type === 'score') return { type: 'score', score: Math.min(3, (rl.scoreQuestions || []).length), total: (rl.scoreQuestions || []).length }
+    const track = rl.fallback?.track || Object.keys(rl.tracks || {})[0]
+    return { type: 'recommendation', track, items: rl.fallback?.items || ['Sample 1', 'Sample 2', 'Sample 3'] }
+  }
+  const ctx = {
+    config,
+    resolve: resolveAsset,
+    question: screen?.type === 'question' ? getQuestion(config, screen.questionId || screen.id, firstSetId) : null,
+    getQuestion: (qk) => getQuestion(config, qk, firstSetId),
+    answers: {},
+    result: screen?.type === 'result' ? sampleResult() : null,
+    timerActive: false,
+    autoResetMs: config.timings?.autoResetMs,
+  }
+
+  return (
+    <div className="editor">
+      <FontLoader fonts={config.theme?.fonts} id={`admin-${config.slug}`} />
+      <div className="editor-topbar">
+        <div className="screen-tabs">
+          {config.screens?.map((s) => (
+            <button key={s.id} className={`screen-tab ${screenId === s.id ? 'active' : ''}`} onClick={() => { setScreenId(s.id); setSelectedId(null) }}>
+              {s.id}
+            </button>
+          ))}
+        </div>
+        <div className="topbar-actions">
+          {status && <span className="topbar-status">{status}</span>}
+          <button className={`btn ghost ${preview ? 'on' : ''}`} onClick={() => setPreview((p) => !p)}>{preview ? 'Editing' : 'Preview'}</button>
+          <button className="btn" onClick={onSave}>Save draft</button>
+          <button className="btn primary" onClick={onPublish}>Publish → /{slug}</button>
+        </div>
+      </div>
+      <div className="editor-body">
+        <div className="canvas-area">
+          {preview
+            ? <QuizPlayer key={`prev-${screenId}`} config={config} preview />
+            : <Stage config={config} screen={screen} ctx={ctx} editable selectedId={selectedId}
+                onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedId(null)} />}
+        </div>
+        <Inspector
+          config={config} setConfig={setConfig} token={token} slug={slug}
+          screen={screen} selectedEl={selectedEl}
+          patchElement={(patch) => patchElement(screen.id, selectedId, patch)}
+          patchElementStyle={(patch) => patchElementStyle(screen.id, selectedId, patch)}
+          removeElement={() => { removeElement(screen.id, selectedId); setSelectedId(null) }}
+          addElement={addElement}
+          reorder={reorder}
+          selectElement={setSelectedId}
+        />
+      </div>
+    </div>
+  )
+}

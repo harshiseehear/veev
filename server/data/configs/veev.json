@@ -1,0 +1,838 @@
+{
+  "schemaVersion": 1,
+  "id": "veev",
+  "name": "VEEV Flavour Quiz",
+  "slug": "veev",
+  "published": true,
+  "language": "en",
+  "resultLogic": {
+    "type": "recommendation",
+    "deviceFrom": "q1",
+    "deviceMap": {
+      "AB": "now",
+      "AC": "now",
+      "BC": "now",
+      "CD": "now",
+      "AD": "one",
+      "BD": "one",
+      "AE": "one",
+      "BE": "one",
+      "CE": "one",
+      "DE": "one"
+    },
+    "deviceDefault": "now",
+    "tracks": {
+      "now": {
+        "displayName": "VEEV NOW 18 mL",
+        "logName": "VEEV NOW 18 mL",
+        "buttonPrefix": "18 mL"
+      },
+      "one": {
+        "displayName": "VEEV ONE",
+        "logName": "VEEV ONE",
+        "buttonPrefix": "VEEV ONE"
+      }
+    },
+    "tableKeys": [
+      "q3",
+      "q4"
+    ],
+    "fallback": {
+      "track": "now",
+      "items": [
+        "Watermelon",
+        "Grape",
+        "Blue Mint"
+      ]
+    },
+    "table": {
+      "now": {
+        "A": {
+          "A": [
+            "Watermelon",
+            "Grape",
+            "Blue Mint"
+          ],
+          "B": [
+            "Watermelon",
+            "Grape",
+            "Mango"
+          ],
+          "C": [
+            "Watermelon",
+            "Grape",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Watermelon",
+            "Grape",
+            "Blue Raspberry"
+          ]
+        },
+        "B": {
+          "A": [
+            "Blue Mint",
+            "Spearmint",
+            "Ice Mint"
+          ],
+          "B": [
+            "Blue Mint",
+            "Spearmint",
+            "Mango"
+          ],
+          "C": [
+            "Blue Mint",
+            "Spearmint",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Blue Mint",
+            "Spearmint",
+            "Blue Raspberry"
+          ]
+        },
+        "C": {
+          "A": [
+            "Classic Tobacco",
+            "Blue Mint",
+            "Spearmint"
+          ],
+          "B": [
+            "Classic Tobacco",
+            "Mango",
+            "Peach"
+          ],
+          "C": [
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Classic Tobacco",
+            "Blue Raspberry",
+            "Strawberry"
+          ]
+        },
+        "D": {
+          "A": [
+            "Blue Raspberry",
+            "Strawberry",
+            "Blue Mint"
+          ],
+          "B": [
+            "Blue Raspberry",
+            "Strawberry",
+            "Mango"
+          ],
+          "C": [
+            "Blue Raspberry",
+            "Strawberry",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Blue Raspberry",
+            "Strawberry",
+            "Blueberry"
+          ]
+        }
+      },
+      "one": {
+        "A": {
+          "A": [
+            "Watermelon X",
+            "Mango X",
+            "Ice Mint"
+          ],
+          "B": [
+            "Watermelon X",
+            "Mango X",
+            "Strawberry X"
+          ],
+          "C": [
+            "Watermelon X",
+            "Mango X",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Watermelon X",
+            "Mango X",
+            "Blueberry X"
+          ]
+        },
+        "B": {
+          "A": [
+            "Blue Mint",
+            "Ice Mint",
+            "Watermelon X"
+          ],
+          "B": [
+            "Blue Mint",
+            "Ice Mint",
+            "Strawberry X"
+          ],
+          "C": [
+            "Blue Mint",
+            "Ice Mint",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Blue Mint",
+            "Ice Mint",
+            "Blueberry X"
+          ]
+        },
+        "C": {
+          "A": [
+            "Classic Tobacco",
+            "Blue Mint",
+            "Ice Mint"
+          ],
+          "B": [
+            "Classic Tobacco",
+            "Mango X",
+            "Watermelon X"
+          ],
+          "C": [
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Classic Tobacco",
+            "Blueberry X",
+            "Strawberry X"
+          ]
+        },
+        "D": {
+          "A": [
+            "Blueberry X",
+            "Strawberry X",
+            "Mango X"
+          ],
+          "B": [
+            "Blueberry X",
+            "Strawberry X",
+            "Ice Mint"
+          ],
+          "C": [
+            "Blueberry X",
+            "Strawberry X",
+            "Classic Tobacco"
+          ],
+          "D": [
+            "Blueberry X",
+            "Strawberry X",
+            "Mango X"
+          ]
+        }
+      }
+    }
+  },
+  "analytics": {
+    "sheetWebAppUrl": "https://script.google.com/macros/s/AKfycbwDvjdnQQAedghKLBhfP_rO3tg4HIQsMd5TkwY8NS3UbxpFReESghIDwsS5JXJhGr610Q/exec"
+  },
+  "theme": {
+    "canvasWidth": 1080,
+    "canvasHeight": 1920,
+    "colors": {
+      "brand": "#3a0b6b",
+      "accent": "#ffffff",
+      "text": "#ffffff"
+    },
+    "fonts": [
+      {
+        "family": "IQOS Sans",
+        "url": "/assets/veev/fonts/iqos_regular.ttf",
+        "weight": 400,
+        "style": "normal"
+      },
+      {
+        "family": "IQOS Sans",
+        "url": "/assets/veev/fonts/iqos_bold.otf",
+        "weight": 700,
+        "style": "normal"
+      },
+      {
+        "family": "Korolev",
+        "url": "/assets/veev/fonts/korolev_heavy.otf",
+        "weight": 900,
+        "style": "normal"
+      }
+    ]
+  },
+  "banner": {
+    "enabled": true,
+    "src": "/assets/veev/warning.png",
+    "heightPct": 9
+  },
+  "background": {
+    "type": "color",
+    "color": "#3a0b6b"
+  },
+  "timings": {
+    "transitionMs": 500,
+    "autoResetMs": 30000
+  },
+  "questions": {
+    "q1": {
+      "prompt": "Q1: What do you look for in a vape?",
+      "pickLabel": "PICK 2",
+      "maxSelect": 2,
+      "options": [
+        {
+          "value": "A",
+          "label": "Easy to use"
+        },
+        {
+          "value": "B",
+          "label": "Fast charging"
+        },
+        {
+          "value": "C",
+          "label": "High puff count"
+        },
+        {
+          "value": "D",
+          "label": "Aluminum body"
+        },
+        {
+          "value": "E",
+          "label": "Easy pod swaps"
+        }
+      ]
+    },
+    "q2": {
+      "prompt": "Q2: What don't you love about the vape you're using now?",
+      "pickLabel": "PICK 2",
+      "maxSelect": 2,
+      "options": [
+        {
+          "value": "leaky",
+          "label": "Leaky pods"
+        },
+        {
+          "value": "low",
+          "label": "Low puff count"
+        },
+        {
+          "value": "charge",
+          "label": "Takes forever to charge"
+        },
+        {
+          "value": "bulky",
+          "label": "Too bulky"
+        }
+      ]
+    },
+    "q3": {
+      "prompt": "Q3: What appeals to you the most?",
+      "pickLabel": "PICK 1",
+      "maxSelect": 1,
+      "options": [
+        {
+          "value": "A",
+          "label": "Bold and Fruity"
+        },
+        {
+          "value": "B",
+          "label": "Crisp and Fresh"
+        },
+        {
+          "value": "C",
+          "label": "Classic and Toasty"
+        },
+        {
+          "value": "D",
+          "label": "Berrylicious"
+        }
+      ]
+    },
+    "q4": {
+      "prompt": "Q4: What's your flavour mood?",
+      "pickLabel": "PICK 1",
+      "maxSelect": 1,
+      "options": [
+        {
+          "value": "A",
+          "label": "Cool and Smooth"
+        },
+        {
+          "value": "B",
+          "label": "Light and Refreshing"
+        },
+        {
+          "value": "C",
+          "label": "Warm and Familiar"
+        },
+        {
+          "value": "D",
+          "label": "Bright and Punchy"
+        }
+      ]
+    }
+  },
+  "flow": [
+    "welcome",
+    "q1",
+    "q2",
+    "q3",
+    "q4",
+    "result"
+  ],
+  "screens": [
+    {
+      "id": "welcome",
+      "type": "welcome",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_1.png"
+      },
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "text": "WHAT'S THE BEST\nVEEV VAPE\nAND FLAVOUR\nFOR YOU?",
+          "x": 80,
+          "y": 540,
+          "w": 920,
+          "h": 470,
+          "z": 2,
+          "style": {
+            "fontFamily": "Korolev",
+            "fontWeight": 900,
+            "fontSize": 104,
+            "color": "#e9e4f5",
+            "textAlign": "center",
+            "lineHeight": 0.95,
+            "letterSpacing": 0,
+            "textTransform": "uppercase"
+          }
+        },
+        {
+          "id": "cta",
+          "type": "button",
+          "action": "start",
+          "text": "LET'S FIND OUT",
+          "x": 405,
+          "y": 1120,
+          "w": 270,
+          "h": 270,
+          "z": 3,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 800,
+            "fontSize": 40,
+            "color": "#3a0b6b",
+            "background": "#ffffff",
+            "borderRadius": 999,
+            "textAlign": "center",
+            "lineHeight": 1.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "q1",
+      "type": "question",
+      "questionId": "q1",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_2.png"
+      },
+      "elements": [
+        {
+          "id": "prompt",
+          "type": "prompt",
+          "x": 90,
+          "y": 380,
+          "w": 900,
+          "h": 180,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 54,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "pick",
+          "type": "pickLabel",
+          "x": 90,
+          "y": 585,
+          "w": 900,
+          "h": 70,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 800,
+            "fontSize": 42,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "textTransform": "uppercase"
+          }
+        },
+        {
+          "id": "options",
+          "type": "options",
+          "questionId": "q1",
+          "x": 180,
+          "y": 720,
+          "w": 720,
+          "h": 1050,
+          "z": 2,
+          "gap": 34,
+          "showLetters": true,
+          "optionStyle": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 40,
+            "color": "#2b0a5e",
+            "background": "#ffffff",
+            "borderRadius": 44,
+            "textAlign": "left",
+            "paddingX": 48,
+            "height": 130
+          },
+          "selectedStyle": {
+            "background": "#e7c9ff",
+            "color": "#2b0a5e"
+          }
+        },
+        {
+          "id": "timer",
+          "type": "timer",
+          "x": 340,
+          "y": 1815,
+          "w": 400,
+          "h": 14,
+          "z": 4,
+          "style": {
+            "trackColor": "rgba(255,255,255,0.35)",
+            "fillColor": "#ffffff",
+            "borderRadius": 999
+          }
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "type": "question",
+      "questionId": "q2",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_3.png"
+      },
+      "elements": [
+        {
+          "id": "prompt",
+          "type": "prompt",
+          "x": 90,
+          "y": 360,
+          "w": 900,
+          "h": 240,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 52,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "pick",
+          "type": "pickLabel",
+          "x": 90,
+          "y": 620,
+          "w": 900,
+          "h": 70,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 800,
+            "fontSize": 42,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "textTransform": "uppercase"
+          }
+        },
+        {
+          "id": "options",
+          "type": "options",
+          "questionId": "q2",
+          "x": 180,
+          "y": 760,
+          "w": 720,
+          "h": 980,
+          "z": 2,
+          "gap": 40,
+          "showLetters": true,
+          "optionStyle": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 40,
+            "color": "#2b0a5e",
+            "background": "#ffffff",
+            "borderRadius": 44,
+            "textAlign": "left",
+            "paddingX": 48,
+            "height": 130
+          },
+          "selectedStyle": {
+            "background": "#e7c9ff",
+            "color": "#2b0a5e"
+          }
+        },
+        {
+          "id": "timer",
+          "type": "timer",
+          "x": 340,
+          "y": 1815,
+          "w": 400,
+          "h": 14,
+          "z": 4,
+          "style": {
+            "trackColor": "rgba(255,255,255,0.35)",
+            "fillColor": "#ffffff",
+            "borderRadius": 999
+          }
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "type": "question",
+      "questionId": "q3",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_4.png"
+      },
+      "elements": [
+        {
+          "id": "prompt",
+          "type": "prompt",
+          "x": 90,
+          "y": 400,
+          "w": 900,
+          "h": 170,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 54,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "pick",
+          "type": "pickLabel",
+          "x": 90,
+          "y": 590,
+          "w": 900,
+          "h": 70,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 800,
+            "fontSize": 42,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "textTransform": "uppercase"
+          }
+        },
+        {
+          "id": "options",
+          "type": "options",
+          "questionId": "q3",
+          "x": 180,
+          "y": 760,
+          "w": 720,
+          "h": 980,
+          "z": 2,
+          "gap": 40,
+          "showLetters": true,
+          "optionStyle": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 40,
+            "color": "#2b0a5e",
+            "background": "#ffffff",
+            "borderRadius": 44,
+            "textAlign": "left",
+            "paddingX": 48,
+            "height": 130
+          },
+          "selectedStyle": {
+            "background": "#e7c9ff",
+            "color": "#2b0a5e"
+          }
+        },
+        {
+          "id": "timer",
+          "type": "timer",
+          "x": 340,
+          "y": 1815,
+          "w": 400,
+          "h": 14,
+          "z": 4,
+          "style": {
+            "trackColor": "rgba(255,255,255,0.35)",
+            "fillColor": "#ffffff",
+            "borderRadius": 999
+          }
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "type": "question",
+      "questionId": "q4",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_5.png"
+      },
+      "elements": [
+        {
+          "id": "prompt",
+          "type": "prompt",
+          "x": 90,
+          "y": 400,
+          "w": 900,
+          "h": 170,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 54,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "pick",
+          "type": "pickLabel",
+          "x": 90,
+          "y": 590,
+          "w": 900,
+          "h": 70,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 800,
+            "fontSize": 42,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "textTransform": "uppercase"
+          }
+        },
+        {
+          "id": "options",
+          "type": "options",
+          "questionId": "q4",
+          "x": 180,
+          "y": 760,
+          "w": 720,
+          "h": 980,
+          "z": 2,
+          "gap": 40,
+          "showLetters": true,
+          "optionStyle": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 40,
+            "color": "#2b0a5e",
+            "background": "#ffffff",
+            "borderRadius": 44,
+            "textAlign": "left",
+            "paddingX": 48,
+            "height": 130
+          },
+          "selectedStyle": {
+            "background": "#e7c9ff",
+            "color": "#2b0a5e"
+          }
+        },
+        {
+          "id": "timer",
+          "type": "timer",
+          "x": 340,
+          "y": 1815,
+          "w": 400,
+          "h": 14,
+          "z": 4,
+          "style": {
+            "trackColor": "rgba(255,255,255,0.35)",
+            "fillColor": "#ffffff",
+            "borderRadius": 999
+          }
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "type": "result",
+      "background": {
+        "type": "image",
+        "src": "/assets/veev/screen_6.png"
+      },
+      "elements": [
+        {
+          "id": "heading",
+          "type": "text",
+          "text": "You might want\nto try...",
+          "x": 90,
+          "y": 520,
+          "w": 900,
+          "h": 220,
+          "z": 2,
+          "style": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 900,
+            "fontSize": 84,
+            "color": "#ffffff",
+            "textAlign": "center",
+            "lineHeight": 1.05
+          }
+        },
+        {
+          "id": "results",
+          "type": "resultList",
+          "x": 180,
+          "y": 780,
+          "w": 720,
+          "h": 760,
+          "z": 2,
+          "gap": 44,
+          "optionStyle": {
+            "fontFamily": "IQOS Sans",
+            "fontWeight": 700,
+            "fontSize": 40,
+            "color": "#2b0a5e",
+            "background": "#ffffff",
+            "borderRadius": 44,
+            "textAlign": "center",
+            "paddingX": 40,
+            "height": 130
+          }
+        },
+        {
+          "id": "timer",
+          "type": "timer",
+          "x": 340,
+          "y": 1815,
+          "w": 400,
+          "h": 14,
+          "z": 4,
+          "style": {
+            "trackColor": "rgba(255,255,255,0.35)",
+            "fillColor": "#ffffff",
+            "borderRadius": 999
+          }
+        }
+      ]
+    }
+  ]
+}

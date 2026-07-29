@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "id": "uber",
+  "name": "Uber Eats x CH Trivia",
+  "slug": "uber",
+  "published": true,
+  "language": "fr",
+  "resultLogic": {
+    "type": "score",
+    "scoreQuestions": ["q1", "q2", "q3", "q4", "q5"],
+    "setStrategy": "random"
+  },
+  "analytics": {
+    "sheetWebAppUrl": ""
+  },
+  "theme": {
+    "canvasWidth": 1080,
+    "canvasHeight": 1920,
+    "colors": { "brand": "#06C167", "accent": "#000000", "text": "#000000" },
+    "fonts": [
+      { "family": "Uber Move", "url": "/assets/uber/fonts/UberMoveMedium.otf", "weight": 500, "style": "normal" },
+      { "family": "Uber Move", "url": "/assets/uber/fonts/UberMoveBold.otf", "weight": 700, "style": "normal" }
+    ]
+  },
+  "banner": { "enabled": false, "src": "", "heightPct": 0 },
+  "background": { "type": "color", "color": "#06C167" },
+  "timings": { "transitionMs": 400, "autoResetMs": 30000 },
+  "sets": [
+    {
+      "id": "set1",
+      "questions": {
+        "q1": { "prompt": "En quelle annee les Canadiens de Montreal ont-ils ete fondes ?", "correct": "B", "options": [
+          { "value": "A", "label": "1906" }, { "value": "B", "label": "1909" }, { "value": "C", "label": "1914" }, { "value": "D", "label": "1907" } ] },
+        "q2": { "prompt": "Quelle gaterie les partisans des Canadiens ont-ils commandee plus de 50 000 fois cette saison ?", "correct": "D", "options": [
+          { "value": "A", "label": "Lait frappe" }, { "value": "B", "label": "Chocolats" }, { "value": "C", "label": "Tiramisu" }, { "value": "D", "label": "Gateau au fromage" } ] },
+        "q3": { "prompt": "Durant les series eliminatoires de 2025, quel trio (nourriture, produit d'epicerie et produit du quotidien) les partisans ont-ils commande le plus souvent ?", "correct": "D", "options": [
+          { "value": "A", "label": "Shawarma, oeufs, papier essuie-tout" }, { "value": "B", "label": "Burgers, bananes, assiettes" }, { "value": "C", "label": "Ramen, poulet roti, gomme a macher" }, { "value": "D", "label": "Pizza, fraises, fleurs" } ] },
+        "q4": { "prompt": "En quelle annee Youppi! est-il devenu la mascotte des Canadiens de Montreal ?", "correct": "B", "options": [
+          { "value": "A", "label": "2000" }, { "value": "B", "label": "2005" }, { "value": "C", "label": "1990" }, { "value": "D", "label": "2009" } ] },
+        "q5": { "prompt": "Durant les series eliminatoires de 2025, les partisans ont commande plus de 7 000 portions de frites, ce qui correspond au :", "correct": "B", "options": [
+          { "value": "A", "label": "Nombre de mises au jeu cette saison" }, { "value": "B", "label": "Nombre de matchs de saison reguliere dans l'histoire de l'equipe" }, { "value": "C", "label": "Nombre de minutes en superiorite numerique cette saison" }, { "value": "D", "label": "Nombre de joueurs ayant porte le chandail du CH" } ] }
+      }
+    },
+    {
+      "id": "set2",
+      "questions": {
+        "q1": { "prompt": "Les Canadiens ont remporte le plus de coupes Stanley de la LNH. Combien en ont-ils remporte ?", "correct": "D", "options": [
+          { "value": "A", "label": "18" }, { "value": "B", "label": "32" }, { "value": "C", "label": "27" }, { "value": "D", "label": "24" } ] },
+        "q2": { "prompt": "Cette saison, les partisans ont commande plus de 300 000 burgers, assez pour :", "correct": "B", "options": [
+          { "value": "A", "label": "Remplir cinq fois la patinoire du Centre Bell" }, { "value": "B", "label": "Depasser 31 tours du stade olympique en hauteur" }, { "value": "C", "label": "Egaler le poids de 1,2 million de rondelles" }, { "value": "D", "label": "Couvrir la longueur de la ligne orange du metro" } ] },
+        "q3": { "prompt": "Les soirs de match, lequel de ces aliments a ete commande plus de 450 000 fois en deux saisons ?", "correct": "C", "options": [
+          { "value": "A", "label": "Mais souffle" }, { "value": "B", "label": "Frites" }, { "value": "C", "label": "Poutine" }, { "value": "D", "label": "Pomme de terre au four" } ] },
+        "q4": { "prompt": "Quel entraineur-chef a mene les Canadiens a cinq coupes Stanley consecutives entre 1956 et 1960 ?", "correct": "A", "options": [
+          { "value": "A", "label": "Toe Blake" }, { "value": "B", "label": "Scotty Bowman" }, { "value": "C", "label": "Dick Irvin" }, { "value": "D", "label": "Claude Ruel" } ] },
+        "q5": { "prompt": "La saison derniere, les partisans ont commande plus de 150 000 pizzas, assez pour :", "correct": "C", "options": [
+          { "value": "A", "label": "Parcourir 50 fois la distance Centre Bell - Vieux-Port" }, { "value": "B", "label": "Faire 18 fois le tour de la patinoire du Centre Bell" }, { "value": "C", "label": "Faire deux fois la longueur de la ligne orange du metro" }, { "value": "D", "label": "Couvrir le belvedere du mont Royal" } ] }
+      }
+    },
+    {
+      "id": "set3",
+      "questions": {
+        "q1": { "prompt": "Avant le Centre Bell, dans quel arena les Canadiens ont-ils joue pendant des decennies ?", "correct": "A", "options": [
+          { "value": "A", "label": "Forum de Montreal" }, { "value": "B", "label": "Centre Molson" }, { "value": "C", "label": "Maple Leaf Gardens" }, { "value": "D", "label": "Stade olympique" } ] },
+        "q2": { "prompt": "Durant les series de 2025, les partisans ont passe 3 000 commandes d'ailes de poulet, ce qui correspond au :", "correct": "A", "options": [
+          { "value": "A", "label": "Nombre de secondes dans une periode de prolongation en series" }, { "value": "B", "label": "Nombre total de minutes en superiorite numerique" }, { "value": "C", "label": "Nombre de tirs au but" }, { "value": "D", "label": "Nombre total de mises au jeu cette saison" } ] },
+        "q3": { "prompt": "La saison derniere, les partisans ont commande assez de hot-dogs pour parcourir la distance entre le Centre Bell et quel site emblematique ?", "correct": "B", "options": [
+          { "value": "A", "label": "La basilique Notre-Dame" }, { "value": "B", "label": "Schwartz's Deli sur le boulevard Saint-Laurent" }, { "value": "C", "label": "Le stade olympique" }, { "value": "D", "label": "La croix du mont Royal" } ] },
+        "q4": { "prompt": "Le celebre << Big Three >> des annees 1970 etait forme de Serge Savard, Guy Lapointe et de quel autre defenseur ?", "correct": "A", "options": [
+          { "value": "A", "label": "Larry Robinson" }, { "value": "B", "label": "Rod Langway" }, { "value": "C", "label": "Craig Rivet" }, { "value": "D", "label": "Chris Chelios" } ] },
+        "q5": { "prompt": "Durant les series de 2025, les partisans ont commande beaucoup de poutines. Combien de surfaceuses la sauce pourrait-elle remplir ?", "correct": "B", "options": [
+          { "value": "A", "label": "1 resurfaceuse" }, { "value": "B", "label": "3 resurfaceuses" }, { "value": "C", "label": "7 resurfaceuses" }, { "value": "D", "label": "12 resurfaceuses" } ] }
+      }
+    }
+  ],
+  "questions": {
+    "q1": { "prompt": "", "correct": "B", "maxSelect": 1, "options": [] },
+    "q2": { "prompt": "", "correct": "D", "maxSelect": 1, "options": [] },
+    "q3": { "prompt": "", "correct": "D", "maxSelect": 1, "options": [] },
+    "q4": { "prompt": "", "correct": "B", "maxSelect": 1, "options": [] },
+    "q5": { "prompt": "", "correct": "B", "maxSelect": 1, "options": [] }
+  },
+  "flow": ["welcome", "q1", "q2", "q3", "q4", "q5", "result"],
+  "screens": [
+    {
+      "id": "welcome",
+      "type": "welcome",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "logo", "type": "image", "src": "/assets/uber/uber_eats_logo.png", "x": 290, "y": 470, "w": 500, "h": 200, "z": 2, "style": { "objectFit": "contain" } },
+        { "id": "tagline", "type": "text", "text": "Repondez aux\nquestions.\nGagnez presque\npresque tout.", "x": 90, "y": 760, "w": 900, "h": 520, "z": 2,
+          "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontSize": 100, "color": "#000000", "textAlign": "center", "lineHeight": 1.05 } },
+        { "id": "cta", "type": "button", "action": "start", "text": "Jouez maintenant", "x": 265, "y": 1470, "w": 550, "h": 150, "z": 3,
+          "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontSize": 48, "color": "#ffffff", "background": "#000000", "borderRadius": 999, "textAlign": "center" } }
+      ]
+    },
+    {
+      "id": "q1", "type": "question", "questionId": "q1",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "prompt", "type": "prompt", "x": 90, "y": 300, "w": 900, "h": 520, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontStyle": "italic", "fontSize": 64, "color": "#000000", "textAlign": "left", "lineHeight": 1.1 } },
+        { "id": "options", "type": "options", "questionId": "q1", "x": 90, "y": 900, "w": 900, "h": 900, "z": 2, "gap": 28, "showLetters": false,
+          "optionStyle": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 40, "color": "#000000", "background": "#ffffff", "borderRadius": 16, "textAlign": "left", "paddingX": 44, "height": 150 },
+          "selectedStyle": { "background": "#d4f5e2", "color": "#000000" } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1850, "w": 900, "h": 12, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    },
+    {
+      "id": "q2", "type": "question", "questionId": "q2",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "prompt", "type": "prompt", "x": 90, "y": 300, "w": 900, "h": 520, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontStyle": "italic", "fontSize": 64, "color": "#000000", "textAlign": "left", "lineHeight": 1.1 } },
+        { "id": "options", "type": "options", "questionId": "q2", "x": 90, "y": 900, "w": 900, "h": 900, "z": 2, "gap": 28, "showLetters": false,
+          "optionStyle": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 40, "color": "#000000", "background": "#ffffff", "borderRadius": 16, "textAlign": "left", "paddingX": 44, "height": 150 },
+          "selectedStyle": { "background": "#d4f5e2", "color": "#000000" } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1850, "w": 900, "h": 12, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    },
+    {
+      "id": "q3", "type": "question", "questionId": "q3",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "prompt", "type": "prompt", "x": 90, "y": 300, "w": 900, "h": 520, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontStyle": "italic", "fontSize": 64, "color": "#000000", "textAlign": "left", "lineHeight": 1.1 } },
+        { "id": "options", "type": "options", "questionId": "q3", "x": 90, "y": 900, "w": 900, "h": 900, "z": 2, "gap": 28, "showLetters": false,
+          "optionStyle": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 40, "color": "#000000", "background": "#ffffff", "borderRadius": 16, "textAlign": "left", "paddingX": 44, "height": 150 },
+          "selectedStyle": { "background": "#d4f5e2", "color": "#000000" } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1850, "w": 900, "h": 12, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    },
+    {
+      "id": "q4", "type": "question", "questionId": "q4",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "prompt", "type": "prompt", "x": 90, "y": 300, "w": 900, "h": 520, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontStyle": "italic", "fontSize": 64, "color": "#000000", "textAlign": "left", "lineHeight": 1.1 } },
+        { "id": "options", "type": "options", "questionId": "q4", "x": 90, "y": 900, "w": 900, "h": 900, "z": 2, "gap": 28, "showLetters": false,
+          "optionStyle": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 40, "color": "#000000", "background": "#ffffff", "borderRadius": 16, "textAlign": "left", "paddingX": 44, "height": 150 },
+          "selectedStyle": { "background": "#d4f5e2", "color": "#000000" } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1850, "w": 900, "h": 12, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    },
+    {
+      "id": "q5", "type": "question", "questionId": "q5",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "prompt", "type": "prompt", "x": 90, "y": 300, "w": 900, "h": 520, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontStyle": "italic", "fontSize": 64, "color": "#000000", "textAlign": "left", "lineHeight": 1.1 } },
+        { "id": "options", "type": "options", "questionId": "q5", "x": 90, "y": 900, "w": 900, "h": 900, "z": 2, "gap": 28, "showLetters": false,
+          "optionStyle": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 40, "color": "#000000", "background": "#ffffff", "borderRadius": 16, "textAlign": "left", "paddingX": 44, "height": 150 },
+          "selectedStyle": { "background": "#d4f5e2", "color": "#000000" } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1850, "w": 900, "h": 12, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    },
+    {
+      "id": "result", "type": "result",
+      "background": { "type": "color", "color": "#06C167" },
+      "elements": [
+        { "id": "score", "type": "scoreCircle", "x": 410, "y": 240, "w": 260, "h": 260, "z": 3, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontSize": 130, "color": "#ffffff", "background": "#000000", "textAlign": "center" } },
+        { "id": "heading", "type": "text", "text": "Preparez-vous a gagner presque presque tout.", "x": 90, "y": 560, "w": 900, "h": 240, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontSize": 58, "color": "#000000", "textAlign": "center", "lineHeight": 1.1 } },
+        { "id": "answers", "type": "answerSummary", "x": 120, "y": 840, "w": 840, "h": 640, "z": 2, "gap": 20, "style": { "fontFamily": "Uber Move", "fontWeight": 600, "fontSize": 34, "borderRadius": 16, "correctBg": "#ffffff", "correctColor": "#000000", "wrongBg": "#000000", "wrongColor": "#ffffff", "height": 100, "paddingX": 36 } },
+        { "id": "submit", "type": "button", "action": "reset", "text": "Envoyer", "x": 340, "y": 1520, "w": 400, "h": 130, "z": 3, "style": { "fontFamily": "Uber Move", "fontWeight": 700, "fontSize": 44, "color": "#ffffff", "background": "#000000", "borderRadius": 999, "textAlign": "center" } },
+        { "id": "legal", "type": "text", "text": "En participant a ce jeu, vous reconnaissez et acceptez les modalites et conditions (disponibles sur demande). Aucun achat requis. L'organisateur se reserve le droit de modifier, suspendre ou annuler le jeu en tout temps, sans preavis.", "x": 100, "y": 1690, "w": 880, "h": 180, "z": 2, "style": { "fontFamily": "Uber Move", "fontWeight": 500, "fontSize": 22, "color": "#000000", "textAlign": "center", "lineHeight": 1.25 } },
+        { "id": "timer", "type": "timer", "x": 90, "y": 1885, "w": 900, "h": 10, "z": 4, "style": { "trackColor": "rgba(0,0,0,0.15)", "fillColor": "#000000", "borderRadius": 999 } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Stage } from './renderer.jsx'
+import { resolveAsset, api } from '../api.js'
+import { buildAnalyticsRow, computeResult, createFlowId, getQuestion, pickActiveSet } from './quizLogic.js'
+
+// The public, interactive quiz. Given a resolved config, it drives the whole
+// welcome -> questions -> result flow with auto-reset, and logs to analytics.
+export default function QuizPlayer({ config, preview = false }) {
+  const flow = config.flow && config.flow.length ? config.flow : (config.screens || []).map((s) => s.id)
+  const [index, setIndex] = useState(0)
+  const [answers, setAnswers] = useState({})
+  const [activeSetId, setActiveSetId] = useState(() => pickActiveSet(config))
+  const [fading, setFading] = useState(false)
+  const [timerKey, setTimerKey] = useState(0)
+  const flowIdRef = useRef('')
+  const loggedRef = useRef(false)
+  const autoResetRef = useRef(null)
+  const transitionRef = useRef(null)
+
+  const screenId = flow[index]
+  const screen = useMemo(() => (config.screens || []).find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
+  const isQuestion = screen?.type === 'question'
+  const isResult = screen?.type === 'result'
+  const question = isQuestion ? getQuestion(config, screen.questionId || screen.id, activeSetId) : null
+  const autoResetMs = config.timings?.autoResetMs || 30000
+  const transitionMs = config.timings?.transitionMs || 400
+
+  const result = useMemo(
+    () => (isResult ? computeResult(config, answers, activeSetId) : null),
+    [isResult, config, answers, activeSetId],
+  )
+
+  const clearTimers = () => { clearTimeout(autoResetRef.current); clearTimeout(transitionRef.current) }
+
+  const reset = () => {
+    clearTimers()
+    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false)
+    loggedRef.current = false; flowIdRef.current = ''
+  }
+
+  const goTo = (nextIndex) => {
+    setFading(true)
+    transitionRef.current = setTimeout(() => { setIndex(nextIndex); setFading(false); setTimerKey((k) => k + 1) }, transitionMs)
+  }
+  const advance = () => goTo(Math.min(index + 1, flow.length - 1))
+
+  const makeRow = (event, suggestionClicked = '') =>
+    buildAnalyticsRow(config, {
+      answers, activeSetId, event, suggestionClicked, flowId: flowIdRef.current,
+      result: computeResult(config, answers, activeSetId),
+    })
+
+  // inactivity auto-reset on question/result screens
+  useEffect(() => {
+    clearTimeout(autoResetRef.current)
+    if ((isQuestion || isResult) && !preview) autoResetRef.current = setTimeout(reset, autoResetMs)
+    return () => clearTimeout(autoResetRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, isQuestion, isResult])
+
+  // log result_reached once when landing on the result screen
+  useEffect(() => {
+    if (!isResult || preview || loggedRef.current) return
+    loggedRef.current = true
+    if (!flowIdRef.current) flowIdRef.current = createFlowId()
+    api.sendAnalytics(config.slug, makeRow('result_reached'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isResult])
+
+  const onSelect = (questionId, value) => {
+    const q = getQuestion(config, questionId, activeSetId)
+    const max = q.maxSelect || 1
+    setAnswers((prev) => {
+      const cur = prev[questionId]
+      let next
+      if (max === 1) next = value
+      else {
+        const arr = Array.isArray(cur) ? cur : []
+        next = arr.includes(value) ? arr.filter((v) => v !== value) : arr.length < max ? [...arr, value] : arr
+      }
+      const done = max === 1 ? true : Array.isArray(next) && next.length === max
+      if (done) { clearTimeout(autoResetRef.current); advance() }
+      return { ...prev, [questionId]: next }
+    })
+  }
+
+  const onAction = (action) => {
+    if (action === 'start') {
+      clearTimers()
+      setAnswers({}); setActiveSetId(pickActiveSet(config)); flowIdRef.current = createFlowId(); loggedRef.current = false
+      goTo(Math.min(1, flow.length - 1))
+    } else if (action === 'reset') {
+      reset()
+    }
+  }
+
+  const onResultClick = (fullLabel) => {
+    if (!preview) api.sendAnalytics(config.slug, makeRow('suggestion_clicked', fullLabel))
+    reset()
+  }
+
+  const ctx = {
+    config,
+    resolve: resolveAsset,
+    question,
+    getQuestion: (qk) => getQuestion(config, qk, activeSetId),
+    answers,
+    onSelect,
+    onAction,
+    onResultClick,
+    result,
+    timerActive: (isQuestion || isResult) && !preview,
+    timerKey,
+    autoResetMs,
+  }
+
+  if (!screen) return null
+  return (
+    <div className="qw-player" style={{ opacity: fading ? 0 : 1, transition: `opacity ${transitionMs}ms ease` }}>
+      <Stage config={config} screen={screen} ctx={ctx} />
+    </div>
+  )
+}

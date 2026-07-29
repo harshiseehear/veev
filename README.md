@@ -1,95 +1,107 @@
-# VEEV Questionnaire App
+# Quiz Wizard
 
-Tablet/kiosk questionnaire that recommends VEEV products and flavours based on user preferences. Built with React + Vite.
+A modular, fully-customizable kiosk **quiz management platform**. One app hosts
+many quizzes; each is a data-only config that controls **everything** — images,
+text, fonts, colours, per-element position/size/layer, game rules, the analytics
+sheet, banner, backgrounds, and timings. Non-technical editors customize quizzes
+in a Photoshop-like admin editor (or by asking the built-in AI), then publish
+each to its own slug (e.g. `/veev`, `/uber`).
 
-**Live URL:** https://harshiseehear.github.io/veev/
+Built to replace one-off per-client quiz apps: instead of editing code for every
+update, the whole quiz is a config you edit in the browser.
 
----
+## What's included
 
-## Branches
+- **Two live quizzes**, shipped as configs:
+  - `/veev` — VEEV flavour **recommendation** quiz (pick-2 / pick-1 → device → flavour table).
+  - `/uber` — Uber Eats × CH **trivia** quiz (5 questions, 3 random sets, 0–5 score, French).
+- **Modular engine** that renders any quiz from JSON and supports two result
+  types: `recommendation` (answer → track → lookup table) and `score` (trivia).
+- **Admin app at `/admin`** (username + password) with:
+  - A **visual, Photoshop-like editor** — click any element on the 1080×1920
+    canvas to select it; drag to move, drag the corner to resize, arrow-keys to
+    nudge, and set exact X/Y/W/H, z-order (front/back), font, size, weight,
+    alignment, colours, corner radius, etc. Per screen, per element.
+  - **Content** editor (questions, options, correct answers, sets),
+    **Rules** editor (device maps / flavour tables / scoring),
+    **Assets** manager (upload images & fonts), and **Settings**
+    (name, analytics Sheet URL, timings, banner, backgrounds, fonts).
+  - **AI assistant** — describe a change or upload a client brief; Claude edits
+    *this* project's config. Review, then Save/Publish.
+  - **Publish → /slug** and **New project** (blank or cloned from an existing quiz).
+- **Backend** (Express): config store (draft + published), asset uploads,
+  a **Google Sheets analytics proxy** (per-project Web App URL), and the AI proxy
+  (the Anthropic key lives only on the server).
 
-- `main` — Template questionnaire (unstyled base)
-- `creative` — VEEV-branded version with custom backgrounds, fonts, styling
-- `gh-pages` — Auto-generated deploy branch, don't edit directly
-- `deploy` — Test branch, can be deleted
+## Run locally
 
----
-
-## Tech Stack
-
-- **React 18** — UI framework
-- **Vite 5** — Dev server + build tool
-- **gh-pages** — Publishes `dist/` to GitHub Pages
-
-No router, state library, or CSS framework. Lightweight for kiosk use.
-
----
-
-## Deploying
-
-1. Checkout the branch you want to deploy (e.g. `creative`)
-2. Run `npm run deploy`
-3. In GitHub repo settings, Pages should deploy from `gh-pages` branch
-
-The `base: '/veev/'` in `vite.config.js` handles the subpath.
-
----
-
-## Codebase
-
-```
-src/
-  App.jsx       — All logic: questions, answers, recommendations, navigation
-  App.css       — All component styling, layout, animations
-  index.css     — Fonts, CSS variables, colour theme
-  assets/       — Background images (screen_1–6.png), warning.png, font files
+```bash
+npm install
+cp .env.example .env      # optionally add ANTHROPIC_API_KEY for the AI assistant
+npm run dev               # Vite (5173) + Express (8787), proxied
+# or a production-style single server:
+npm run serve             # builds, then serves everything on :8787
 ```
 
-Everything is in `App.jsx` — single-file app, no child components.
+- Players: `http://localhost:8787/veev`, `/uber`
+- Admin: `http://localhost:8787/admin`
 
-**Flow:** welcome → q1 → q2 → q3 → q4 → result
+### Admin credentials
 
-- Q1 + Q2: pick 2 options each
-- Q3 + Q4: pick 1 option each
-- Q1 decides the device (VEEV NOW 18mL or VEEV ONE)
-- Q3 + Q4 decide the flavour via a lookup table (`RECOMMENDATIONS`)
-- 30-second inactivity timer resets to welcome screen
+Defaults (override with the `ADMIN_USERS` env var, a JSON `{"user":"pass"}` map):
 
----
+- `hvrc` / `fullmetalbitch`
+- `michelle` / `mawg`
 
-## Google Sheets
+## How a quiz is defined
 
-Results are logged to a Google Sheet via Apps Script.
+Each quiz is one JSON file in `server/data/configs/<slug>.json`:
 
-**Sheet:** https://docs.google.com/spreadsheets/d/1oA3JksQcXxkqhZEhWh0tlMXZsBb5b1y9ZKFRc41XlNI/edit
+- `theme` — canvas size, fonts (`@font-face` from `/assets/...`), colours.
+- `banner`, `background`, `timings` (transition + auto-reset).
+- `questions` (or `sets[]` for randomized trivia).
+- `resultLogic` — `type: "recommendation"` (deviceMap + tracks + table) or
+  `type: "score"` (correct answers + scoreQuestions).
+- `screens[]` — each has a `background` and `elements[]`. Every element has
+  `id, type, x, y, w, h, z` and a `style` object. Element types: `text`,
+  `prompt`, `pickLabel`, `button`, `image`, `options`, `resultList`,
+  `scoreCircle`, `answerSummary`, `timer`.
 
-The frontend POSTs JSON to the Apps Script URL. Two event types:
+Editing in `/admin` writes a **draft**; **Publish** promotes it to the live
+config served at `/<slug>`. Analytics rows are posted through the server to the
+project's Google Sheets Apps Script URL (set per project in Settings).
 
-**`result_reached`** — Appends a row with: flow ID, timestamp, all answers (Q1–Q4), final suggestions.
+## Deploy (Google Cloud Run)
 
-**`suggestion_clicked`** — Finds the row by flow ID and updates the "Suggestion Clicked" column.
+Runs on `harshrajmachikar@gmail.com`'s GCP — not GitHub Pages.
 
-The script lives in **Google Sheet → Extensions → Apps Script**. It reads headers from row 1 to map columns dynamically.
+```bash
+gcloud auth login
+gcloud config set project <PROJECT_ID>
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+# optional, for the AI assistant:
+printf '%s' "$ANTHROPIC_API_KEY" | gcloud secrets create anthropic-api-key --data-file=-
 
-**To make changes:**
-- Add a column: add the header in row 1, add a `set()` call in the script, add the field in the frontend POST body
-- Change column names: rename in both the sheet header and the script's `set()` calls
-- After editing the script: **Deploy → Manage deployments → Edit → New version → Deploy**
+./deploy.sh                 # builds the container + deploys, prints the run.app URL
+```
 
----
+### Custom subdomain `wizard.hvrc.place`
 
-## Styling
+```bash
+gcloud beta run domain-mappings create \
+  --service quiz-wizard --domain wizard.hvrc.place \
+  --region us-central1 --project <PROJECT_ID>
+```
 
-**`index.css`** — `@font-face` for IQOS Sans and Korolev, CSS variables for colours/theme. Change `--font-display` to swap the body font.
+Then add the CNAME/A records it prints to the `hvrc.place` DNS zone. Once DNS
+propagates, the platform is live at `https://wizard.hvrc.place`, with quizzes at
+`/veev` and `/uber` and the editor at `/admin`.
 
-**`App.css`** — Fixed 1080×1920 canvas scaled to viewport. Each screen is a `.panel` with absolutely positioned background images. Content positioning uses `margin-top` and `translateY()`. The welcome title font is set separately on `.welcome-title-main`.
+### Persistence note
 
-To swap images, replace files in `src/assets/` (keep the same filenames).
-
----
-
-## Kiosk Mode (Windows)
-
-Opens fullscreen, no UI. `Alt+F4` to exit.
-
-Settings → Accounts → Set up a kiosk → choose Edge → set the URL → Digital signage mode.
+Config/asset writes go to the container filesystem. `deploy.sh` pins the service
+to a single always-on instance (`--min-instances 1 --max-instances 1`) so edits
+persist within that instance. For durable, multi-instance storage, back the
+`server/data` directory with a GCS bucket (via GCS FUSE volume mount) or move the
+store to Firestore/GCS — the store layer (`server/store.js`) is the only thing to
+swap.
