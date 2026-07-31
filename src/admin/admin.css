@@ -57,6 +57,8 @@
 .span2 { grid-column: span 2; }
 .row-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip { padding: 6px 10px; border-radius: 7px; background: #1e1e30; border: 1px solid #33334f; color: #cfcfe0; cursor: pointer; font-size: 12px; }
+.chip.on { background: #3a1630; border-color: #ff3d7f; color: #fff; }
+.chip:disabled { opacity: 0.4; cursor: default; }
 .danger { margin-top: 10px; padding: 8px; border-radius: 8px; background: #3a1420; border: 1px solid #7a2a3f; color: #ff9bb5; cursor: pointer; }
 
 .layers { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }

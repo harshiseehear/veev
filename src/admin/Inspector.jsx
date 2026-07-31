@@ -93,6 +93,10 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
           {selectedEl.type !== 'image' && selectedEl.type !== 'timer' && (
             <>
               <div className="insp-h sub">Type</div>
+              <div className="row-btns">
+                <button className={`chip ${(s.fontWeight >= 700) ? 'on' : ''}`} onClick={() => patchElementStyle({ fontWeight: (s.fontWeight >= 700) ? 400 : 700 })}><b>B</b>&nbsp;Bold</button>
+                <button className={`chip ${s.fontStyle === 'italic' ? 'on' : ''}`} onClick={() => patchElementStyle({ fontStyle: s.fontStyle === 'italic' ? 'normal' : 'italic' })}><i>I</i>&nbsp;Italic</button>
+              </div>
               <label className="fld"><span>Font</span><select value={s.fontFamily || ''} onChange={(e) => patchElementStyle({ fontFamily: e.target.value })}>
                 <option value="">(inherit)</option>{families.map((f) => <option key={f} value={f}>{f}</option>)}<option value="sans-serif">sans-serif</option></select></label>
               <div className="grid2">
@@ -151,10 +155,22 @@ function ContentTab({ config, update }) {
   const [setIdx, setSetIdx] = useState(0)
   const questions = sets ? sets[setIdx]?.questions : config.questions
   const path = (mut) => update((next) => { const q = (next.sets ? next.sets[setIdx].questions : next.questions); mut(q) })
+  const newSetId = () => { const ids = new Set((sets || []).map((s) => s.id)); let n = (sets?.length || 0) + 1; while (ids.has(`set${n}`)) n++; return `set${n}` }
+  const duplicateSet = () => { const id = newSetId(); update((next) => { const copy = clone(next.sets[setIdx]); copy.id = id; next.sets.splice(setIdx + 1, 0, copy) }); setSetIdx(setIdx + 1) }
+  const removeSet = () => { if ((sets?.length || 0) <= 1) return; update((next) => { next.sets.splice(setIdx, 1) }); setSetIdx(Math.max(0, setIdx - 1)) }
   return (
     <div className="insp-scroll">
       {sets && (
-        <label className="fld"><span>Question set</span><select value={setIdx} onChange={(e) => setSetIdx(Number(e.target.value))}>{sets.map((s, i) => <option key={s.id} value={i}>{s.id}</option>)}</select></label>
+        <>
+          <label className="fld"><span>Question set — {sets.length} total, one shown at random per play</span>
+            <select value={setIdx} onChange={(e) => setSetIdx(Number(e.target.value))}>{sets.map((s, i) => <option key={s.id} value={i}>{s.id}</option>)}</select>
+          </label>
+          <div className="row-btns">
+            <button className="chip" onClick={duplicateSet}>+ Duplicate set</button>
+            <button className="chip" disabled={sets.length <= 1} onClick={removeSet}>🗑 Remove this set</button>
+          </div>
+          <p className="muted">Each player is randomly shown one of these {sets.length} sets. Edits below apply to <b>{sets[setIdx]?.id}</b> only.</p>
+        </>
       )}
       {Object.entries(questions || {}).map(([qk, q]) => (
         <div className="qedit" key={qk}>
