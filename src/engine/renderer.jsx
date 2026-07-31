@@ -56,17 +56,20 @@ function ElementContent({ el, ctx }) {
       const selected = ctx.answers?.[el.questionId]
       const isSel = (v) => (Array.isArray(selected) ? selected.includes(v) : selected === v)
       return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: `${el.gap || 24}px`, justifyContent: 'center' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: `${el.gap || 24}px`, justifyContent: el.justify || 'center' }}>
           {(q?.options || []).map((opt, i) => {
             const sel = isSel(opt.value)
             const merged = sel ? { ...os, ...(el.selectedStyle || {}) } : os
             return (
               <button key={opt.value} type="button"
                 onClick={ctx.onSelect ? () => ctx.onSelect(el.questionId, opt.value) : undefined}
-                style={{ height: `${os.height || 120}px`, width: '100%', border: 'none', cursor: 'pointer',
+                style={{ minHeight: `${os.height || 120}px`, width: '100%', border: 'none', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: os.textAlign === 'center' ? 'center' : 'flex-start',
-                  padding: `0 ${os.paddingX ?? 40}px`, ...cssFromStyle(merged) }}>
-                {el.showLetters ? `${opt.value}) ${opt.label}` : opt.label}
+                  padding: `${os.paddingY ?? 0}px ${os.paddingX ?? 40}px`, lineHeight: os.lineHeight ?? 1.2,
+                  gap: el.showLetters ? '18px' : 0, ...cssFromStyle(merged) }}>
+                {el.showLetters
+                  ? (<><span style={{ flex: 'none', minWidth: 48 }}>{String.fromCharCode(65 + i)})</span><span>{opt.label}</span></>)
+                  : opt.label}
               </button>
             )
           })}
@@ -185,8 +188,9 @@ export function Stage({ config, screen, ctx, editable = false, selectedId = null
         {bg.type === 'image' && bg.src
           ? <img className="qw-bg" src={ctx.resolve(bg.src)} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
           : <div className="qw-bg" style={{ position: 'absolute', inset: 0, background: bg.color || '#000' }} />}
+        {bg.overlay && <div style={{ position: 'absolute', inset: 0, background: bg.overlay, zIndex: 1 }} />}
         {banner.enabled && banner.src && (
-          <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', zIndex: 50, background: '#fff' }} />
+          <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', objectPosition: 'top', zIndex: 50, background: '#fff' }} />
         )}
         {[...(screen.elements || [])].sort((a, b) => (a.z || 0) - (b.z || 0)).map((el) => (
           <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedId === el.id} onPointerDown={onPointerDown} />
