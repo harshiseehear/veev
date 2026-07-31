@@ -10,10 +10,13 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   const [screenId, setScreenId] = useState(config.screens?.[0]?.id)
   const [selectedId, setSelectedId] = useState(null)
   const [preview, setPreview] = useState(false)
+  const [guides, setGuides] = useState({ v: false, h: false })
   const dragRef = useRef(null)
 
   const screen = useMemo(() => config.screens?.find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
   const firstSetId = config.sets?.[0]?.id
+  const cw = config.theme?.canvasWidth || 1080
+  const ch = config.theme?.canvasHeight || 1920
 
   // --- immutable config mutators ---
   const patchElement = (sid, eid, patch) =>
@@ -44,15 +47,26 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
 
   // --- drag / resize (mounted once, reads latest via dragRef) ---
   useEffect(() => {
+    const SNAP = 12 // canvas px within which an element's centre snaps to the canvas centre
     const move = (e) => {
       const d = dragRef.current
       if (!d) return
       const dx = (e.clientX - d.sx) / d.scale
       const dy = (e.clientY - d.sy) / d.scale
-      if (d.handle === 'move') patchElement(d.sid, d.eid, { x: Math.round(d.ox + dx), y: Math.round(d.oy + dy) })
-      else patchElement(d.sid, d.eid, { w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
+      if (d.handle === 'move') {
+        let nx = Math.round(d.ox + dx)
+        let ny = Math.round(d.oy + dy)
+        let gv = false
+        let gh = false
+        if (Math.abs(nx + d.ow / 2 - d.cw / 2) <= SNAP) { nx = Math.round(d.cw / 2 - d.ow / 2); gv = true }
+        if (Math.abs(ny + d.oh / 2 - d.ch / 2) <= SNAP) { ny = Math.round(d.ch / 2 - d.oh / 2); gh = true }
+        patchElement(d.sid, d.eid, { x: nx, y: ny })
+        setGuides({ v: gv, h: gh })
+      } else {
+        patchElement(d.sid, d.eid, { w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
+      }
     }
-    const up = () => { dragRef.current = null }
+    const up = () => { dragRef.current = null; setGuides({ v: false, h: false }) }
     window.addEventListener('mousemove', move)
     window.addEventListener('mouseup', up)
     return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up) }
@@ -65,7 +79,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     if (!el) return
     const wrap = document.querySelector('.qw-stage-wrap')
     const scale = parseFloat(wrap?.dataset.scale || '1') || 1
-    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: el.x, oy: el.y, ow: el.w, oh: el.h }
+    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: el.x, oy: el.y, ow: el.w, oh: el.h, cw, ch }
   }
 
   // arrow-key nudge
@@ -127,7 +141,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         <div className="canvas-area">
           {preview
             ? <QuizPlayer key={`prev-${screenId}`} config={config} preview />
-            : <Stage config={config} screen={screen} ctx={ctx} editable selectedId={selectedId}
+            : <Stage config={config} screen={screen} ctx={ctx} editable selectedId={selectedId} guides={guides}
                 onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedId(null)} />}
         </div>
         <Inspector

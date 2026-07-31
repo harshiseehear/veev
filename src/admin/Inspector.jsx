@@ -78,6 +78,10 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
             <button className="chip" onClick={() => reorder(selectedEl.id, 'back')}>Send back</button>
             <button className="chip" onClick={() => patchElement({ hidden: !selectedEl.hidden })}>{selectedEl.hidden ? 'Show' : 'Hide'}</button>
           </div>
+          <div className="row-btns">
+            <button className="chip" onClick={() => patchElement({ x: Math.round(((config.theme?.canvasWidth || 1080) - selectedEl.w) / 2) })}>⯐ Center H</button>
+            <button className="chip" onClick={() => patchElement({ y: Math.round(((config.theme?.canvasHeight || 1920) - selectedEl.h) / 2) })}>⯐ Center V</button>
+          </div>
 
           {['text', 'button'].includes(selectedEl.type) && <Txt label="Text" area value={selectedEl.text} onChange={(v) => patchElement({ text: v })} />}
           {selectedEl.type === 'button' && (
