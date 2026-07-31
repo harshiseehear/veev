@@ -2,10 +2,10 @@
 // server (ANTHROPIC_API_KEY env / Secret Manager in prod); the browser never
 // sees it. The assistant is project-aware: it receives the current quiz config
 // and returns a full, edited config plus a short human summary.
-const MODEL = (process.env.WIZARD_AI_MODEL || 'claude-sonnet-4-6').trim()
-const MAX_TOKENS = Number(process.env.WIZARD_AI_MAX_TOKENS || 16000)
+const MODEL = (process.env.KIOSK_AI_MODEL || 'claude-sonnet-4-6').trim()
+const MAX_TOKENS = Number(process.env.KIOSK_AI_MAX_TOKENS || 16000)
 
-const SYSTEM = `You are the built-in AI editor for "Quiz Wizard", a modular kiosk quiz platform.
+const SYSTEM = `You are the built-in AI editor for "Kiosk", a modular kiosk quiz platform.
 You edit a single quiz's JSON config. A config has: meta (id,name,slug,language), theme (canvasWidth,canvasHeight,fonts,colors), banner, background, timings (transitionMs,autoResetMs), questions (or sets[] for trivia), resultLogic (type "recommendation" or "score", plus mapping tables), flow[], and screens[]. Each screen has a background and elements[]. Every element has: id, type (text|prompt|pickLabel|button|image|options|resultList|scoreCircle|answerSummary|timer), x, y, w, h (pixels on the canvas, origin top-left), z (stacking), and a style object (fontFamily,fontWeight,fontSize,color,background,borderRadius,textAlign,lineHeight,letterSpacing,textTransform).
 
 RULES:

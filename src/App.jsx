@@ -10,7 +10,7 @@ function Landing() {
   useEffect(() => { api.listProjects().then(setProjects).catch(() => setProjects([])) }, [])
   return (
     <div className="landing">
-      <h1>Quiz Wizard</h1>
+      <h1>Kiosk</h1>
       <p className="muted">Modular kiosk quiz platform. Live quizzes:</p>
       <div className="landing-grid">
         {projects.map((p) => (

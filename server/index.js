@@ -122,4 +122,4 @@ app.get('*', async (req, res, next) => {
 })
 
 const PORT = process.env.PORT || 8787
-app.listen(PORT, () => console.log(`Quiz Wizard server on :${PORT}`))
+app.listen(PORT, () => console.log(`Kiosk server on :${PORT}`))

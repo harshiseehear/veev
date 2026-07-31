@@ -1,13 +1,13 @@
-# Quiz Wizard — Next Steps
+# Kiosk — Next Steps
 
 Status as of 2026-07-29: platform built, verified locally, and pushed to
-`github.com/hvrc/quiz-wizard` (branch `app` → `main`). **Not yet deployed.**
+`github.com/hvrc/kiosk` (branch `app` → `main`). **Not yet deployed.**
 
 Run these from `~/Documents/offline/veev` unless noted.
 
 ## 1. Deploy to Cloud Run (GCP `hvrc-web`, us-east1)
 
-Publishes the app as the Cloud Run service `wizard`. Must run in your own
+Publishes the app as the Cloud Run service `kiosk`. Must run in your own
 terminal (auto-mode blocks `--allow-unauthenticated`).
 
 ```bash
@@ -18,21 +18,21 @@ gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregi
 
 Verify the printed URL: `/` (landing), `/veev`, `/uber`, `/admin`.
 
-## 2. Map the subdomain wizard.hvrc.place
+## 2. Map the subdomain kiosk.hvrc.place
 
 ```bash
 gcloud beta run domain-mappings create \
-  --service wizard --domain wizard.hvrc.place \
+  --service kiosk --domain kiosk.hvrc.place \
   --region us-east1 --project hvrc-web
 ```
 
 Then in **Squarespace DNS** for `hvrc.place` add:
 
 ```
-CNAME   wizard   ->   ghs.googlehosted.com
+CNAME   kiosk   ->   ghs.googlehosted.com
 ```
 
-Wait for propagation → live at https://wizard.hvrc.place (quizzes at `/veev`,
+Wait for propagation → live at https://kiosk.hvrc.place (quizzes at `/veev`,
 `/uber`; editor at `/admin`).
 
 ## 3. Enable the AI assistant (optional)
@@ -46,7 +46,7 @@ printf '%s' "$YOUR_ANTHROPIC_KEY" | gcloud secrets create anthropic-api-key --da
 ```
 
 (Locally: put the key in `.env` as `ANTHROPIC_API_KEY=...`.)
-Model defaults to `claude-sonnet-4-6` (override with `WIZARD_AI_MODEL`).
+Model defaults to `claude-sonnet-4-6` (override with `KIOSK_AI_MODEL`).
 
 ## 4. Durable storage (before heavy multi-editor use) — optional
 

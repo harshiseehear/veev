@@ -23,7 +23,7 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-wrap">
       <form className="login-card" onSubmit={submit}>
-        <h1>Quiz Wizard</h1>
+        <h1>Kiosk</h1>
         <p className="muted">Admin sign in</p>
         <label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus /></label>
         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>

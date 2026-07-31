@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy Quiz Wizard to Google Cloud Run (account: harshrajmachikar@gmail.com).
+# Deploy Kiosk to Google Cloud Run (account: harshrajmachikar@gmail.com).
 # One command builds the container (Cloud Build) and deploys it, returning a
 # public https://<service>-<hash>-<region>.run.app URL.
 #
@@ -15,7 +15,7 @@ set -euo pipefail
 # us-east1, one Cloud Run service + one subdomain per app.
 PROJECT="${GCP_PROJECT:-$(gcloud config get-value project 2>/dev/null)}"
 REGION="${REGION:-us-east1}"
-SERVICE="${SERVICE:-wizard}"
+SERVICE="${SERVICE:-kiosk}"
 
 if [ -z "$PROJECT" ]; then echo "Set a project: gcloud config set project <id>"; exit 1; fi
 echo "Deploying '$SERVICE' to project '$PROJECT' ($REGION)…"
@@ -33,6 +33,6 @@ else
 fi
 
 echo
-echo "Done. To map the custom subdomain wizard.hvrc.place:"
-echo "  gcloud beta run domain-mappings create --service $SERVICE --domain wizard.hvrc.place --region $REGION --project $PROJECT"
-echo "  # then at Squarespace DNS for hvrc.place add:  CNAME  wizard  ->  ghs.googlehosted.com"
+echo "Done. To map the custom subdomain kiosk.hvrc.place:"
+echo "  gcloud beta run domain-mappings create --service $SERVICE --domain kiosk.hvrc.place --region $REGION --project $PROJECT"
+echo "  # then at Squarespace DNS for hvrc.place add:  CNAME  kiosk  ->  ghs.googlehosted.com"

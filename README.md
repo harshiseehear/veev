@@ -1,4 +1,4 @@
-# Quiz Wizard
+# Kiosk
 
 A modular, fully-customizable kiosk **quiz management platform**. One app hosts
 many quizzes; each is a data-only config that controls **everything** — images,
@@ -85,16 +85,16 @@ printf '%s' "$ANTHROPIC_API_KEY" | gcloud secrets create anthropic-api-key --dat
 ./deploy.sh                 # builds the container + deploys, prints the run.app URL
 ```
 
-### Custom subdomain `wizard.hvrc.place`
+### Custom subdomain `kiosk.hvrc.place`
 
 ```bash
 gcloud beta run domain-mappings create \
-  --service quiz-wizard --domain wizard.hvrc.place \
+  --service kiosk --domain kiosk.hvrc.place \
   --region us-central1 --project <PROJECT_ID>
 ```
 
 Then add the CNAME/A records it prints to the `hvrc.place` DNS zone. Once DNS
-propagates, the platform is live at `https://wizard.hvrc.place`, with quizzes at
+propagates, the platform is live at `https://kiosk.hvrc.place`, with quizzes at
 `/veev` and `/uber` and the editor at `/admin`.
 
 ### Persistence note

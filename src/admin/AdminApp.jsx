@@ -64,7 +64,7 @@ function AdminShell({ auth, onLogout }) {
     <div className="admin">
       <aside className="admin-rail">
         <div className="rail-top">
-          <div className="rail-brand">Quiz&nbsp;Wizard</div>
+          <div className="rail-brand">Kiosk</div>
           <div className="rail-user">{auth.user}</div>
         </div>
         <div className="rail-section">Projects</div>
