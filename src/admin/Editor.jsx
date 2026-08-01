@@ -16,6 +16,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   useEffect(() => { localStorage.setItem('qw-inspw', String(inspW)) }, [inspW])
   const [styleClip, setStyleClip] = useState(() => { try { return JSON.parse(localStorage.getItem('qw-styleclip') || 'null') } catch { return null } })
   const dragRef = useRef(null)
+  const liveRef = useRef({})
 
   const [previewSetId, setPreviewSetId] = useState(config.sets?.[0]?.id)
   const screen = useMemo(() => config.screens?.find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
@@ -64,10 +65,10 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         let gh = false
         if (Math.abs(nx + d.ow / 2 - d.cw / 2) <= SNAP) { nx = Math.round(d.cw / 2 - d.ow / 2); gv = true }
         if (Math.abs(ny + d.oh / 2 - d.ch / 2) <= SNAP) { ny = Math.round(d.ch / 2 - d.oh / 2); gh = true }
-        patchElement(d.sid, d.eid, { x: nx, y: ny })
+        d.commit({ x: nx, y: ny })
         setGuides({ v: gv, h: gh })
       } else {
-        patchElement(d.sid, d.eid, { w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
+        d.commit({ w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
       }
     }
     const up = () => { dragRef.current = null; setGuides({ v: false, h: false }) }
@@ -79,29 +80,33 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   const onPointerDown = (e, eid, handle) => {
     e.preventDefault(); e.stopPropagation()
     setSelectedId(eid)
-    const el = screen.elements.find((x) => x.id === eid)
-    if (!el) return
+    const baseEl = screen.elements.find((x) => x.id === eid)
+    if (!baseEl) return
+    // start from the effective (per-set) position, and commit to the right place
+    const ov = isSetScope ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[eid] || {}) : {}
+    const startX = ov.x ?? baseEl.x, startY = ov.y ?? baseEl.y, startW = ov.w ?? baseEl.w, startH = ov.h ?? baseEl.h
     const wrap = document.querySelector('.qw-stage-wrap')
     const scale = parseFloat(wrap?.dataset.scale || '1') || 1
-    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: el.x, oy: el.y, ow: el.w, oh: el.h, cw, ch }
+    const commit = isSetScope ? (patch) => writeOverride(eid, patch) : (patch) => patchElement(screen.id, eid, patch)
+    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: startX, oy: startY, ow: startW, oh: startH, cw, ch, commit }
   }
 
-  // arrow-key nudge
+  // arrow-key nudge (reads current scope/element from liveRef to avoid staleness)
   useEffect(() => {
     const onKey = (e) => {
-      if (!selectedId || preview) return
+      const { effectiveEl: el, doPatchElement: patch, preview: prev, selectedId: sel } = liveRef.current
+      if (!sel || prev || !el || !patch) return
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
       const step = e.shiftKey ? 10 : 1
       const map = { ArrowLeft: ['x', -step], ArrowRight: ['x', step], ArrowUp: ['y', -step], ArrowDown: ['y', step] }
       const m = map[e.key]
       if (!m) return
       e.preventDefault()
-      const el = screen.elements.find((x) => x.id === selectedId)
-      if (el) patchElement(screen.id, selectedId, { [m[0]]: (el[m[0]] || 0) + m[1] })
+      patch({ [m[0]]: (el[m[0]] || 0) + m[1] })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedId, screen, preview]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const selectedEl = screen?.elements.find((e) => e.id === selectedId) || null
 
@@ -115,7 +120,6 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     : {}
   const effectiveEl = selectedEl && isSetScope
     ? { ...selectedEl, ...activeOverride,
-        x: selectedEl.x, y: selectedEl.y, w: selectedEl.w, h: selectedEl.h, z: selectedEl.z,
         style: { ...(selectedEl.style || {}), ...(activeOverride.style || {}) },
         optionStyle: { ...(selectedEl.optionStyle || {}), ...(activeOverride.optionStyle || {}) },
         selectedStyle: { ...(selectedEl.selectedStyle || {}), ...(activeOverride.selectedStyle || {}) } }
@@ -130,29 +134,24 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     q.overrides[elId][kind] = { ...(q.overrides[elId][kind] || {}), ...patch }
     return next
   })
-  const setOverrideProps = (patch) => setConfig((prev) => {
+  const writeOverride = (elId, patch) => setConfig((prev) => {
     const next = JSON.parse(JSON.stringify(prev))
     const set = next.sets.find((s) => s.id === previewSetId)
     const q = set?.questions?.[activeQid]
     if (!q) return prev
     q.overrides = q.overrides || {}
-    q.overrides[selectedId] = { ...(q.overrides[selectedId] || {}), ...patch }
+    q.overrides[elId] = { ...(q.overrides[elId] || {}), ...patch }
     return next
   })
-  const POS_KEYS = ['x', 'y', 'w', 'h', 'z']
+  const setOverrideProps = (patch) => writeOverride(selectedId, patch)
   const doPatchStyle = (patch) => isSetScope ? setOverride(selectedId, 'style', patch) : patchElementStyle(screen.id, selectedId, patch)
   const doPatchOptionStyle = (patch) => isSetScope
     ? setOverride(selectedId, 'optionStyle', patch)
     : patchElement(screen.id, selectedId, { optionStyle: { ...(selectedEl?.optionStyle || {}), ...patch } })
-  // Non-style element edits: position/size stay shared across sets; everything
-  // else (gap, showLetters, selectedStyle, text…) is per-set when a set is active.
-  const doPatchElement = (patch) => {
-    if (!isSetScope) return patchElement(screen.id, selectedId, patch)
-    const pos = {}, ov = {}
-    for (const [k, v] of Object.entries(patch)) (POS_KEYS.includes(k) ? pos : ov)[k] = v
-    if (Object.keys(pos).length) patchElement(screen.id, selectedId, pos)
-    if (Object.keys(ov).length) setOverrideProps(ov)
-  }
+  // When a set is active on a question page, EVERY element edit (position, size,
+  // and all styling) is per-set; otherwise it edits the shared base element.
+  const doPatchElement = (patch) => isSetScope ? setOverrideProps(patch) : patchElement(screen.id, selectedId, patch)
+  liveRef.current = { effectiveEl, doPatchElement, preview, selectedId }
 
   // Style clipboard: copy the selected element's look, paste onto any element
   // (any page or set). Paste respects scope — into the set override when a set
