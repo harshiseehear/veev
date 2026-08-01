@@ -53,8 +53,7 @@
   },
   "timings": {
     "transitionMs": 400,
-    "autoResetMs": 30000,
-    "transitionStyle": "slideFade"
+    "autoResetMs": 30000
   },
   "sets": [
     {
@@ -343,6 +342,10 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1800
             }
           }
         }
@@ -1433,7 +1436,7 @@
           "id": "score",
           "type": "scoreCircle",
           "x": 475,
-          "y": 250,
+          "y": 102,
           "w": 130,
           "h": 130,
           "z": 3,
@@ -1451,7 +1454,7 @@
           "type": "text",
           "text": "Préparez-vous à gagner presque presque tout.",
           "x": 146,
-          "y": 430,
+          "y": 282,
           "w": 788,
           "h": 280,
           "z": 2,
@@ -1459,7 +1462,7 @@
             "fontFamily": "Uber Move",
             "fontWeight": 700,
             "fontStyle": "normal",
-            "fontSize": 60,
+            "fontSize": 75,
             "color": "#000000",
             "textAlign": "center",
             "lineHeight": 1.25
@@ -1468,33 +1471,34 @@
         {
           "id": "answers",
           "type": "answerSummary",
-          "x": 146,
-          "y": 760,
-          "w": 788,
-          "h": 560,
+          "x": 148,
+          "y": 626,
+          "w": 785,
+          "h": 693,
           "z": 2,
           "gap": 22,
           "style": {
             "fontFamily": "Uber Move",
             "fontWeight": 600,
-            "fontSize": 34,
+            "fontSize": 35,
             "borderRadius": 32,
             "correctBg": "#ffffff",
             "correctColor": "#000000",
             "wrongBg": "#000000",
             "wrongColor": "#ffffff",
-            "height": 90,
+            "height": 118,
             "paddingX": 43
-          }
+          },
+          "hidden": false
         },
         {
           "id": "submit",
           "type": "button",
           "action": "reset",
           "text": "Envoyer",
-          "x": 340,
-          "y": 1430,
-          "w": 400,
+          "x": 485,
+          "y": 1382,
+          "w": 110,
           "h": 110,
           "z": 3,
           "style": {
@@ -1502,17 +1506,18 @@
             "fontWeight": 700,
             "fontSize": 44,
             "color": "#ffffff",
-            "background": "#000000",
-            "borderRadius": 999,
+            "background": "transparent",
+            "borderRadius": 0,
             "textAlign": "center"
-          }
+          },
+          "icon": "arrow"
         },
         {
           "id": "legal",
           "type": "text",
           "text": "En participant à ce jeu, vous reconnaissez et acceptez les modalités et conditions (disponibles sur demande). L'admissibilité, les détails des prix et le processus de sélection sont assujettis au règlement officiel. Aucun achat requis. L'organisateur se réserve le droit de modifier, de suspendre ou d'annuler le jeu en tout temps, sans préavis.",
           "x": 124,
-          "y": 1560,
+          "y": 1544,
           "w": 832,
           "h": 210,
           "z": 2,
@@ -1529,16 +1534,18 @@
         {
           "id": "timer",
           "type": "timer",
-          "x": 303,
-          "y": 1870,
+          "x": 304,
+          "y": 1800,
           "w": 473,
-          "h": 12,
+          "h": 13,
           "z": 4,
           "style": {
             "trackColor": "rgba(0,0,0,0.15)",
             "fillColor": "#000000",
             "borderRadius": 999
-          }
+          },
+          "optionStyle": {},
+          "selectedStyle": {}
         }
       ]
     }

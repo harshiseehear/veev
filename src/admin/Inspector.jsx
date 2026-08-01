@@ -91,6 +91,9 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
           {selectedEl.type === 'button' && (
             <label className="fld"><span>Action</span><select value={selectedEl.action || 'reset'} onChange={(e) => patchElement({ action: e.target.value })}><option value="start">start</option><option value="reset">reset</option></select></label>
           )}
+          {selectedEl.type === 'button' && (
+            <label className="fld"><span>Icon</span><select value={selectedEl.icon || ''} onChange={(e) => patchElement({ icon: e.target.value || undefined })}><option value="">none (show text)</option><option value="arrow">→ arrow</option></select></label>
+          )}
           {selectedEl.type === 'image' && <Txt label="Image src" value={selectedEl.src} onChange={(v) => patchElement({ src: v })} />}
           {['prompt', 'pickLabel'].includes(selectedEl.type) && <p className="muted">Text comes from the question (Content tab). Style it below.</p>}
 
