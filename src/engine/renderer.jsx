@@ -64,7 +64,7 @@ function ElementContent({ el, ctx }) {
           style={{ width: '100%', height: '100%', border: 'none', cursor: 'pointer', display: 'flex',
             alignItems: 'center', justifyContent: 'center', whiteSpace: 'pre-line', ...cssFromStyle(s) }}>
           {el.icon === 'arrow'
-            ? (<svg viewBox="0 0 24 24" fill="none" style={{ width: '55%', height: '55%' }}>
+            ? (<svg viewBox="0 0 24 24" fill="none" style={{ width: `${el.iconScale || 55}%`, height: `${el.iconScale || 55}%` }}>
                 <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke={s.color || '#ffffff'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>)
             : el.text}
