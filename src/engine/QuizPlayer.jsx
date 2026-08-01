@@ -115,12 +115,18 @@ export default function QuizPlayer({ config, preview = false }) {
   }
 
   if (!screen) return null
-  // fade/slide-fade between screens, matching each quiz's original feel. Keyed by
-  // screenId so the incoming screen remounts and plays the "in" animation, while
-  // the outgoing screen plays "out" (same element, class swap) before the swap.
-  const fx = config.timings?.transitionStyle === 'slideFade' ? 'qw-slidefade' : 'qw-fade'
+  // slideFade: background stays put, only the elements fade + slide up (matches
+  // the original uber). Default fade: the whole screen (incl. background) crossfades.
+  if (config.timings?.transitionStyle === 'slideFade') {
+    const elFade = { key: screenId, className: `qw-slidefade-${fading ? 'out' : 'in'}`, durationMs: transitionMs }
+    return (
+      <div className="qw-player">
+        <Stage config={config} screen={screen} ctx={ctx} elFade={elFade} />
+      </div>
+    )
+  }
   return (
-    <div key={screenId} className={`qw-player ${fading ? `${fx}-out` : `${fx}-in`}`} style={{ '--qw-fade': `${transitionMs}ms` }}>
+    <div key={screenId} className={`qw-player ${fading ? 'qw-fade-out' : 'qw-fade-in'}`} style={{ '--qw-fade': `${transitionMs}ms` }}>
       <Stage config={config} screen={screen} ctx={ctx} />
     </div>
   )

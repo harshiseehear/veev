@@ -178,7 +178,7 @@ function ElementBox({ el, ctx, editable, selected, onPointerDown }) {
 }
 
 // The fixed-size authoring canvas, scaled to fit its container.
-export function Stage({ config, screen, ctx, editable = false, selectedIds = [], onPointerDown, onBackgroundClick, guides = null }) {
+export function Stage({ config, screen, ctx, editable = false, selectedIds = [], onPointerDown, onBackgroundClick, guides = null, elFade = null }) {
   const wrapRef = useRef(null)
   const [scale, setScale] = useState(1)
   const cw = config.theme?.canvasWidth || 1080
@@ -212,12 +212,18 @@ export function Stage({ config, screen, ctx, editable = false, selectedIds = [],
         {banner.enabled && banner.src && (
           <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', objectPosition: 'top', zIndex: 50, background: '#fff' }} />
         )}
-        {(screen.elements || [])
-          .map((el) => mergeOverride(el, ctx.question?.overrides?.[el.id]))
-          .sort((a, b) => (a.z || 0) - (b.z || 0))
-          .map((el) => (
-            <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedIds.includes(el.id)} onPointerDown={onPointerDown} />
-          ))}
+        {(() => {
+          const nodes = (screen.elements || [])
+            .map((el) => mergeOverride(el, ctx.question?.overrides?.[el.id]))
+            .sort((a, b) => (a.z || 0) - (b.z || 0))
+            .map((el) => (
+              <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedIds.includes(el.id)} onPointerDown={onPointerDown} />
+            ))
+          // elFade animates ONLY the elements (background/banner stay static).
+          return elFade
+            ? <div key={elFade.key} className={elFade.className} style={{ position: 'absolute', inset: 0, zIndex: 2, '--qw-fade': `${elFade.durationMs}ms` }}>{nodes}</div>
+            : nodes
+        })()}
         {editable && guides?.v && (
           <div style={{ position: 'absolute', left: cw / 2 - 1, top: 0, width: 2, height: ch, background: '#ff3d7f', zIndex: 9998, pointerEvents: 'none' }} />
         )}
