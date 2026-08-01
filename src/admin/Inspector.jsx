@@ -13,9 +13,23 @@ const Num = ({ label, value, onChange, step = 1 }) => (
 const Txt = ({ label, value, onChange, area }) => (
   <label className="fld"><span>{label}</span>{area ? <textarea rows={3} value={value ?? ''} onChange={(e) => onChange(e.target.value)} /> : <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />}</label>
 )
-const Color = ({ label, value, onChange }) => (
-  <label className="fld"><span>{label}</span><span className="color-row"><input type="color" value={/^#/.test(value || '') ? value : '#000000'} onChange={(e) => onChange(e.target.value)} /><input value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder="transparent" /></span></label>
-)
+// colour with an alpha slider — produces #RRGGBBAA when alpha < 100%
+const baseHex = (v) => (/^#[0-9a-fA-F]{8}$/.test(v || '') ? v.slice(0, 7) : /^#[0-9a-fA-F]{6}$/.test(v || '') ? v : '#000000')
+const hexAlpha = (v) => (/^#[0-9a-fA-F]{8}$/.test(v || '') ? Math.round((parseInt(v.slice(7, 9), 16) / 255) * 100) : 100)
+const withAlpha = (hex, a) => (a >= 100 ? hex : hex + Math.round((a / 100) * 255).toString(16).padStart(2, '0'))
+const Color = ({ label, value, onChange }) => {
+  const hex = baseHex(value)
+  const a = hexAlpha(value)
+  return (
+    <label className="fld"><span>{label}</span>
+      <span className="color-row">
+        <input type="color" value={hex} onChange={(e) => onChange(withAlpha(e.target.value, a))} />
+        <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder="transparent" />
+      </span>
+      <span className="color-row"><input type="range" min="0" max="100" value={a} onChange={(e) => onChange(withAlpha(hex, Number(e.target.value)))} style={{ flex: 1 }} /><span className="muted" style={{ minWidth: 40, textAlign: 'right' }}>{a}%</span></span>
+    </label>
+  )
+}
 
 export default function Inspector(props) {
   const { config, setConfig, screen, selectedEl } = props
