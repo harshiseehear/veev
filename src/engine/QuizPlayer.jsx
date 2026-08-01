@@ -11,6 +11,7 @@ export default function QuizPlayer({ config, preview = false }) {
   const [answers, setAnswers] = useState({})
   const [activeSetId, setActiveSetId] = useState(() => pickActiveSet(config))
   const [fading, setFading] = useState(false)
+  const [outgoingId, setOutgoingId] = useState(null)
   const [timerKey, setTimerKey] = useState(0)
   const flowIdRef = useRef('')
   const loggedRef = useRef(false)
@@ -24,6 +25,7 @@ export default function QuizPlayer({ config, preview = false }) {
   const question = isQuestion ? getQuestion(config, screen.questionId || screen.id, activeSetId) : null
   const autoResetMs = config.timings?.autoResetMs || 30000
   const transitionMs = config.timings?.transitionMs || 400
+  const style = config.timings?.transitionStyle
 
   const result = useMemo(
     () => (isResult ? computeResult(config, answers, activeSetId) : null),
@@ -34,11 +36,21 @@ export default function QuizPlayer({ config, preview = false }) {
 
   const reset = () => {
     clearTimers()
-    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false)
+    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false); setOutgoingId(null)
     loggedRef.current = false; flowIdRef.current = ''
   }
 
+  // crossfade (dissolve): keep the old screen underneath, fade the new one in on
+  // top, then drop the old — matches the original veev background crossfade.
+  const crossTo = (nextIndex) => {
+    setOutgoingId(screenId)
+    setIndex(nextIndex)
+    setTimerKey((k) => k + 1)
+    clearTimeout(transitionRef.current)
+    transitionRef.current = setTimeout(() => setOutgoingId(null), transitionMs)
+  }
   const goTo = (nextIndex) => {
+    if (style === 'crossfade') return crossTo(nextIndex)
     setFading(true)
     transitionRef.current = setTimeout(() => { setIndex(nextIndex); setFading(false); setTimerKey((k) => k + 1) }, transitionMs)
   }
@@ -99,22 +111,39 @@ export default function QuizPlayer({ config, preview = false }) {
     reset()
   }
 
-  const ctx = {
-    config,
-    resolve: resolveAsset,
-    question,
-    getQuestion: (qk) => getQuestion(config, qk, activeSetId),
-    answers,
-    onSelect,
-    onAction,
-    onResultClick,
-    result,
-    timerActive: (isQuestion || isResult) && !preview,
-    timerKey,
-    autoResetMs,
+  const buildCtx = (scr, interactive) => {
+    const isQ = scr?.type === 'question'
+    const isR = scr?.type === 'result'
+    return {
+      config,
+      resolve: resolveAsset,
+      question: isQ ? getQuestion(config, scr.questionId || scr.id, activeSetId) : null,
+      getQuestion: (qk) => getQuestion(config, qk, activeSetId),
+      answers,
+      onSelect: interactive ? onSelect : undefined,
+      onAction: interactive ? onAction : undefined,
+      onResultClick: interactive ? onResultClick : undefined,
+      result: isR ? computeResult(config, answers, activeSetId) : null,
+      timerActive: interactive && (isQ || isR) && !preview,
+      timerKey,
+      autoResetMs,
+    }
   }
+  const ctx = buildCtx(screen, true)
 
   if (!screen) return null
+  // crossfade: old screen stays underneath, new fades in on top, old removed after.
+  if (style === 'crossfade') {
+    const outScreen = outgoingId ? (config.screens || []).find((s) => s.id === outgoingId) : null
+    return (
+      <div className="qw-player" style={{ position: 'relative' }}>
+        {outScreen && <div style={{ position: 'absolute', inset: 0 }}><Stage config={config} screen={outScreen} ctx={buildCtx(outScreen, false)} /></div>}
+        <div key={screenId} className="qw-fade-in" style={{ position: 'absolute', inset: 0, '--qw-fade': `${transitionMs}ms` }}>
+          <Stage config={config} screen={screen} ctx={ctx} />
+        </div>
+      </div>
+    )
+  }
   // slideFade: background stays put, only the elements fade + slide up (matches
   // the original uber). Default fade: the whole screen (incl. background) crossfades.
   if (config.timings?.transitionStyle === 'slideFade') {
