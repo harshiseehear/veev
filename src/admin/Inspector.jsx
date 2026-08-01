@@ -129,8 +129,8 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
             </>
           )}
           <div className="row-btns" style={{ marginTop: 8 }}>
-            <button className="btn" onClick={() => setCopied(copyStyle())}>⧉ Copy style</button>
-            <button className="btn" disabled={!hasClip} onClick={() => setCopied(pasteStyle())}>⤵ Paste style</button>
+            <button className="btn" onClick={() => setCopied(copyStyle())}>⧉ Copy element</button>
+            <button className="btn" disabled={!hasClip} onClick={() => setCopied(pasteStyle())}>⤵ Paste element</button>
           </div>
           {copied && <div className="muted">{copied}</div>}
           <button className="danger" onClick={removeElement}>Delete element</button>

@@ -156,32 +156,24 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   // Style clipboard: copy the selected element's look, paste onto any element
   // (any page or set). Paste respects scope — into the set override when a set
   // is active on a question page, else onto the base element.
+  // Copy/paste covers ALL element fields (position, size, z, text/src/action, and
+  // every styling field) — only identity (id/type/questionId) is left out.
+  const EXCL = ['id', 'type', 'questionId']
   const copyElementStyle = () => {
     if (!effectiveEl) return ''
     const clip = {}
-    ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (effectiveEl[k] !== undefined) clip[k] = JSON.parse(JSON.stringify(effectiveEl[k])) })
+    Object.keys(effectiveEl).forEach((k) => { if (!EXCL.includes(k)) clip[k] = JSON.parse(JSON.stringify(effectiveEl[k])) })
     setStyleClip(clip)
     try { localStorage.setItem('qw-styleclip', JSON.stringify(clip)) } catch { /* ignore */ }
-    return `Copied ${effectiveEl.type} style`
+    return `Copied all fields from ${effectiveEl.type}`
   }
   const pasteElementStyle = () => {
     if (!styleClip || !selectedId || !selectedEl) return ''
-    if (isSetScope) {
-      setConfig((prev) => {
-        const next = JSON.parse(JSON.stringify(prev))
-        const set = next.sets.find((s) => s.id === previewSetId)
-        const q = set?.questions?.[activeQid]
-        if (!q) return prev
-        q.overrides = q.overrides || {}
-        q.overrides[selectedId] = JSON.parse(JSON.stringify(styleClip))
-        return next
-      })
-    } else {
-      const patch = {}
-      ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (styleClip[k] !== undefined) patch[k] = JSON.parse(JSON.stringify(styleClip[k])) })
-      patchElement(screen.id, selectedId, patch)
-    }
-    return `Pasted style onto ${selectedEl.id}`
+    const clip = {}
+    Object.keys(styleClip).forEach((k) => { if (!EXCL.includes(k)) clip[k] = JSON.parse(JSON.stringify(styleClip[k])) })
+    if (isSetScope) writeOverride(selectedId, clip)
+    else patchElement(screen.id, selectedId, clip)
+    return `Pasted all fields onto ${selectedEl.id}`
   }
 
   // preview ctx (static, unselected)
