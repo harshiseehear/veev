@@ -39,10 +39,35 @@ export default function Inspector(props) {
   )
 }
 
-function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, pasteStyle, hasClip, isSetScope, activeSetId, activeQid }) {
+function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, pasteStyle, hasClip, isSetScope, activeSetId, activeQid, selectedIds, centerGroupOnCanvas, alignGroup }) {
   const families = [...new Set((config.theme?.fonts || []).map((f) => f.family))]
   const [copied, setCopied] = useState('')
   const s = selectedEl?.style || {}
+
+  if (selectedIds && selectedIds.length > 1) {
+    return (
+      <div className="insp-scroll">
+        <div className="insp-h">{selectedIds.length} elements selected</div>
+        <p className="muted">Drag any one to move them together; arrow-keys nudge the group. Shift-click on the canvas to add/remove.</p>
+        <div className="insp-h sub">Center the group on the canvas</div>
+        <div className="row-btns">
+          <button className="chip" onClick={() => centerGroupOnCanvas('h')}>⯐ Center H</button>
+          <button className="chip" onClick={() => centerGroupOnCanvas('v')}>⯐ Center V</button>
+        </div>
+        <div className="insp-h sub">Align to each other</div>
+        <div className="row-btns">
+          <button className="chip" onClick={() => alignGroup('left')}>Left</button>
+          <button className="chip" onClick={() => alignGroup('hcenter')}>Center</button>
+          <button className="chip" onClick={() => alignGroup('right')}>Right</button>
+        </div>
+        <div className="row-btns">
+          <button className="chip" onClick={() => alignGroup('top')}>Top</button>
+          <button className="chip" onClick={() => alignGroup('vmiddle')}>Middle</button>
+          <button className="chip" onClick={() => alignGroup('bottom')}>Bottom</button>
+        </div>
+      </div>
+    )
+  }
   const addNew = (type) => {
     const id = `${type}-${Math.random().toString(36).slice(2, 6)}`
     const base = { id, type, x: 120, y: 200, w: 500, h: 200, z: 5, style: { fontFamily: families[0] || 'sans-serif', fontWeight: 700, fontSize: 48, color: '#ffffff', textAlign: 'center' } }

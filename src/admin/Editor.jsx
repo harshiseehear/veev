@@ -9,7 +9,8 @@ import Resizer from './Resizer.jsx'
 
 export default function Editor({ config, setConfig, token, slug, onSave, onPublish, status }) {
   const [screenId, setScreenId] = useState(config.screens?.[0]?.id)
-  const [selectedId, setSelectedId] = useState(null)
+  const [selectedIds, setSelectedIds] = useState([])
+  const selectedId = selectedIds.length === 1 ? selectedIds[0] : null
   const [preview, setPreview] = useState(false)
   const [guides, setGuides] = useState({ v: false, h: false })
   const [inspW, setInspW] = useState(() => Number(localStorage.getItem('qw-inspw')) || 340)
@@ -59,16 +60,15 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
       const dx = (e.clientX - d.sx) / d.scale
       const dy = (e.clientY - d.sy) / d.scale
       if (d.handle === 'move') {
-        let nx = Math.round(d.ox + dx)
-        let ny = Math.round(d.oy + dy)
-        let gv = false
-        let gh = false
-        if (Math.abs(nx + d.ow / 2 - d.cw / 2) <= SNAP) { nx = Math.round(d.cw / 2 - d.ow / 2); gv = true }
-        if (Math.abs(ny + d.oh / 2 - d.ch / 2) <= SNAP) { ny = Math.round(d.ch / 2 - d.oh / 2); gh = true }
-        d.commit({ x: nx, y: ny })
+        // move the whole selection together; snap the group's bbox centre to the canvas centre
+        let adx = dx, ady = dy, gv = false, gh = false
+        if (Math.abs(d.gcx + dx - d.cw / 2) <= SNAP) { adx = d.cw / 2 - d.gcx; gv = true }
+        if (Math.abs(d.gcy + dy - d.ch / 2) <= SNAP) { ady = d.ch / 2 - d.gcy; gh = true }
+        d.items.forEach((it) => it.commit({ x: Math.round(it.ox + adx), y: Math.round(it.oy + ady) }))
         setGuides({ v: gv, h: gh })
       } else {
-        d.commit({ w: Math.max(20, Math.round(d.ow + dx)), h: Math.max(20, Math.round(d.oh + dy)) })
+        const it = d.items[0]
+        it.commit({ w: Math.max(20, Math.round(it.ow + dx)), h: Math.max(20, Math.round(it.oh + dy)) })
       }
     }
     const up = () => { dragRef.current = null; setGuides({ v: false, h: false }) }
@@ -79,30 +79,42 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
 
   const onPointerDown = (e, eid, handle) => {
     e.preventDefault(); e.stopPropagation()
-    setSelectedId(eid)
-    const baseEl = screen.elements.find((x) => x.id === eid)
-    if (!baseEl) return
-    // start from the effective (per-set) position, and commit to the right place
-    const ov = isSetScope ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[eid] || {}) : {}
-    const startX = ov.x ?? baseEl.x, startY = ov.y ?? baseEl.y, startW = ov.w ?? baseEl.w, startH = ov.h ?? baseEl.h
+    // Shift/Cmd/Ctrl-click toggles an element in the selection (no drag).
+    if (e.shiftKey || e.metaKey || e.ctrlKey) {
+      setSelectedIds((ids) => ids.includes(eid) ? ids.filter((x) => x !== eid) : [...ids, eid])
+      return
+    }
+    const dragIds = selectedIds.includes(eid) ? selectedIds : [eid]
+    if (!selectedIds.includes(eid)) setSelectedIds([eid])
     const wrap = document.querySelector('.qw-stage-wrap')
     const scale = parseFloat(wrap?.dataset.scale || '1') || 1
-    const commit = isSetScope ? (patch) => writeOverride(eid, patch) : (patch) => patchElement(screen.id, eid, patch)
-    dragRef.current = { sid: screen.id, eid, handle, scale, sx: e.clientX, sy: e.clientY, ox: startX, oy: startY, ow: startW, oh: startH, cw, ch, commit }
+    const ovOf = (id) => isSetScope ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[id] || {}) : {}
+    const writerOf = (id) => isSetScope ? (patch) => writeOverride(id, patch) : (patch) => patchElement(screen.id, id, patch)
+    const mk = (id) => { const el = screen.elements.find((x) => x.id === id); const ov = ovOf(id); return { eid: id, ox: ov.x ?? el.x, oy: ov.y ?? el.y, ow: ov.w ?? el.w, oh: ov.h ?? el.h, commit: writerOf(id) } }
+    if (handle === 'resize') {
+      if (!screen.elements.some((x) => x.id === eid)) return
+      dragRef.current = { handle: 'resize', scale, sx: e.clientX, sy: e.clientY, items: [mk(eid)], cw, ch }
+    } else {
+      const items = dragIds.filter((id) => screen.elements.some((x) => x.id === id)).map(mk)
+      if (!items.length) return
+      const minX = Math.min(...items.map((i) => i.ox)), maxX = Math.max(...items.map((i) => i.ox + i.ow))
+      const minY = Math.min(...items.map((i) => i.oy)), maxY = Math.max(...items.map((i) => i.oy + i.oh))
+      dragRef.current = { handle: 'move', scale, sx: e.clientX, sy: e.clientY, items, gcx: (minX + maxX) / 2, gcy: (minY + maxY) / 2, cw, ch }
+    }
   }
 
-  // arrow-key nudge (reads current scope/element from liveRef to avoid staleness)
+  // arrow-key nudge (reads current selection from liveRef to avoid staleness)
   useEffect(() => {
     const onKey = (e) => {
-      const { effectiveEl: el, doPatchElement: patch, preview: prev, selectedId: sel } = liveRef.current
-      if (!sel || prev || !el || !patch) return
+      const { nudgeSelected: nudge, selectedIds: ids, preview: prev } = liveRef.current
+      if (!ids || !ids.length || prev || !nudge) return
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
       const step = e.shiftKey ? 10 : 1
       const map = { ArrowLeft: ['x', -step], ArrowRight: ['x', step], ArrowUp: ['y', -step], ArrowDown: ['y', step] }
       const m = map[e.key]
       if (!m) return
       e.preventDefault()
-      patch({ [m[0]]: (el[m[0]] || 0) + m[1] })
+      nudge(m[0], m[1])
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -151,7 +163,41 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   // When a set is active on a question page, EVERY element edit (position, size,
   // and all styling) is per-set; otherwise it edits the shared base element.
   const doPatchElement = (patch) => isSetScope ? setOverrideProps(patch) : patchElement(screen.id, selectedId, patch)
-  liveRef.current = { effectiveEl, doPatchElement, preview, selectedId }
+
+  // --- group (multi-select) helpers ---
+  const gOvOf = (id) => isSetScope ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[id] || {}) : {}
+  const gWriterOf = (id) => isSetScope ? (patch) => writeOverride(id, patch) : (patch) => patchElement(screen.id, id, patch)
+  const gEffPos = (el) => { const ov = gOvOf(el.id); return { x: ov.x ?? el.x, y: ov.y ?? el.y, w: ov.w ?? el.w, h: ov.h ?? el.h } }
+  const groupBBox = () => {
+    const els = selectedIds.map((id) => screen.elements.find((x) => x.id === id)).filter(Boolean).map((el) => ({ id: el.id, ...gEffPos(el) }))
+    if (!els.length) return null
+    const minX = Math.min(...els.map((e) => e.x)), maxX = Math.max(...els.map((e) => e.x + e.w))
+    const minY = Math.min(...els.map((e) => e.y)), maxY = Math.max(...els.map((e) => e.y + e.h))
+    return { els, minX, maxX, minY, maxY, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 }
+  }
+  const centerGroupOnCanvas = (axis) => {
+    const b = groupBBox(); if (!b) return
+    const dx = axis === 'h' ? cw / 2 - b.cx : 0
+    const dy = axis === 'v' ? ch / 2 - b.cy : 0
+    b.els.forEach((e) => gWriterOf(e.id)({ x: Math.round(e.x + dx), y: Math.round(e.y + dy) }))
+  }
+  const alignGroup = (kind) => {
+    const b = groupBBox(); if (!b) return
+    b.els.forEach((e) => {
+      const p = {}
+      if (kind === 'left') p.x = b.minX
+      else if (kind === 'right') p.x = b.maxX - e.w
+      else if (kind === 'hcenter') p.x = Math.round(b.cx - e.w / 2)
+      else if (kind === 'top') p.y = b.minY
+      else if (kind === 'bottom') p.y = b.maxY - e.h
+      else if (kind === 'vmiddle') p.y = Math.round(b.cy - e.h / 2)
+      gWriterOf(e.id)(p)
+    })
+  }
+  const nudgeSelected = (axis, delta) => {
+    selectedIds.forEach((id) => { const el = screen.elements.find((x) => x.id === id); if (!el) return; const p = gEffPos(el); gWriterOf(id)({ [axis]: (p[axis] || 0) + delta }) })
+  }
+  liveRef.current = { nudgeSelected, selectedIds, preview }
 
   // Style clipboard: copy the selected element's look, paste onto any element
   // (any page or set). Paste respects scope — into the set override when a set
@@ -200,7 +246,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
       <div className="editor-topbar">
         <div className="screen-tabs">
           {config.screens?.map((s) => (
-            <button key={s.id} className={`screen-tab ${screenId === s.id ? 'active' : ''}`} onClick={() => { setScreenId(s.id); setSelectedId(null) }}>
+            <button key={s.id} className={`screen-tab ${screenId === s.id ? 'active' : ''}`} onClick={() => { setScreenId(s.id); setSelectedIds([]) }}>
               {s.id}
             </button>
           ))}
@@ -223,8 +269,8 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         <div className="canvas-area">
           {preview
             ? <QuizPlayer key={`prev-${screenId}`} config={config} preview />
-            : <Stage key={`${previewSetId || 'base'}-${screenId}`} config={config} screen={screen} ctx={ctx} editable selectedId={selectedId} guides={guides}
-                onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedId(null)} />}
+            : <Stage key={`${previewSetId || 'base'}-${screenId}`} config={config} screen={screen} ctx={ctx} editable selectedIds={selectedIds} guides={guides}
+                onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedIds([])} />}
         </div>
         <Resizer onDelta={(dx) => setInspW((w) => Math.max(280, Math.min(680, w - dx)))} />
         <Inspector
@@ -235,13 +281,16 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
           patchElement={doPatchElement}
           patchElementStyle={doPatchStyle}
           patchOptionStyle={doPatchOptionStyle}
-          removeElement={() => { removeElement(screen.id, selectedId); setSelectedId(null) }}
+          removeElement={() => { removeElement(screen.id, selectedId); setSelectedIds([]) }}
           addElement={addElement}
           reorder={reorder}
-          selectElement={setSelectedId}
+          selectElement={(id) => setSelectedIds(id ? [id] : [])}
           copyStyle={copyElementStyle}
           pasteStyle={pasteElementStyle}
           hasClip={!!styleClip}
+          selectedIds={selectedIds}
+          centerGroupOnCanvas={centerGroupOnCanvas}
+          alignGroup={alignGroup}
         />
       </div>
     </div>
