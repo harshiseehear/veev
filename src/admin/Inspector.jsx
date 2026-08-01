@@ -137,6 +137,9 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
             <Num label="Icon size (% of box)" value={selectedEl.iconScale} onChange={(v) => patchElement({ iconScale: v })} />
           )}
           {selectedEl.type === 'image' && <Txt label="Image src" value={selectedEl.src} onChange={(v) => patchElement({ src: v })} />}
+          {selectedEl.type === 'image' && (
+            <label className="fld"><span>Fit</span><select value={s.objectFit || 'contain'} onChange={(e) => patchElementStyle({ objectFit: e.target.value })}><option value="contain">contain (whole image)</option><option value="cover">cover (fill, crop)</option><option value="fill">fill (stretch)</option></select></label>
+          )}
           {['prompt', 'pickLabel'].includes(selectedEl.type) && <p className="muted">Text comes from the question (Content tab). Style it below.</p>}
 
           {selectedEl.type !== 'image' && selectedEl.type !== 'timer' && (
@@ -286,9 +289,10 @@ function RulesTab({ config, setConfig }) {
   )
 }
 
-function AssetsTab({ config, slug, token, update, selectElement, addElement }) {
+function AssetsTab({ config, slug, token, update, addElement, screen }) {
   const [assets, setAssets] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
   const load = () => api.listAssets(slug).then(setAssets).catch(() => setAssets([]))
   if (assets === null) load()
   const upload = async (e) => {
@@ -296,7 +300,14 @@ function AssetsTab({ config, slug, token, update, selectElement, addElement }) {
     setBusy(true)
     try { await api.uploadAsset(slug, file, token); await load() } finally { setBusy(false); e.target.value = '' }
   }
-  const setAsBg = (url) => update((next) => { const scr = next.screens.find((s) => s.id === (window.__qwScreen || next.screens[0].id)) })
+  const addImageEl = (url) => {
+    const cw = config.theme?.canvasWidth || 1080, ch = config.theme?.canvasHeight || 1920
+    const w = Math.round(cw * 0.5), h = Math.round(ch * 0.25)
+    addElement({ id: `image-${Math.random().toString(36).slice(2, 6)}`, type: 'image', src: url, x: Math.round((cw - w) / 2), y: Math.round((ch - h) / 2), w, h, z: 6, style: { objectFit: 'contain' } })
+    setMsg('Added movable image element to ' + screen?.id + ' — select it on the canvas to move/resize')
+  }
+  const setAsBg = (url) => { update((next) => { const s = next.screens.find((x) => x.id === screen.id); if (s) s.background = { ...s.background, type: 'image', src: url } }); setMsg('Set as ' + screen?.id + ' background') }
+  const isImg = (n) => /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(n)
   return (
     <div className="insp-scroll">
       <div className="insp-h">Assets · {slug}</div>
@@ -304,14 +315,15 @@ function AssetsTab({ config, slug, token, update, selectElement, addElement }) {
       <div className="asset-grid">
         {(assets || []).map((a) => (
           <div key={a.name} className="asset" title={a.name}>
-            {/\.(png|jpg|jpeg|gif|svg|webp)$/i.test(a.name)
-              ? <img src={a.url} alt="" />
-              : <span className="asset-file">{a.name.split('/').pop()}</span>}
+            {isImg(a.name) ? <img src={a.url} alt="" /> : <span className="asset-file">{a.name.split('/').pop()}</span>}
             <button className="chip" onClick={() => navigator.clipboard?.writeText(a.url)}>copy url</button>
+            {isImg(a.name) && <button className="chip" onClick={() => addImageEl(a.url)}>＋ image element</button>}
+            {isImg(a.name) && <button className="chip" onClick={() => setAsBg(a.url)}>set as bg</button>}
           </div>
         ))}
       </div>
-      <p className="muted">Copy a URL, then paste it into an image element's “src”, a screen background, or a font URL in Settings.</p>
+      {msg && <div className="muted">{msg}</div>}
+      <p className="muted">“＋ image element” adds a draggable/resizable image to the current screen. “set as bg” makes it the full-screen background. Backgrounds aren’t elements — to transform an image, add it as an element.</p>
     </div>
   )
 }
