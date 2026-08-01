@@ -266,7 +266,7 @@
     "color": "#3f1d86"
   },
   "timings": {
-    "transitionMs": 500,
+    "transitionMs": 900,
     "autoResetMs": 30000,
     "transitionStyle": "crossfade"
   },
