@@ -103,7 +103,7 @@ export const buildAnalyticsRow = (config, { answers, activeSetId, result, event,
 
   if (type === 'score') {
     const keys = config.resultLogic?.scoreQuestions || questionOrder(config)
-    const row = { ...base, set: activeSetId || '', score: result?.score ?? '' }
+    const row = { ...base, set: String(activeSetId || '').replace(/^set/i, ''), score: result?.score ?? '' }
     keys.forEach((qk) => { row[qk] = answers[qk] || '' })
     return row
   }

@@ -17,7 +17,7 @@
     "setStrategy": "random"
   },
   "analytics": {
-    "sheetWebAppUrl": ""
+    "sheetWebAppUrl": "https://script.google.com/macros/s/AKfycbwq40IWUB0yvUt-PnnvcGRhaHFaTO3OwDPGczouwJzAA-269WTNdYOE2KEfLrcS4IpT/exec"
   },
   "theme": {
     "canvasWidth": 1080,
