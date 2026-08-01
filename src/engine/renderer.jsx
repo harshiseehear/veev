@@ -25,7 +25,9 @@ const alignItems = (align) => (align === 'left' ? 'flex-start' : align === 'righ
 
 // Renders the dynamic content of a single element based on its type.
 function ElementContent({ el, ctx }) {
-  const s = el.style || {}
+  // per-set overrides: a set's question may carry overrides[elementId] = { style, optionStyle }
+  const ov = ctx.question?.overrides?.[el.id] || {}
+  const s = { ...(el.style || {}), ...(ov.style || {}) }
   switch (el.type) {
     case 'text':
     case 'prompt':
@@ -33,11 +35,9 @@ function ElementContent({ el, ctx }) {
       let text = el.text || ''
       if (el.type === 'prompt') text = ctx.question?.prompt || el.text || ''
       if (el.type === 'pickLabel') text = ctx.question?.pickLabel || el.text || ''
-      // per-set style override (set questions may carry their own `style`)
-      const st = el.type === 'prompt' ? { ...s, ...(ctx.question?.style || {}) } : s
       return (
         <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          alignItems: alignItems(st.textAlign), whiteSpace: 'pre-line', ...cssFromStyle(st) }}>
+          alignItems: alignItems(s.textAlign), whiteSpace: 'pre-line', ...cssFromStyle(s) }}>
           {text}
         </div>
       )
@@ -54,8 +54,7 @@ function ElementContent({ el, ctx }) {
       )
     case 'options': {
       const q = ctx.question
-      // per-set option-card override (set questions may carry their own `optionStyle`)
-      const os = { ...(el.optionStyle || {}), ...(ctx.question?.optionStyle || {}) }
+      const os = { ...(el.optionStyle || {}), ...(ov.optionStyle || {}) }
       const selected = ctx.answers?.[el.questionId]
       const isSel = (v) => (Array.isArray(selected) ? selected.includes(v) : selected === v)
       return (

@@ -77,6 +77,7 @@
 .set-tab.active { background: #241a38; border-color: #06C167; color: #fff; }
 .copy-wrap { display: flex; flex-direction: column; gap: 6px; }
 .copy-panel { border: 1px solid #33334f; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 8px; background: #14141f; }
+.scope-note { font-size: 11px; background: #241a38; border: 1px solid rgba(255,61,127,0.4); color: #ffb3d0; border-radius: 7px; padding: 6px 8px; }
 .optrow { display: grid; grid-template-columns: 54px 1fr auto; gap: 6px; }
 .optrow input { background: #1a1a28; border: 1px solid #2c2c44; color: #eee; border-radius: 6px; padding: 6px; font-size: 12px; }
 .optrow .x { background: #3a1420; border: none; color: #ff9bb5; border-radius: 6px; cursor: pointer; }

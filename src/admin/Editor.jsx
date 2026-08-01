@@ -129,6 +129,32 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
 
   const selectedEl = screen?.elements.find((e) => e.id === selectedId) || null
 
+  // Per-set style scoping: when the project has sets and we're on a question page,
+  // style edits target the ACTIVE set's override for the selected element, and the
+  // inspector shows the effective (base + override) values.
+  const activeQid = screen?.questionId || screen?.id
+  const isSetScope = !!config.sets && screen?.type === 'question'
+  const activeOverride = isSetScope
+    ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[selectedId] || {})
+    : {}
+  const effectiveEl = selectedEl && isSetScope
+    ? { ...selectedEl, style: { ...(selectedEl.style || {}), ...(activeOverride.style || {}) }, optionStyle: { ...(selectedEl.optionStyle || {}), ...(activeOverride.optionStyle || {}) } }
+    : selectedEl
+  const setOverride = (elId, kind, patch) => setConfig((prev) => {
+    const next = JSON.parse(JSON.stringify(prev))
+    const set = next.sets.find((s) => s.id === previewSetId)
+    const q = set?.questions?.[activeQid]
+    if (!q) return prev
+    q.overrides = q.overrides || {}
+    q.overrides[elId] = q.overrides[elId] || {}
+    q.overrides[elId][kind] = { ...(q.overrides[elId][kind] || {}), ...patch }
+    return next
+  })
+  const doPatchStyle = (patch) => isSetScope ? setOverride(selectedId, 'style', patch) : patchElementStyle(screen.id, selectedId, patch)
+  const doPatchOptionStyle = (patch) => isSetScope
+    ? setOverride(selectedId, 'optionStyle', patch)
+    : patchElement(screen.id, selectedId, { optionStyle: { ...(selectedEl?.optionStyle || {}), ...patch } })
+
   // preview ctx (static, unselected)
   const sampleResult = () => {
     const rl = config.resultLogic || {}
@@ -183,9 +209,11 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         <Inspector
           width={inspW}
           config={config} setConfig={setConfig} token={token} slug={slug}
-          screen={screen} selectedEl={selectedEl}
+          screen={screen} selectedEl={effectiveEl}
+          activeSetId={previewSetId} setActiveSetId={setPreviewSetId} activeQid={activeQid} isSetScope={isSetScope}
           patchElement={(patch) => patchElement(screen.id, selectedId, patch)}
-          patchElementStyle={(patch) => patchElementStyle(screen.id, selectedId, patch)}
+          patchElementStyle={doPatchStyle}
+          patchOptionStyle={doPatchOptionStyle}
           removeElement={() => { removeElement(screen.id, selectedId); setSelectedId(null) }}
           addElement={addElement}
           reorder={reorder}

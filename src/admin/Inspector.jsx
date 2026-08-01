@@ -29,7 +29,7 @@ export default function Inspector(props) {
       </div>
       <div className="insp-body">
         {tab === 'Element' && <ElementTab {...props} />}
-        {tab === 'Content' && <ContentTab config={config} update={update} />}
+        {tab === 'Content' && <ContentTab config={config} update={update} activeSetId={props.activeSetId} setActiveSetId={props.setActiveSetId} activeQid={props.activeQid} />}
         {tab === 'Rules' && <RulesTab config={config} setConfig={setConfig} />}
         {tab === 'Assets' && <AssetsTab {...props} update={update} />}
         {tab === 'Settings' && <SettingsTab config={config} update={update} screen={screen} />}
@@ -39,7 +39,7 @@ export default function Inspector(props) {
   )
 }
 
-function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, removeElement, addElement, reorder, selectElement, copyStyle, copyTargetsFor }) {
+function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, copyTargetsFor, isSetScope, activeSetId, activeQid }) {
   const families = [...new Set((config.theme?.fonts || []).map((f) => f.family))]
   const [copied, setCopied] = useState('')
   const [copyOpen, setCopyOpen] = useState(false)
@@ -71,6 +71,7 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
       {!selectedEl ? <p className="muted pad">Select an element on the canvas to edit it. Drag to move, drag the pink corner to resize, arrow-keys to nudge.</p> : (
         <>
           <div className="insp-h">{selectedEl.type} · {selectedEl.id}</div>
+          {isSetScope && <div className="scope-note">✎ Styling <b>{activeSetId}</b> · {activeQid} — each set keeps its own style. Position/size are shared across sets.</div>}
           <div className="grid2">
             <Num label="X" value={selectedEl.x} onChange={(v) => patchElement({ x: v })} />
             <Num label="Y" value={selectedEl.y} onChange={(v) => patchElement({ y: v })} />
@@ -126,7 +127,7 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
               {selectedEl.type === 'options' && (
                 <label className="fld chk"><input type="checkbox" checked={!!selectedEl.showLetters} onChange={(e) => patchElement({ showLetters: e.target.checked })} /> Show A) B) letters</label>
               )}
-              <OptionStyle el={selectedEl} patchElement={patchElement} />
+              <OptionStyle el={selectedEl} patchOptionStyle={patchOptionStyle} patchElement={patchElement} />
             </>
           )}
           {copyStyle && (
@@ -159,9 +160,9 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
   function patchElementAny(el, patch) { patchElement(patch) /* selection follows */ }
 }
 
-function OptionStyle({ el, patchElement }) {
+function OptionStyle({ el, patchElement, patchOptionStyle }) {
   const os = el.optionStyle || {}
-  const set = (patch) => patchElement({ optionStyle: { ...os, ...patch } })
+  const set = (patch) => patchOptionStyle(patch)
   const sel = el.selectedStyle || {}
   const setSel = (patch) => patchElement({ selectedStyle: { ...sel, ...patch } })
   return (
@@ -177,69 +178,50 @@ function OptionStyle({ el, patchElement }) {
   )
 }
 
-function ContentTab({ config, update }) {
+function ContentTab({ config, update, activeSetId, setActiveSetId, activeQid }) {
   const sets = config.sets
-  const [setIdx, setSetIdx] = useState(0)
+  const setIdx = sets ? Math.max(0, sets.findIndex((s) => s.id === activeSetId)) : -1
   const questions = sets ? sets[setIdx]?.questions : config.questions
   const path = (mut) => update((next) => { const q = (next.sets ? next.sets[setIdx].questions : next.questions); mut(q) })
   const newSetId = () => { const ids = new Set((sets || []).map((s) => s.id)); let n = (sets?.length || 0) + 1; while (ids.has(`set${n}`)) n++; return `set${n}` }
-  const duplicateSet = () => { const id = newSetId(); update((next) => { const copy = clone(next.sets[setIdx]); copy.id = id; next.sets.splice(setIdx + 1, 0, copy) }); setSetIdx(setIdx + 1) }
-  const removeSet = () => { if ((sets?.length || 0) <= 1) return; update((next) => { next.sets.splice(setIdx, 1) }); setSetIdx(Math.max(0, setIdx - 1)) }
+  const duplicateSet = () => { const id = newSetId(); update((next) => { const copy = clone(next.sets[setIdx]); copy.id = id; next.sets.splice(setIdx + 1, 0, copy) }); setActiveSetId && setActiveSetId(id) }
+  const removeSet = () => { if ((sets?.length || 0) <= 1) return; const remaining = sets.filter((_, i) => i !== setIdx); update((next) => { next.sets.splice(setIdx, 1) }); setActiveSetId && setActiveSetId((remaining[setIdx - 1] || remaining[0]).id) }
+  const q = questions?.[activeQid]
   return (
     <div className="insp-scroll">
       {sets && (
         <>
-          <label className="fld"><span>Question set — {sets.length} total, one shown at random per play</span>
-            <select value={setIdx} onChange={(e) => setSetIdx(Number(e.target.value))}>{sets.map((s, i) => <option key={s.id} value={i}>{s.id}</option>)}</select>
-          </label>
+          <div className="muted">Editing set <b>{activeSetId}</b> — switch sets with the tabs at the top right. One of {sets.length} sets shows at random per play.</div>
           <div className="row-btns">
             <button className="chip" onClick={duplicateSet}>+ Duplicate set</button>
-            <button className="chip" disabled={sets.length <= 1} onClick={removeSet}>🗑 Remove this set</button>
+            <button className="chip" disabled={sets.length <= 1} onClick={removeSet}>🗑 Remove set</button>
           </div>
-          <p className="muted">Each player is randomly shown one of these {sets.length} sets. Edits below apply to <b>{sets[setIdx]?.id}</b> only.</p>
         </>
       )}
-      {Object.entries(questions || {}).map(([qk, q]) => (
-        <div className="qedit" key={qk}>
-          <div className="insp-h sub">{qk}</div>
-          <Txt label="Prompt" area value={q.prompt} onChange={(v) => path((qs) => { qs[qk].prompt = v })} />
-          {!sets && <Txt label="Pick label" value={q.pickLabel} onChange={(v) => path((qs) => { qs[qk].pickLabel = v })} />}
-          {!sets && <Num label="Max select" value={q.maxSelect} onChange={(v) => path((qs) => { qs[qk].maxSelect = v })} />}
+      {!q ? (
+        <p className="muted pad">Select a question page (e.g. q1) from the tabs at the top to edit its content{sets ? ` for ${activeSetId}` : ''}.</p>
+      ) : (
+        <div className="qedit">
+          <div className="insp-h">{sets ? `${activeSetId} · ${activeQid}` : activeQid}</div>
+          <Txt label="Prompt" area value={q.prompt} onChange={(v) => path((qs) => { qs[activeQid].prompt = v })} />
+          {!sets && <Txt label="Pick label" value={q.pickLabel} onChange={(v) => path((qs) => { qs[activeQid].pickLabel = v })} />}
+          {!sets && <Num label="Max select" value={q.maxSelect} onChange={(v) => path((qs) => { qs[activeQid].maxSelect = v })} />}
           {sets && (
-            <label className="fld"><span>Correct</span><select value={q.correct || ''} onChange={(e) => path((qs) => { qs[qk].correct = e.target.value })}>{(q.options || []).map((o) => <option key={o.value} value={o.value}>{o.value}</option>)}</select></label>
-          )}
-          {sets && (
-            <div className="override">
-              <div className="muted">Style override for {sets[setIdx]?.id} · {qk} — blank = use the page style</div>
-              <div className="grid2">
-                <Num label="Prompt size" value={q.style?.fontSize} onChange={(v) => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontSize', v) })} />
-                <Num label="Option size" value={q.optionStyle?.fontSize} onChange={(v) => path((qs) => { qs[qk].optionStyle = withVal(qs[qk].optionStyle, 'fontSize', v) })} />
-              </div>
-              <Color label="Prompt colour" value={q.style?.color} onChange={(v) => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'color', v) })} />
-              <label className="fld"><span>Prompt align</span><select value={q.style?.textAlign || ''} onChange={(e) => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'textAlign', e.target.value) })}><option value="">(page)</option><option>left</option><option>center</option><option>right</option></select></label>
-              <Color label="Option text" value={q.optionStyle?.color} onChange={(v) => path((qs) => { qs[qk].optionStyle = withVal(qs[qk].optionStyle, 'color', v) })} />
-              <Color label="Option card bg" value={q.optionStyle?.background} onChange={(v) => path((qs) => { qs[qk].optionStyle = withVal(qs[qk].optionStyle, 'background', v) })} />
-              <div className="row-btns">
-                <button className={`chip ${q.style?.fontWeight >= 700 ? 'on' : ''}`} onClick={() => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontWeight', q.style?.fontWeight >= 700 ? undefined : 700) })}><b>B</b>&nbsp;prompt</button>
-                <button className={`chip ${q.style?.fontStyle === 'italic' ? 'on' : ''}`} onClick={() => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontStyle', q.style?.fontStyle === 'italic' ? undefined : 'italic') })}><i>I</i>&nbsp;prompt</button>
-                <button className="chip" onClick={() => path((qs) => { delete qs[qk].style; delete qs[qk].optionStyle })}>Clear</button>
-              </div>
-            </div>
+            <label className="fld"><span>Correct answer</span><select value={q.correct || ''} onChange={(e) => path((qs) => { qs[activeQid].correct = e.target.value })}>{(q.options || []).map((o) => <option key={o.value} value={o.value}>{o.value}</option>)}</select></label>
           )}
           {(q.options || []).map((o, i) => (
             <div className="optrow" key={i}>
-              <input className="optval" value={o.value} onChange={(e) => path((qs) => { qs[qk].options[i].value = e.target.value })} />
-              <input className="optlabel" value={o.label} onChange={(e) => path((qs) => { qs[qk].options[i].label = e.target.value })} />
-              <button className="x" onClick={() => path((qs) => { qs[qk].options.splice(i, 1) })}>×</button>
+              <input className="optval" value={o.value} onChange={(e) => path((qs) => { qs[activeQid].options[i].value = e.target.value })} />
+              <input className="optlabel" value={o.label} onChange={(e) => path((qs) => { qs[activeQid].options[i].label = e.target.value })} />
+              <button className="x" onClick={() => path((qs) => { qs[activeQid].options.splice(i, 1) })}>×</button>
             </div>
           ))}
-          <button className="chip" onClick={() => path((qs) => { qs[qk].options = [...(qs[qk].options || []), { value: String.fromCharCode(65 + (qs[qk].options?.length || 0)), label: 'New option' }] })}>+ option</button>
+          <button className="chip" onClick={() => path((qs) => { qs[activeQid].options = [...(qs[activeQid].options || []), { value: String.fromCharCode(65 + (qs[activeQid].options?.length || 0)), label: 'New option' }] })}>+ option</button>
         </div>
-      ))}
+      )}
     </div>
   )
 }
-
 function RulesTab({ config, setConfig }) {
   const [text, setText] = useState(JSON.stringify(config.resultLogic || {}, null, 2))
   const [err, setErr] = useState('')
