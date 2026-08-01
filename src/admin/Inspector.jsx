@@ -341,6 +341,13 @@ function SettingsTab({ config, update, screen }) {
         <Num label="Transition ms" value={config.timings?.transitionMs} onChange={(v) => update((n) => { n.timings = { ...n.timings, transitionMs: v } })} />
         <Num label="Auto-reset ms" value={config.timings?.autoResetMs} onChange={(v) => update((n) => { n.timings = { ...n.timings, autoResetMs: v } })} />
       </div>
+      <label className="fld"><span>Transition style</span>
+        <select value={config.timings?.transitionStyle || ''} onChange={(e) => update((n) => { n.timings = { ...n.timings, transitionStyle: e.target.value || undefined } })}>
+          <option value="">fade (default)</option>
+          <option value="slideFade">slide-fade (elements only, static bg)</option>
+          <option value="crossfade">crossfade (dissolve, bg stays then new fades in)</option>
+        </select>
+      </label>
       <div className="insp-h sub">Banner</div>
       <label className="fld chk"><input type="checkbox" checked={!!config.banner?.enabled} onChange={(e) => update((n) => { n.banner = { ...n.banner, enabled: e.target.checked } })} /> Show banner</label>
       <Txt label="Banner image src" value={config.banner?.src} onChange={(v) => update((n) => { n.banner = { ...n.banner, src: v } })} />
