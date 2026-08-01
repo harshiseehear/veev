@@ -53,7 +53,8 @@
   },
   "timings": {
     "transitionMs": 400,
-    "autoResetMs": 30000
+    "autoResetMs": 30000,
+    "transitionStyle": "slideFade"
   },
   "sets": [
     {
@@ -98,6 +99,20 @@
               },
               "w": 800,
               "h": 800
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -158,6 +173,20 @@
               "x": 140,
               "y": 900,
               "w": 800
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -186,10 +215,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 73
+                "fontSize": 69
               },
               "x": 146,
-              "y": 175,
+              "y": 179,
               "w": 788,
               "h": 716
             },
@@ -211,7 +240,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 946,
+              "y": 942,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -222,6 +251,10 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829
             }
           }
         },
@@ -253,7 +286,7 @@
                 "fontSize": 80
               },
               "x": 152,
-              "y": 279,
+              "y": 281,
               "w": 777,
               "h": 506
             },
@@ -275,7 +308,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 842,
+              "y": 839,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -286,11 +319,25 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
         "q5": {
-          "prompt": "Q5: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont commandé plus de 7 000 portions de frites, ce qui correspond au :",
+          "prompt": "Q5: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont commandé plus de \n7 000 portions de frites, ce qui correspond au :",
           "correct": "B",
           "options": [
             {
@@ -314,10 +361,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 68
+                "fontSize": 67
               },
-              "x": 152,
-              "y": 269,
+              "x": 145,
+              "y": 235,
               "w": 777,
               "h": 524
             },
@@ -338,10 +385,10 @@
                 "paddingY": 28,
                 "height": 190
               },
-              "x": 146,
-              "y": 851,
-              "w": 788,
-              "h": 800,
+              "x": 140,
+              "y": 809,
+              "w": 800,
+              "h": 877,
               "z": 2,
               "gap": 38,
               "justify": "flex-start",
@@ -353,7 +400,17 @@
             },
             "timer": {
               "x": 304,
-              "y": 1800
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         }
@@ -385,23 +442,37 @@
           ],
           "overrides": {
             "prompt": {
-              "x": 151,
-              "y": 274,
+              "x": 139,
+              "y": 231,
               "style": {
                 "fontSize": 81
               },
-              "w": 778,
-              "h": 517
+              "w": 775,
+              "h": 594
             },
             "options": {
-              "x": 140,
-              "y": 847,
+              "x": 141,
+              "y": 889,
               "optionStyle": {
                 "height": 175,
                 "fontSize": 48
               },
               "w": 800,
               "h": 800
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -471,6 +542,20 @@
               "y": 784,
               "w": 791,
               "h": 943
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -501,10 +586,10 @@
                 "fontStyle": "normal",
                 "fontSize": 76
               },
-              "x": 141,
-              "y": 290,
-              "w": 796,
-              "h": 439
+              "x": 148,
+              "y": 197,
+              "w": 785,
+              "h": 638
             },
             "options": {
               "style": {
@@ -530,11 +615,25 @@
               "gap": 38,
               "showLetters": true,
               "justify": "flex-start",
-              "y": 793,
+              "y": 886,
               "w": 803,
               "x": 139,
               "h": 837,
               "z": 2
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -578,7 +677,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 874,
+              "y": 919,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -595,10 +694,24 @@
                 "fontStyle": "normal",
                 "fontSize": 79
               },
-              "x": 149,
-              "y": 246,
-              "w": 783,
-              "h": 570
+              "x": 150,
+              "y": 201,
+              "w": 780,
+              "h": 655
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -627,12 +740,12 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 79
+                "fontSize": 74
               },
-              "x": 145,
-              "y": 221,
-              "w": 790,
-              "h": 503
+              "x": 147,
+              "y": 185,
+              "w": 787,
+              "h": 575
             },
             "options": {
               "style": {
@@ -652,7 +765,7 @@
                 "height": 200
               },
               "x": 140,
-              "y": 766,
+              "y": 802,
               "w": 800,
               "h": 933,
               "z": 2,
@@ -663,6 +776,20 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         }
@@ -723,6 +850,20 @@
               },
               "w": 772,
               "h": 525
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -751,12 +892,12 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 70
+                "fontSize": 68
               },
               "x": 132,
-              "y": 260,
+              "y": 164,
               "w": 817,
-              "h": 437
+              "h": 596
             },
             "options": {
               "style": {
@@ -784,9 +925,23 @@
               "justify": "flex-start",
               "x": 149,
               "w": 791,
-              "y": 747,
-              "h": 914,
+              "y": 805,
+              "h": 951,
               "z": 2
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -815,12 +970,12 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 67
+                "fontSize": 64
               },
               "x": 144,
-              "y": 261,
+              "y": 166,
               "w": 793,
-              "h": 564
+              "h": 638
             },
             "options": {
               "style": {
@@ -830,19 +985,19 @@
               "optionStyle": {
                 "fontFamily": "Uber Move",
                 "fontWeight": 600,
-                "fontSize": 48,
+                "fontSize": 46,
                 "color": "#000000",
                 "background": "#ffffff",
                 "borderRadius": 32,
                 "textAlign": "left",
                 "paddingX": 43,
                 "paddingY": 28,
-                "height": 175
+                "height": 195
               },
-              "x": 140,
-              "y": 860,
-              "w": 800,
-              "h": 800,
+              "x": 139,
+              "y": 837,
+              "w": 803,
+              "h": 917,
               "z": 2,
               "gap": 38,
               "justify": "flex-start",
@@ -851,6 +1006,20 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -913,6 +1082,20 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         },
@@ -944,7 +1127,7 @@
                 "fontSize": 66
               },
               "x": 146,
-              "y": 237
+              "y": 214
             },
             "options": {
               "style": {
@@ -964,7 +1147,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 884,
+              "y": 906,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -978,7 +1161,17 @@
             },
             "timer": {
               "x": 304,
-              "y": 1800
+              "y": 1829,
+              "w": 473,
+              "h": 13,
+              "z": 4,
+              "style": {
+                "trackColor": "rgba(0,0,0,0.15)",
+                "fillColor": "#000000",
+                "borderRadius": 999
+              },
+              "optionStyle": {},
+              "selectedStyle": {}
             }
           }
         }
