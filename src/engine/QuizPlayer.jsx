@@ -134,6 +134,8 @@ export default function QuizPlayer({ config, preview = false }) {
       timerActive: interactive && (isQ || isR) && !preview,
       timerKey,
       autoResetMs,
+      transitionMs,
+      transitioning: phase === 'out',
     }
   }
   const ctx = buildCtx(screen, true)

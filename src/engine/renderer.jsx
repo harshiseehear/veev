@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { recommendationButtons } from './quizLogic.js'
 
 // Absolute canvas size everything is authored against; the stage is scaled to fit.
@@ -139,17 +139,39 @@ function ElementContent({ el, ctx }) {
       )
     }
     case 'timer':
-      return (
-        <div style={{ width: '100%', height: '100%', borderRadius: `${s.borderRadius || 999}px`, background: s.trackColor || 'rgba(255,255,255,0.3)', overflow: 'hidden' }}>
-          {ctx.timerActive && (
-            <div key={ctx.timerKey} style={{ height: '100%', background: s.fillColor || '#fff', borderRadius: `${s.borderRadius || 999}px`,
-              animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />
-          )}
-        </div>
-      )
+      return <TimerBar el={el} ctx={ctx} />
     default:
       return null
   }
+}
+
+// Timer bar. Default variant (uber): a single fill that shrinks left->right over
+// the auto-reset time, on a track. variant 'center' (veev): a track-less white
+// fill that drains from BOTH sides toward centre, and when a choice is made
+// (ctx.transitioning) grows back to full over the transition time.
+function TimerBar({ el, ctx }) {
+  const s = el.style || {}
+  const center = s.variant === 'center'
+  const radius = `${s.borderRadius || 999}px`
+  const fillRef = useRef(null)
+  useEffect(() => {
+    const fill = fillRef.current
+    if (!fill || !center || !ctx.transitioning) return
+    const parentW = fill.parentElement?.offsetWidth || 1
+    const curPct = (fill.getBoundingClientRect().width / parentW) * 100
+    fill.style.animation = 'none'
+    fill.style.width = `${curPct}%`
+    void fill.offsetWidth // reflow so the transition starts from the captured width
+    fill.style.transition = `width ${ctx.transitionMs || 500}ms ease-out`
+    fill.style.width = '100%'
+  }, [ctx.transitioning]) // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div style={{ width: '100%', height: '100%', borderRadius: radius, background: center ? 'transparent' : (s.trackColor || 'rgba(255,255,255,0.3)'), overflow: 'hidden', position: 'relative' }}>
+      {ctx.timerActive && (center
+        ? <div key={ctx.timerKey} ref={fillRef} style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '100%', transform: 'translateX(-50%)', background: s.fillColor || '#ffffff', borderRadius: radius, animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />
+        : <div key={ctx.timerKey} ref={fillRef} style={{ height: '100%', width: '100%', background: s.fillColor || '#fff', borderRadius: radius, animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />)}
+    </div>
+  )
 }
 
 // One positioned element, with optional edit affordances.
@@ -213,16 +235,24 @@ export function Stage({ config, screen, ctx, editable = false, selectedIds = [],
           <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', objectPosition: 'top', zIndex: 50, background: '#fff' }} />
         )}
         {!bgOnly && (() => {
-          const nodes = (screen.elements || [])
+          const merged = (screen.elements || [])
             .map((el) => mergeOverride(el, ctx.question?.overrides?.[el.id]))
             .sort((a, b) => (a.z || 0) - (b.z || 0))
-            .map((el) => (
-              <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedIds.includes(el.id)} onPointerDown={onPointerDown} />
-            ))
-          // elFade animates ONLY the elements (background/banner stay static).
-          return elFade
-            ? <div key={elFade.key} className={elFade.className} style={{ position: 'absolute', inset: 0, zIndex: 2, '--qw-fade': `${elFade.durationMs}ms` }}>{nodes}</div>
-            : nodes
+          const box = (el) => (
+            <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedIds.includes(el.id)} onPointerDown={onPointerDown} />
+          )
+          if (!elFade) return merged.map(box)
+          // A center-variant timer is exempt from the fade so it can grow to full
+          // during the transition instead of fading out; everything else fades.
+          const exempt = (el) => el.type === 'timer' && el.style?.variant === 'center'
+          return (
+            <>
+              <div key={elFade.key} className={elFade.className} style={{ position: 'absolute', inset: 0, zIndex: 2, '--qw-fade': `${elFade.durationMs}ms` }}>
+                {merged.filter((e) => !exempt(e)).map(box)}
+              </div>
+              {merged.filter(exempt).map(box)}
+            </>
+          )
         })()}
         {editable && guides?.v && (
           <div style={{ position: 'absolute', left: cw / 2 - 1, top: 0, width: 2, height: ch, background: '#ff3d7f', zIndex: 9998, pointerEvents: 'none' }} />

@@ -272,7 +272,7 @@
   },
   "questions": {
     "q1": {
-      "prompt": "Q1: What do you look for in a vape?",
+      "prompt": "Q1: What do you look for in \na vape?",
       "pickLabel": "PICK 2",
       "maxSelect": 2,
       "options": [
@@ -299,7 +299,7 @@
       ]
     },
     "q2": {
-      "prompt": "Q2: What don't you love about the vape you're using now?",
+      "prompt": "Q2: What don't you love about the vape you're\n using now?",
       "pickLabel": "PICK 2",
       "maxSelect": 2,
       "options": [
@@ -322,7 +322,7 @@
       ]
     },
     "q3": {
-      "prompt": "Q3: What appeals to you the most?",
+      "prompt": "Q3: What appeals to you\nthe most?",
       "pickLabel": "PICK 1",
       "maxSelect": 1,
       "options": [
@@ -556,7 +556,8 @@
           "style": {
             "trackColor": "rgba(255,255,255,0.2)",
             "fillColor": "#ffffff",
-            "borderRadius": 999
+            "borderRadius": 999,
+            "variant": "center"
           }
         }
       ]
@@ -645,7 +646,8 @@
           "style": {
             "trackColor": "rgba(255,255,255,0.2)",
             "fillColor": "#ffffff",
-            "borderRadius": 999
+            "borderRadius": 999,
+            "variant": "center"
           }
         }
       ]
@@ -734,7 +736,8 @@
           "style": {
             "trackColor": "rgba(255,255,255,0.2)",
             "fillColor": "#ffffff",
-            "borderRadius": 999
+            "borderRadius": 999,
+            "variant": "center"
           }
         }
       ]
@@ -823,7 +826,8 @@
           "style": {
             "trackColor": "rgba(255,255,255,0.2)",
             "fillColor": "#ffffff",
-            "borderRadius": 999
+            "borderRadius": 999,
+            "variant": "center"
           }
         }
       ]
@@ -888,7 +892,8 @@
           "style": {
             "trackColor": "rgba(255,255,255,0.2)",
             "fillColor": "#ffffff",
-            "borderRadius": 999
+            "borderRadius": 999,
+            "variant": "center"
           }
         }
       ]
