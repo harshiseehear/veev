@@ -163,7 +163,7 @@
           ]
         },
         "q5": {
-          "prompt": "Durant les series eliminatoires de 2025, les partisans ont commande plus de 7 000 portions de frites, ce qui correspond au :",
+          "prompt": "Q5: Durant les series eliminatoires de 2025, les partisans ont commande plus de 7 000 portions de frites, ce qui correspond au :",
           "correct": "B",
           "options": [
             {
@@ -182,7 +182,14 @@
               "value": "D",
               "label": "Nombre de joueurs ayant porte le chandail du CH"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal"
+              }
+            }
+          }
         }
       }
     },
@@ -212,7 +219,7 @@
           ]
         },
         "q2": {
-          "prompt": "Cette saison, les partisans ont commande plus de 300 000 burgers, assez pour :",
+          "prompt": "Q2: Cette saison, les partisans ont commande plus de 300 000 burgers, assez pour :",
           "correct": "B",
           "options": [
             {
@@ -231,10 +238,24 @@
               "value": "D",
               "label": "Couvrir la longueur de la ligne orange du metro"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontFamily": "Uber Move",
+                "fontWeight": 700,
+                "fontStyle": "normal",
+                "fontSize": 84,
+                "color": "#000000",
+                "textAlign": "left",
+                "lineHeight": 1.2
+              },
+              "optionStyle": {}
+            }
+          }
         },
         "q3": {
-          "prompt": "Les soirs de match, lequel de ces aliments a ete commande plus de 450 000 fois en deux saisons ?",
+          "prompt": "Q3: Les soirs de match, lequel de ces aliments a ete commande plus de 450 000 fois en deux saisons ?",
           "correct": "C",
           "options": [
             {
@@ -253,10 +274,17 @@
               "value": "D",
               "label": "Pomme de terre au four"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal"
+              }
+            }
+          }
         },
         "q4": {
-          "prompt": "Quel entraineur-chef a mene les Canadiens a cinq coupes Stanley consecutives entre 1956 et 1960 ?",
+          "prompt": "Q4: Quel entraineur-chef a mene les Canadiens a cinq coupes Stanley consecutives entre 1956 et 1960 ?",
           "correct": "A",
           "options": [
             {
@@ -278,7 +306,7 @@
           ]
         },
         "q5": {
-          "prompt": "La saison derniere, les partisans ont commande plus de 150 000 pizzas, assez pour :",
+          "prompt": "Q5: La saison derniere, les partisans ont commande plus de 150 000 pizzas, assez pour :",
           "correct": "C",
           "options": [
             {
@@ -297,7 +325,14 @@
               "value": "D",
               "label": "Couvrir le belvedere du mont Royal"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal"
+              }
+            }
+          }
         }
       }
     },
@@ -371,7 +406,7 @@
           ]
         },
         "q4": {
-          "prompt": "Le celebre << Big Three >> des annees 1970 etait forme de Serge Savard, Guy Lapointe et de quel autre defenseur ?",
+          "prompt": "Q4: Le celebre << Big Three >> des annees 1970 etait forme de Serge Savard, Guy Lapointe et de quel autre defenseur ?",
           "correct": "A",
           "options": [
             {
@@ -390,10 +425,18 @@
               "value": "D",
               "label": "Chris Chelios"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal",
+                "fontSize": 78
+              }
+            }
+          }
         },
         "q5": {
-          "prompt": "Durant les series de 2025, les partisans ont commande beaucoup de poutines. Combien de surfaceuses la sauce pourrait-elle remplir ?",
+          "prompt": "Q5: Durant les series de 2025, les partisans ont commande beaucoup de poutines. Combien de surfaceuses la sauce pourrait-elle remplir ?",
           "correct": "B",
           "options": [
             {
@@ -412,7 +455,14 @@
               "value": "D",
               "label": "12 resurfaceuses"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal"
+              }
+            }
+          }
         }
       }
     }

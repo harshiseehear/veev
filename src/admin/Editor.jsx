@@ -114,7 +114,11 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     ? (config.sets.find((s) => s.id === previewSetId)?.questions?.[activeQid]?.overrides?.[selectedId] || {})
     : {}
   const effectiveEl = selectedEl && isSetScope
-    ? { ...selectedEl, style: { ...(selectedEl.style || {}), ...(activeOverride.style || {}) }, optionStyle: { ...(selectedEl.optionStyle || {}), ...(activeOverride.optionStyle || {}) } }
+    ? { ...selectedEl, ...activeOverride,
+        x: selectedEl.x, y: selectedEl.y, w: selectedEl.w, h: selectedEl.h, z: selectedEl.z,
+        style: { ...(selectedEl.style || {}), ...(activeOverride.style || {}) },
+        optionStyle: { ...(selectedEl.optionStyle || {}), ...(activeOverride.optionStyle || {}) },
+        selectedStyle: { ...(selectedEl.selectedStyle || {}), ...(activeOverride.selectedStyle || {}) } }
     : selectedEl
   const setOverride = (elId, kind, patch) => setConfig((prev) => {
     const next = JSON.parse(JSON.stringify(prev))
@@ -126,10 +130,29 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     q.overrides[elId][kind] = { ...(q.overrides[elId][kind] || {}), ...patch }
     return next
   })
+  const setOverrideProps = (patch) => setConfig((prev) => {
+    const next = JSON.parse(JSON.stringify(prev))
+    const set = next.sets.find((s) => s.id === previewSetId)
+    const q = set?.questions?.[activeQid]
+    if (!q) return prev
+    q.overrides = q.overrides || {}
+    q.overrides[selectedId] = { ...(q.overrides[selectedId] || {}), ...patch }
+    return next
+  })
+  const POS_KEYS = ['x', 'y', 'w', 'h', 'z']
   const doPatchStyle = (patch) => isSetScope ? setOverride(selectedId, 'style', patch) : patchElementStyle(screen.id, selectedId, patch)
   const doPatchOptionStyle = (patch) => isSetScope
     ? setOverride(selectedId, 'optionStyle', patch)
     : patchElement(screen.id, selectedId, { optionStyle: { ...(selectedEl?.optionStyle || {}), ...patch } })
+  // Non-style element edits: position/size stay shared across sets; everything
+  // else (gap, showLetters, selectedStyle, text…) is per-set when a set is active.
+  const doPatchElement = (patch) => {
+    if (!isSetScope) return patchElement(screen.id, selectedId, patch)
+    const pos = {}, ov = {}
+    for (const [k, v] of Object.entries(patch)) (POS_KEYS.includes(k) ? pos : ov)[k] = v
+    if (Object.keys(pos).length) patchElement(screen.id, selectedId, pos)
+    if (Object.keys(ov).length) setOverrideProps(ov)
+  }
 
   // Style clipboard: copy the selected element's look, paste onto any element
   // (any page or set). Paste respects scope — into the set override when a set
@@ -151,7 +174,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         const q = set?.questions?.[activeQid]
         if (!q) return prev
         q.overrides = q.overrides || {}
-        q.overrides[selectedId] = { style: styleClip.style || {}, optionStyle: styleClip.optionStyle || {} }
+        q.overrides[selectedId] = JSON.parse(JSON.stringify(styleClip))
         return next
       })
     } else {
@@ -209,7 +232,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
         <div className="canvas-area">
           {preview
             ? <QuizPlayer key={`prev-${screenId}`} config={config} preview />
-            : <Stage config={config} screen={screen} ctx={ctx} editable selectedId={selectedId} guides={guides}
+            : <Stage key={`${previewSetId || 'base'}-${screenId}`} config={config} screen={screen} ctx={ctx} editable selectedId={selectedId} guides={guides}
                 onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedId(null)} />}
         </div>
         <Resizer onDelta={(dx) => setInspW((w) => Math.max(280, Math.min(680, w - dx)))} />
@@ -218,7 +241,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
           config={config} setConfig={setConfig} token={token} slug={slug}
           screen={screen} selectedEl={effectiveEl}
           activeSetId={previewSetId} setActiveSetId={setPreviewSetId} activeQid={activeQid} isSetScope={isSetScope}
-          patchElement={(patch) => patchElement(screen.id, selectedId, patch)}
+          patchElement={doPatchElement}
           patchElementStyle={doPatchStyle}
           patchOptionStyle={doPatchOptionStyle}
           removeElement={() => { removeElement(screen.id, selectedId); setSelectedId(null) }}

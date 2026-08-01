@@ -23,11 +23,25 @@ export const cssFromStyle = (s = {}) => {
 
 const alignItems = (align) => (align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center')
 
+// Merge a per-set override (overrides[elementId]) into an element. Everything
+// except position/size can be overridden per set; style/optionStyle/selectedStyle
+// deep-merge, other keys (gap, showLetters, text…) replace.
+const mergeOverride = (el, ov) => {
+  if (!ov) return el
+  const m = { ...el }
+  for (const k of Object.keys(ov)) {
+    if (k === 'style') m.style = { ...(el.style || {}), ...ov.style }
+    else if (k === 'optionStyle') m.optionStyle = { ...(el.optionStyle || {}), ...ov.optionStyle }
+    else if (k === 'selectedStyle') m.selectedStyle = { ...(el.selectedStyle || {}), ...ov.selectedStyle }
+    else m[k] = ov[k]
+  }
+  return m
+}
+
 // Renders the dynamic content of a single element based on its type.
 function ElementContent({ el, ctx }) {
-  // per-set overrides: a set's question may carry overrides[elementId] = { style, optionStyle }
-  const ov = ctx.question?.overrides?.[el.id] || {}
-  const s = { ...(el.style || {}), ...(ov.style || {}) }
+  // el is already merged with any per-set override by the Stage (see mergeOverride).
+  const s = el.style || {}
   switch (el.type) {
     case 'text':
     case 'prompt':
@@ -54,7 +68,7 @@ function ElementContent({ el, ctx }) {
       )
     case 'options': {
       const q = ctx.question
-      const os = { ...(el.optionStyle || {}), ...(ov.optionStyle || {}) }
+      const os = el.optionStyle || {}
       const selected = ctx.answers?.[el.questionId]
       const isSel = (v) => (Array.isArray(selected) ? selected.includes(v) : selected === v)
       return (
@@ -194,9 +208,12 @@ export function Stage({ config, screen, ctx, editable = false, selectedId = null
         {banner.enabled && banner.src && (
           <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', objectPosition: 'top', zIndex: 50, background: '#fff' }} />
         )}
-        {[...(screen.elements || [])].sort((a, b) => (a.z || 0) - (b.z || 0)).map((el) => (
-          <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedId === el.id} onPointerDown={onPointerDown} />
-        ))}
+        {(screen.elements || [])
+          .map((el) => mergeOverride(el, ctx.question?.overrides?.[el.id]))
+          .sort((a, b) => (a.z || 0) - (b.z || 0))
+          .map((el) => (
+            <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedId === el.id} onPointerDown={onPointerDown} />
+          ))}
         {editable && guides?.v && (
           <div style={{ position: 'absolute', left: cw / 2 - 1, top: 0, width: 2, height: ch, background: '#ff3d7f', zIndex: 9998, pointerEvents: 'none' }} />
         )}
