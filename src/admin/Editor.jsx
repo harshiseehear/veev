@@ -5,12 +5,15 @@ import FontLoader from '../FontLoader.jsx'
 import { resolveAsset } from '../api.js'
 import { getQuestion } from '../engine/quizLogic.js'
 import Inspector from './Inspector.jsx'
+import Resizer from './Resizer.jsx'
 
 export default function Editor({ config, setConfig, token, slug, onSave, onPublish, status }) {
   const [screenId, setScreenId] = useState(config.screens?.[0]?.id)
   const [selectedId, setSelectedId] = useState(null)
   const [preview, setPreview] = useState(false)
   const [guides, setGuides] = useState({ v: false, h: false })
+  const [inspW, setInspW] = useState(() => Number(localStorage.getItem('qw-inspw')) || 340)
+  useEffect(() => { localStorage.setItem('qw-inspw', String(inspW)) }, [inspW])
   const dragRef = useRef(null)
 
   const [previewSetId, setPreviewSetId] = useState(config.sets?.[0]?.id)
@@ -176,7 +179,9 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
             : <Stage config={config} screen={screen} ctx={ctx} editable selectedId={selectedId} guides={guides}
                 onPointerDown={onPointerDown} onBackgroundClick={() => setSelectedId(null)} />}
         </div>
+        <Resizer onDelta={(dx) => setInspW((w) => Math.max(280, Math.min(680, w - dx)))} />
         <Inspector
+          width={inspW}
           config={config} setConfig={setConfig} token={token} slug={slug}
           screen={screen} selectedEl={selectedEl}
           patchElement={(patch) => patchElement(screen.id, selectedId, patch)}

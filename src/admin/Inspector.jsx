@@ -23,7 +23,7 @@ export default function Inspector(props) {
   const update = (fn) => setConfig((prev) => { const next = clone(prev); fn(next); return next })
 
   return (
-    <aside className="inspector">
+    <aside className="inspector" style={{ width: props.width }}>
       <div className="insp-tabs">
         {TABS.map((t) => <button key={t} className={`insp-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>{t}</button>)}
       </div>

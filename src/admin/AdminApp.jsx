@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api.js'
 import Login from './Login.jsx'
 import Editor from './Editor.jsx'
+import Resizer from './Resizer.jsx'
 import './admin.css'
 
 const AUTH_KEY = 'qw-auth'
@@ -19,6 +20,8 @@ function AdminShell({ auth, onLogout }) {
   const [slug, setSlug] = useState(null)
   const [config, setConfig] = useState(null)
   const [status, setStatus] = useState('')
+  const [railW, setRailW] = useState(() => Number(localStorage.getItem('qw-railw')) || 232)
+  useEffect(() => { localStorage.setItem('qw-railw', String(railW)) }, [railW])
 
   const refreshProjects = useCallback(async () => {
     const list = await api.listProjects().catch(() => [])
@@ -62,7 +65,7 @@ function AdminShell({ auth, onLogout }) {
 
   return (
     <div className="admin">
-      <aside className="admin-rail">
+      <aside className="admin-rail" style={{ width: railW }}>
         <div className="rail-top">
           <div className="rail-brand">Kiosk</div>
           <div className="rail-user">{auth.user}</div>
@@ -82,6 +85,7 @@ function AdminShell({ auth, onLogout }) {
         <a className="rail-link" href={slug ? `/${slug}` : '/'} target="_blank" rel="noreferrer">Open live /{slug} ↗</a>
         <button className="rail-logout" onClick={onLogout}>Sign out</button>
       </aside>
+      <Resizer onDelta={(dx) => setRailW((w) => Math.max(180, Math.min(480, w + dx)))} />
       <main className="admin-main">
         {config
           ? <Editor key={slug} config={config} setConfig={setConfig} token={auth.token} slug={slug} onSave={save} onPublish={publish} status={status} />

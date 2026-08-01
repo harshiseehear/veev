@@ -1,4 +1,6 @@
 .admin { display: flex; height: 100vh; background: #0b0b12; color: #ececf4; }
+.resizer { flex: none; width: 6px; cursor: col-resize; background: #12121b; border-left: 1px solid #23233a; border-right: 1px solid #23233a; transition: background .12s; }
+.resizer:hover { background: #ff3d7f; }
 .admin-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #8a8aa2; }
 
 /* rail */
