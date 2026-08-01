@@ -53,14 +53,15 @@
   },
   "timings": {
     "transitionMs": 400,
-    "autoResetMs": 30000
+    "autoResetMs": 30000,
+    "transitionStyle": "slideFade"
   },
   "sets": [
     {
       "id": "set1",
       "questions": {
         "q1": {
-          "prompt": "Q1: En quelle année les Canadiens de Montréal ont-ils été fondés ?",
+          "prompt": "Q1: En quelle annee les Canadiens de Montreal ont-ils ete fondes ?",
           "correct": "B",
           "options": [
             {
@@ -83,14 +84,14 @@
           "overrides": {
             "prompt": {
               "style": {
-                "fontSize": 100
+                "fontSize": 80
               },
               "x": 153,
-              "y": 119
+              "y": 148
             },
             "options": {
               "x": 140,
-              "y": 900,
+              "y": 788,
               "optionStyle": {
                 "height": 175
               },
@@ -100,12 +101,12 @@
           }
         },
         "q2": {
-          "prompt": "Q2: Quelle gâterie les partisans des Canadiens ont-ils commandée plus de 50 000 fois cette saison ?",
+          "prompt": "Q2: Quelle gaterie les partisans des Canadiens ont-ils commandee plus de 50 000 fois cette saison ?",
           "correct": "D",
           "options": [
             {
               "value": "A",
-              "label": "Lait frappé"
+              "label": "Lait frappe"
             },
             {
               "value": "B",
@@ -117,17 +118,17 @@
             },
             {
               "value": "D",
-              "label": "Gâteau au fromage"
+              "label": "Gateau au fromage"
             }
           ],
           "overrides": {
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 84
+                "fontSize": 70
               },
               "x": 146,
-              "y": 177
+              "y": 199
             },
             "options": {
               "style": {
@@ -154,18 +155,18 @@
               "showLetters": true,
               "justify": "flex-start",
               "x": 140,
-              "y": 900,
+              "y": 804,
               "w": 800
             }
           }
         },
         "q3": {
-          "prompt": "Q3: Durant les séries éliminatoires de 2025, quel trio (nourriture, produit d'épicerie et produit du quotidien) les partisans des Canadiens ont-ils commandé le plus souvent ?",
+          "prompt": "Q3: Durant les series eliminatoires de 2025, quel trio (nourriture, produit d'epicerie et produit du quotidien) les partisans ont-ils commande le plus souvent ?",
           "correct": "D",
           "options": [
             {
               "value": "A",
-              "label": "Shawarma, œufs, papier essuie-tout"
+              "label": "Shawarma, oeufs, papier essuie-tout"
             },
             {
               "value": "B",
@@ -173,7 +174,7 @@
             },
             {
               "value": "C",
-              "label": "Ramen, poulet rôti, gomme à mâcher"
+              "label": "Ramen, poulet roti, gomme a macher"
             },
             {
               "value": "D",
@@ -184,8 +185,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 65
-              }
+                "fontSize": 64
+              },
+              "x": 146,
+              "y": 187
             },
             "options": {
               "style": {
@@ -205,7 +208,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 855,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -220,7 +223,7 @@
           }
         },
         "q4": {
-          "prompt": "Q4: En quelle année Youppi! est-il devenu la mascotte des Canadiens de Montréal ?",
+          "prompt": "Q4: En quelle annee Youppi! est-il devenu la mascotte des Canadiens de Montreal ?",
           "correct": "B",
           "options": [
             {
@@ -243,8 +246,11 @@
           "overrides": {
             "prompt": {
               "style": {
-                "fontStyle": "normal"
-              }
+                "fontStyle": "normal",
+                "fontSize": 80
+              },
+              "x": 146,
+              "y": 197
             },
             "options": {
               "style": {
@@ -264,7 +270,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 802,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -279,7 +285,7 @@
           }
         },
         "q5": {
-          "prompt": "Q5: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont commandé plus de 7 000 portions de frites, ce qui correspond au :",
+          "prompt": "Q5: Durant les series eliminatoires de 2025, les partisans ont commande plus de 7 000 portions de frites, ce qui correspond au :",
           "correct": "B",
           "options": [
             {
@@ -288,22 +294,25 @@
             },
             {
               "value": "B",
-              "label": "Nombre de matchs de saison régulière disputés dans l'histoire de l'équipe"
+              "label": "Nombre de matchs de saison reguliere dans l'histoire de l'equipe"
             },
             {
               "value": "C",
-              "label": "Nombre de minutes en supériorité numérique cette saison"
+              "label": "Nombre de minutes en superiorite numerique cette saison"
             },
             {
               "value": "D",
-              "label": "Nombre de joueurs ayant porté le chandail du CH"
+              "label": "Nombre de joueurs ayant porte le chandail du CH"
             }
           ],
           "overrides": {
             "prompt": {
               "style": {
-                "fontStyle": "normal"
-              }
+                "fontStyle": "normal",
+                "fontSize": 61
+              },
+              "x": 146,
+              "y": 171
             },
             "options": {
               "style": {
@@ -313,7 +322,7 @@
               "optionStyle": {
                 "fontFamily": "Uber Move",
                 "fontWeight": 600,
-                "fontSize": 45,
+                "fontSize": 40,
                 "color": "#000000",
                 "background": "#ffffff",
                 "borderRadius": 32,
@@ -323,7 +332,7 @@
                 "height": 200
               },
               "x": 146,
-              "y": 800,
+              "y": 739,
               "w": 788,
               "h": 800,
               "z": 2,
@@ -343,7 +352,7 @@
       "id": "set2",
       "questions": {
         "q1": {
-          "prompt": "Q1: Les Canadiens sont l'équipe de la LNH qui a remporté le plus de coupes Stanley. Combien en ont-ils remporté ?",
+          "prompt": "Q1: Les Canadiens ont remporte le plus de coupes Stanley de la LNH. Combien en ont-ils remporte ?",
           "correct": "D",
           "options": [
             {
@@ -366,11 +375,14 @@
           "overrides": {
             "prompt": {
               "x": 153,
-              "y": 137
+              "y": 147,
+              "style": {
+                "fontSize": 81
+              }
             },
             "options": {
               "x": 140,
-              "y": 900,
+              "y": 818,
               "optionStyle": {
                 "height": 175,
                 "fontSize": 48
@@ -390,15 +402,15 @@
             },
             {
               "value": "B",
-              "label": "Atteindre une hauteur correspondant à plus de 31 tours du stade olympique"
+              "label": "Depasser 31 tours du stade olympique en hauteur"
             },
             {
               "value": "C",
-              "label": "Correspondre au poids de 1,2 million de rondelles"
+              "label": "Egaler le poids de 1,2 million de rondelles"
             },
             {
               "value": "D",
-              "label": "Couvrir toute la longueur de la ligne orange du métro"
+              "label": "Couvrir la longueur de la ligne orange du metro"
             }
           ],
           "overrides": {
@@ -407,14 +419,14 @@
                 "fontFamily": "Uber Move",
                 "fontWeight": 700,
                 "fontStyle": "normal",
-                "fontSize": 72,
+                "fontSize": 62,
                 "color": "#000000",
                 "textAlign": "left",
                 "lineHeight": 1.2
               },
               "optionStyle": {},
               "x": 146,
-              "y": 136
+              "y": 141
             },
             "options": {
               "style": {
@@ -441,17 +453,17 @@
               "showLetters": true,
               "justify": "flex-start",
               "x": 146,
-              "y": 800
+              "y": 723
             }
           }
         },
         "q3": {
-          "prompt": "Q3: Les soirs où les Canadiens jouent, lequel de ces aliments a été commandé plus de 450 000 fois au cours des deux dernières saisons ?",
+          "prompt": "Q3: Les soirs de match, lequel de ces aliments a ete commande plus de 450 000 fois en deux saisons ?",
           "correct": "C",
           "options": [
             {
               "value": "A",
-              "label": "Maïs soufflé"
+              "label": "Mais souffle"
             },
             {
               "value": "B",
@@ -470,7 +482,9 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal"
-              }
+              },
+              "x": 146,
+              "y": 195
             },
             "options": {
               "style": {
@@ -496,7 +510,7 @@
               "gap": 38,
               "showLetters": true,
               "justify": "flex-start",
-              "y": 900,
+              "y": 791,
               "w": 800,
               "x": 140,
               "h": 800,
@@ -505,7 +519,7 @@
           }
         },
         "q4": {
-          "prompt": "Q4: Quel entraîneur-chef des Canadiens a mené l'équipe à la conquête de cinq coupes Stanley consécutives entre 1956 et 1960 ?",
+          "prompt": "Q4: Quel entraineur-chef a mene les Canadiens a cinq coupes Stanley consecutives entre 1956 et 1960 ?",
           "correct": "A",
           "options": [
             {
@@ -544,7 +558,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 796,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -555,16 +569,23 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "prompt": {
+              "style": {
+                "fontStyle": "normal"
+              },
+              "x": 146,
+              "y": 195
             }
           }
         },
         "q5": {
-          "prompt": "Q5: Durant la saison dernière, les partisans des Canadiens ont commandé plus de 150 000 pizzas, un nombre suffisant pour :",
+          "prompt": "Q5: La saison derniere, les partisans ont commande plus de 150 000 pizzas, assez pour :",
           "correct": "C",
           "options": [
             {
               "value": "A",
-              "label": "Parcourir 50 fois la distance entre le Centre Bell et le Vieux-Port"
+              "label": "Parcourir 50 fois la distance Centre Bell - Vieux-Port"
             },
             {
               "value": "B",
@@ -572,18 +593,21 @@
             },
             {
               "value": "C",
-              "label": "Faire deux fois la longueur de la ligne orange du métro"
+              "label": "Faire deux fois la longueur de la ligne orange du metro"
             },
             {
               "value": "D",
-              "label": "Couvrir le belvédère du mont Royal"
+              "label": "Couvrir le belvedere du mont Royal"
             }
           ],
           "overrides": {
             "prompt": {
               "style": {
-                "fontStyle": "normal"
-              }
+                "fontStyle": "normal",
+                "fontSize": 74
+              },
+              "x": 146,
+              "y": 133
             },
             "options": {
               "style": {
@@ -603,7 +627,7 @@
                 "height": 200
               },
               "x": 146,
-              "y": 800,
+              "y": 728,
               "w": 788,
               "h": 800,
               "z": 2,
@@ -623,12 +647,12 @@
       "id": "set3",
       "questions": {
         "q1": {
-          "prompt": "Q1: Avant le Centre Bell, dans quel aréna les Canadiens ont-ils joué pendant des décennies ?",
+          "prompt": "Q1: Avant le Centre Bell, dans quel arena les Canadiens ont-ils joue pendant des decennies ?",
           "correct": "A",
           "options": [
             {
               "value": "A",
-              "label": "Forum de Montréal"
+              "label": "Forum de Montreal"
             },
             {
               "value": "B",
@@ -662,27 +686,30 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 831,
               "w": 800,
               "h": 800
             },
             "prompt": {
               "x": 153,
-              "y": 118
+              "y": 137,
+              "style": {
+                "fontSize": 84
+              }
             }
           }
         },
         "q2": {
-          "prompt": "Q2: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont passé 3 000 commandes d'ailes de poulet, un nombre qui correspond au :",
+          "prompt": "Q2: Durant les series de 2025, les partisans ont passe 3 000 commandes d'ailes de poulet, ce qui correspond au :",
           "correct": "A",
           "options": [
             {
               "value": "A",
-              "label": "Nombre de secondes dans une période de prolongation en séries éliminatoires"
+              "label": "Nombre de secondes dans une periode de prolongation en series"
             },
             {
               "value": "B",
-              "label": "Nombre total de minutes en supériorité numérique"
+              "label": "Nombre total de minutes en superiorite numerique"
             },
             {
               "value": "C",
@@ -697,10 +724,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 70
+                "fontSize": 68
               },
               "x": 146,
-              "y": 150
+              "y": 176
             },
             "options": {
               "style": {
@@ -728,14 +755,14 @@
               "justify": "flex-start",
               "x": 146,
               "w": 788,
-              "y": 800,
+              "y": 757,
               "h": 800,
               "z": 2
             }
           }
         },
         "q3": {
-          "prompt": "Q3: La saison dernière, les partisans des Canadiens ont commandé suffisamment de hot-dogs pour parcourir la distance qui sépare le Centre Bell de quel site emblématique de Montréal ?",
+          "prompt": "Q3: La saison derniere, les partisans ont commande assez de hot-dogs pour parcourir la distance entre le Centre Bell et quel site emblematique ?",
           "correct": "B",
           "options": [
             {
@@ -744,7 +771,7 @@
             },
             {
               "value": "B",
-              "label": "Schwartz's Deli sur le boulevard Saint-Laurent (aussi appelé la « Main »)"
+              "label": "Schwartz's Deli sur le boulevard Saint-Laurent"
             },
             {
               "value": "C",
@@ -759,8 +786,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 71
-              }
+                "fontSize": 67
+              },
+              "x": 146,
+              "y": 184
             },
             "options": {
               "style": {
@@ -780,7 +809,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 820,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -819,8 +848,10 @@
             "prompt": {
               "style": {
                 "fontStyle": "normal",
-                "fontSize": 78
-              }
+                "fontSize": 67
+              },
+              "x": 146,
+              "y": 176
             },
             "options": {
               "style": {
@@ -840,7 +871,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 841,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -855,7 +886,7 @@
           }
         },
         "q5": {
-          "prompt": "Q5: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont commandé beaucoup de poutines. Combien de surfaceuses à glace la sauce de ces poutines pourrait-elle remplir ?",
+          "prompt": "Q5: Durant les séries éliminatoires de 2025, les partisans des Canadiens ont commandé beaucoup de poutines. Combien de surfaceuses à glace la sauce de ces poutines pourrait-elle remplir ?\n\n",
           "correct": "B",
           "options": [
             {
@@ -880,7 +911,9 @@
               "style": {
                 "fontStyle": "normal",
                 "fontSize": 66
-              }
+              },
+              "x": 146,
+              "y": 229
             },
             "options": {
               "style": {
@@ -900,7 +933,7 @@
                 "height": 175
               },
               "x": 140,
-              "y": 900,
+              "y": 876,
               "w": 800,
               "h": 800,
               "z": 2,
@@ -911,6 +944,10 @@
                 "background": "#d4f5e2",
                 "color": "#000000"
               }
+            },
+            "timer": {
+              "x": 304,
+              "y": 1800
             }
           }
         }

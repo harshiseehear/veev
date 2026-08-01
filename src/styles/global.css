@@ -17,6 +17,16 @@ button { font-family: inherit; }
 
 @keyframes qw-timer-shrink { from { width: 100%; } to { width: 0%; } }
 
+/* screen transitions (transitionStyle in config.timings) */
+@keyframes qw-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes qw-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes qw-slidefade-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes qw-slidefade-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-24px); } }
+.qw-fade-in { animation: qw-fade-in var(--qw-fade, 400ms) ease forwards; }
+.qw-fade-out { animation: qw-fade-out var(--qw-fade, 400ms) ease forwards; }
+.qw-slidefade-in { animation: qw-slidefade-in var(--qw-fade, 400ms) ease forwards; }
+.qw-slidefade-out { animation: qw-slidefade-out var(--qw-fade, 400ms) ease forwards; }
+
 /* ---- Landing ---- */
 .landing { max-width: 860px; margin: 0 auto; padding: 64px 24px; }
 .landing h1 { font-size: 40px; margin: 0 0 6px; }
