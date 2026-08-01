@@ -39,11 +39,9 @@ export default function Inspector(props) {
   )
 }
 
-function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, copyTargetsFor, isSetScope, activeSetId, activeQid }) {
+function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, pasteStyle, hasClip, isSetScope, activeSetId, activeQid }) {
   const families = [...new Set((config.theme?.fonts || []).map((f) => f.family))]
   const [copied, setCopied] = useState('')
-  const [copyOpen, setCopyOpen] = useState(false)
-  const [copyTargets, setCopyTargets] = useState([])
   const s = selectedEl?.style || {}
   const addNew = (type) => {
     const id = `${type}-${Math.random().toString(36).slice(2, 6)}`
@@ -130,27 +128,10 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
               <OptionStyle el={selectedEl} patchOptionStyle={patchOptionStyle} patchElement={patchElement} />
             </>
           )}
-          {copyStyle && (
-            <div className="copy-wrap">
-              <button className="btn" style={{ marginTop: 8 }} onClick={() => { setCopyTargets(copyTargetsFor(selectedEl.id)); setCopyOpen((o) => !o); setCopied('') }}>⧉ Copy style → pages…</button>
-              {copyOpen && (
-                <div className="copy-panel">
-                  <div className="muted">Copy “{selectedEl.id}” style to which pages?</div>
-                  <div className="row-btns">
-                    {copyTargetsFor(selectedEl.id).map((pid) => (
-                      <button key={pid} className={`chip ${copyTargets.includes(pid) ? 'on' : ''}`} onClick={() => setCopyTargets((t) => t.includes(pid) ? t.filter((x) => x !== pid) : [...t, pid])}>{pid}</button>
-                    ))}
-                    {copyTargetsFor(selectedEl.id).length === 0 && <span className="muted">No other page has a “{selectedEl.id}” element.</span>}
-                  </div>
-                  <div className="row-btns">
-                    <button className="chip" onClick={() => setCopyTargets(copyTargetsFor(selectedEl.id))}>All</button>
-                    <button className="chip" onClick={() => setCopyTargets([])}>None</button>
-                    <button className="btn primary" disabled={!copyTargets.length} onClick={() => { const n = copyStyle(selectedEl.id, copyTargets); setCopied(`Copied to ${n} page(s)`); setCopyOpen(false) }}>Apply</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="row-btns" style={{ marginTop: 8 }}>
+            <button className="btn" onClick={() => setCopied(copyStyle())}>⧉ Copy style</button>
+            <button className="btn" disabled={!hasClip} onClick={() => setCopied(pasteStyle())}>⤵ Paste style</button>
+          </div>
           {copied && <div className="muted">{copied}</div>}
           <button className="danger" onClick={removeElement}>Delete element</button>
         </>

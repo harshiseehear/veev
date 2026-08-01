@@ -79,10 +79,17 @@
               "value": "D",
               "label": "1907"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontSize": 100
+              }
+            }
+          }
         },
         "q2": {
-          "prompt": "Quelle gaterie les partisans des Canadiens ont-ils commandee plus de 50 000 fois cette saison ?",
+          "prompt": "Q2: Quelle gaterie les partisans des Canadiens ont-ils commandee plus de 50 000 fois cette saison ?",
           "correct": "D",
           "options": [
             {
@@ -101,7 +108,15 @@
               "value": "D",
               "label": "Gateau au fromage"
             }
-          ]
+          ],
+          "overrides": {
+            "prompt": {
+              "style": {
+                "fontStyle": "normal",
+                "fontSize": 84
+              }
+            }
+          }
         },
         "q3": {
           "prompt": "Durant les series eliminatoires de 2025, quel trio (nourriture, produit d'epicerie et produit du quotidien) les partisans ont-ils commande le plus souvent ?",
@@ -594,7 +609,7 @@
           "id": "prompt",
           "type": "prompt",
           "x": 146,
-          "y": 280,
+          "y": 243,
           "w": 788,
           "h": 620,
           "z": 2,

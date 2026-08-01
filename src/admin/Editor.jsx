@@ -14,6 +14,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   const [guides, setGuides] = useState({ v: false, h: false })
   const [inspW, setInspW] = useState(() => Number(localStorage.getItem('qw-inspw')) || 340)
   useEffect(() => { localStorage.setItem('qw-inspw', String(inspW)) }, [inspW])
+  const [styleClip, setStyleClip] = useState(() => { try { return JSON.parse(localStorage.getItem('qw-styleclip') || 'null') } catch { return null } })
   const dragRef = useRef(null)
 
   const [previewSetId, setPreviewSetId] = useState(config.sets?.[0]?.id)
@@ -40,31 +41,6 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== sid ? s : { ...s, elements: s.elements.filter((el) => el.id !== eid) }) }))
   const addElement = (el) =>
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== screenId ? s : { ...s, elements: [...s.elements, el] }) }))
-  // copy an element's styling (style + option styling) to the same-id element on
-  // chosen screens (targetIds); if targetIds omitted, all other screens.
-  const copyStyleTo = (elId, targetIds) => {
-    const src = screen.elements.find((e) => e.id === elId)
-    if (!src) return 0
-    const bits = {}
-    ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (src[k] !== undefined) bits[k] = src[k] })
-    const targets = config.screens
-      .filter((s) => s.id !== screen.id && (!targetIds || targetIds.includes(s.id)) && s.elements.some((el) => el.id === elId && el.type === src.type))
-      .map((s) => s.id)
-    const idset = new Set(targets)
-    setConfig((prev) => ({
-      ...prev,
-      screens: prev.screens.map((s) => idset.has(s.id) ? ({
-        ...s, elements: s.elements.map((el) => (el.id === elId && el.type === src.type) ? { ...el, ...JSON.parse(JSON.stringify(bits)) } : el),
-      }) : s),
-    }))
-    return targets.length
-  }
-  // screens (other than this one) that have a matching element to copy style into
-  const copyTargetsFor = (elId) => {
-    const src = screen.elements.find((e) => e.id === elId)
-    if (!src) return []
-    return config.screens.filter((s) => s.id !== screen.id && s.elements.some((el) => el.id === elId && el.type === src.type)).map((s) => s.id)
-  }
   const reorder = (eid, dir) =>
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => {
       if (s.id !== screenId) return s
@@ -155,6 +131,37 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     ? setOverride(selectedId, 'optionStyle', patch)
     : patchElement(screen.id, selectedId, { optionStyle: { ...(selectedEl?.optionStyle || {}), ...patch } })
 
+  // Style clipboard: copy the selected element's look, paste onto any element
+  // (any page or set). Paste respects scope — into the set override when a set
+  // is active on a question page, else onto the base element.
+  const copyElementStyle = () => {
+    if (!effectiveEl) return ''
+    const clip = {}
+    ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (effectiveEl[k] !== undefined) clip[k] = JSON.parse(JSON.stringify(effectiveEl[k])) })
+    setStyleClip(clip)
+    try { localStorage.setItem('qw-styleclip', JSON.stringify(clip)) } catch { /* ignore */ }
+    return `Copied ${effectiveEl.type} style`
+  }
+  const pasteElementStyle = () => {
+    if (!styleClip || !selectedId || !selectedEl) return ''
+    if (isSetScope) {
+      setConfig((prev) => {
+        const next = JSON.parse(JSON.stringify(prev))
+        const set = next.sets.find((s) => s.id === previewSetId)
+        const q = set?.questions?.[activeQid]
+        if (!q) return prev
+        q.overrides = q.overrides || {}
+        q.overrides[selectedId] = { style: styleClip.style || {}, optionStyle: styleClip.optionStyle || {} }
+        return next
+      })
+    } else {
+      const patch = {}
+      ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (styleClip[k] !== undefined) patch[k] = JSON.parse(JSON.stringify(styleClip[k])) })
+      patchElement(screen.id, selectedId, patch)
+    }
+    return `Pasted style onto ${selectedEl.id}`
+  }
+
   // preview ctx (static, unselected)
   const sampleResult = () => {
     const rl = config.resultLogic || {}
@@ -218,8 +225,9 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
           addElement={addElement}
           reorder={reorder}
           selectElement={setSelectedId}
-          copyStyle={copyStyleTo}
-          copyTargetsFor={copyTargetsFor}
+          copyStyle={copyElementStyle}
+          pasteStyle={pasteElementStyle}
+          hasClip={!!styleClip}
         />
       </div>
     </div>
