@@ -128,6 +128,23 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
               <OptionStyle el={selectedEl} patchOptionStyle={patchOptionStyle} patchElement={patchElement} />
             </>
           )}
+          {selectedEl.type === 'answerSummary' && (
+            <>
+              <div className="insp-h sub">Answer cards</div>
+              <div className="grid2">
+                <Num label="Card height" value={s.height} onChange={(v) => patchElementStyle({ height: v })} />
+                <Num label="Gap" value={selectedEl.gap} onChange={(v) => patchElement({ gap: v })} />
+                <Num label="Font size" value={s.fontSize} onChange={(v) => patchElementStyle({ fontSize: v })} />
+                <Num label="Pad X" value={s.paddingX} onChange={(v) => patchElementStyle({ paddingX: v })} />
+                <Num label="Radius" value={s.borderRadius} onChange={(v) => patchElementStyle({ borderRadius: v })} />
+              </div>
+              <Color label="Correct bg" value={s.correctBg} onChange={(v) => patchElementStyle({ correctBg: v })} />
+              <Color label="Correct text" value={s.correctColor} onChange={(v) => patchElementStyle({ correctColor: v })} />
+              <Color label="Wrong bg" value={s.wrongBg} onChange={(v) => patchElementStyle({ wrongBg: v })} />
+              <Color label="Wrong text" value={s.wrongColor} onChange={(v) => patchElementStyle({ wrongColor: v })} />
+              <p className="muted">Tip: if 5 taller cards run past the box, drag the element taller (H) too.</p>
+            </>
+          )}
           <div className="row-btns" style={{ marginTop: 8 }}>
             <button className="btn" onClick={() => setCopied(copyStyle())}>⧉ Copy element</button>
             <button className="btn" disabled={!hasClip} onClick={() => setCopied(pasteStyle())}>⤵ Paste element</button>

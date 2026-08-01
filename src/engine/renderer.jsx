@@ -116,7 +116,7 @@ function ElementContent({ el, ctx }) {
     case 'answerSummary': {
       const keys = ctx.config.resultLogic?.scoreQuestions || []
       return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: `${el.gap || 18}px`, overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: `${el.gap || 18}px` }}>
           {keys.map((qk) => {
             const q = ctx.getQuestion(qk)
             const val = ctx.answers?.[qk]
