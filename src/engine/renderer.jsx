@@ -178,7 +178,7 @@ function ElementBox({ el, ctx, editable, selected, onPointerDown }) {
 }
 
 // The fixed-size authoring canvas, scaled to fit its container.
-export function Stage({ config, screen, ctx, editable = false, selectedIds = [], onPointerDown, onBackgroundClick, guides = null, elFade = null }) {
+export function Stage({ config, screen, ctx, editable = false, selectedIds = [], onPointerDown, onBackgroundClick, guides = null, elFade = null, bgOnly = false }) {
   const wrapRef = useRef(null)
   const [scale, setScale] = useState(1)
   const cw = config.theme?.canvasWidth || 1080
@@ -212,7 +212,7 @@ export function Stage({ config, screen, ctx, editable = false, selectedIds = [],
         {banner.enabled && banner.src && (
           <img src={ctx.resolve(banner.src)} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: `${(banner.heightPct || 8) / 100 * ch}px`, objectFit: 'cover', objectPosition: 'top', zIndex: 50, background: '#fff' }} />
         )}
-        {(() => {
+        {!bgOnly && (() => {
           const nodes = (screen.elements || [])
             .map((el) => mergeOverride(el, ctx.question?.overrides?.[el.id]))
             .sort((a, b) => (a.z || 0) - (b.z || 0))

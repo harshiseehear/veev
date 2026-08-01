@@ -12,6 +12,7 @@ export default function QuizPlayer({ config, preview = false }) {
   const [activeSetId, setActiveSetId] = useState(() => pickActiveSet(config))
   const [fading, setFading] = useState(false)
   const [outgoingId, setOutgoingId] = useState(null)
+  const [phase, setPhase] = useState('idle') // crossfade: 'idle' | 'out' | 'in'
   const [timerKey, setTimerKey] = useState(0)
   const flowIdRef = useRef('')
   const loggedRef = useRef(false)
@@ -36,18 +37,24 @@ export default function QuizPlayer({ config, preview = false }) {
 
   const reset = () => {
     clearTimers()
-    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false); setOutgoingId(null)
+    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false); setOutgoingId(null); setPhase('idle')
     loggedRef.current = false; flowIdRef.current = ''
   }
 
-  // crossfade (dissolve): keep the old screen underneath, fade the new one in on
-  // top, then drop the old — matches the original veev background crossfade.
+  // Two-phase crossfade (matches original veev): phase 'out' fades the current
+  // elements out while the background holds; then phase 'in' fades the new
+  // background + new elements in together over the old background.
   const crossTo = (nextIndex) => {
     setOutgoingId(screenId)
-    setIndex(nextIndex)
-    setTimerKey((k) => k + 1)
+    setPhase('out')
     clearTimeout(transitionRef.current)
-    transitionRef.current = setTimeout(() => setOutgoingId(null), transitionMs)
+    transitionRef.current = setTimeout(() => {
+      setIndex(nextIndex)
+      setPhase('in')
+      setTimerKey((k) => k + 1)
+      clearTimeout(transitionRef.current)
+      transitionRef.current = setTimeout(() => { setPhase('idle'); setOutgoingId(null) }, transitionMs)
+    }, transitionMs)
   }
   const goTo = (nextIndex) => {
     if (style === 'crossfade') return crossTo(nextIndex)
@@ -132,13 +139,23 @@ export default function QuizPlayer({ config, preview = false }) {
   const ctx = buildCtx(screen, true)
 
   if (!screen) return null
-  // crossfade: old screen stays underneath, new fades in on top, old removed after.
+  // Two-phase crossfade (veev): out = current elements fade out (bg holds);
+  // in = new bg + new elements fade in together over the old bg; then old removed.
   if (style === 'crossfade') {
     const outScreen = outgoingId ? (config.screens || []).find((s) => s.id === outgoingId) : null
+    if (phase === 'out') {
+      return (
+        <div className="qw-player">
+          <Stage config={config} screen={screen} ctx={ctx} elFade={{ key: screenId, className: 'qw-fade-out', durationMs: transitionMs }} />
+        </div>
+      )
+    }
     return (
       <div className="qw-player" style={{ position: 'relative' }}>
-        {outScreen && <div style={{ position: 'absolute', inset: 0 }}><Stage config={config} screen={outScreen} ctx={buildCtx(outScreen, false)} /></div>}
-        <div key={screenId} className="qw-fade-in" style={{ position: 'absolute', inset: 0, '--qw-fade': `${transitionMs}ms` }}>
+        {phase === 'in' && outScreen && (
+          <div style={{ position: 'absolute', inset: 0 }}><Stage config={config} screen={outScreen} ctx={buildCtx(outScreen, false)} bgOnly /></div>
+        )}
+        <div key={screenId} className={phase === 'in' ? 'qw-fade-in' : ''} style={{ position: 'absolute', inset: 0, '--qw-fade': `${transitionMs}ms` }}>
           <Stage config={config} screen={screen} ctx={ctx} />
         </div>
       </div>
