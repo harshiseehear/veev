@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { api } from '../api.js'
 
 const clone = (o) => JSON.parse(JSON.stringify(o))
+// set a style key, or remove it when the value is blank (so it falls back to the page style)
+const withVal = (obj, key, val) => { const next = { ...(obj || {}) }; if (val === undefined || val === '' || val === null) delete next[key]; else next[key] = val; return next }
 const TABS = ['Element', 'Content', 'Rules', 'Assets', 'Settings', 'AI']
 
 // small controlled inputs
@@ -180,6 +182,20 @@ function ContentTab({ config, update }) {
           {!sets && <Num label="Max select" value={q.maxSelect} onChange={(v) => path((qs) => { qs[qk].maxSelect = v })} />}
           {sets && (
             <label className="fld"><span>Correct</span><select value={q.correct || ''} onChange={(e) => path((qs) => { qs[qk].correct = e.target.value })}>{(q.options || []).map((o) => <option key={o.value} value={o.value}>{o.value}</option>)}</select></label>
+          )}
+          {sets && (
+            <div className="override">
+              <div className="muted">Style override for {sets[setIdx]?.id} · {qk} (blank = use the page style)</div>
+              <div className="grid2">
+                <Num label="Prompt size" value={q.style?.fontSize} onChange={(v) => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontSize', v) })} />
+                <Num label="Option size" value={q.optionStyle?.fontSize} onChange={(v) => path((qs) => { qs[qk].optionStyle = withVal(qs[qk].optionStyle, 'fontSize', v) })} />
+              </div>
+              <div className="row-btns">
+                <button className={`chip ${q.style?.fontWeight >= 700 ? 'on' : ''}`} onClick={() => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontWeight', q.style?.fontWeight >= 700 ? undefined : 700) })}><b>B</b></button>
+                <button className={`chip ${q.style?.fontStyle === 'italic' ? 'on' : ''}`} onClick={() => path((qs) => { qs[qk].style = withVal(qs[qk].style, 'fontStyle', q.style?.fontStyle === 'italic' ? undefined : 'italic') })}><i>I</i></button>
+                <button className="chip" onClick={() => path((qs) => { delete qs[qk].style; delete qs[qk].optionStyle })}>Clear override</button>
+              </div>
+            </div>
           )}
           {(q.options || []).map((o, i) => (
             <div className="optrow" key={i}>

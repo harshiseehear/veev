@@ -13,8 +13,8 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   const [guides, setGuides] = useState({ v: false, h: false })
   const dragRef = useRef(null)
 
+  const [previewSetId, setPreviewSetId] = useState(config.sets?.[0]?.id)
   const screen = useMemo(() => config.screens?.find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
-  const firstSetId = config.sets?.[0]?.id
   const cw = config.theme?.canvasWidth || 1080
   const ch = config.theme?.canvasHeight || 1920
 
@@ -111,8 +111,8 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
   const ctx = {
     config,
     resolve: resolveAsset,
-    question: screen?.type === 'question' ? getQuestion(config, screen.questionId || screen.id, firstSetId) : null,
-    getQuestion: (qk) => getQuestion(config, qk, firstSetId),
+    question: screen?.type === 'question' ? getQuestion(config, screen.questionId || screen.id, previewSetId) : null,
+    getQuestion: (qk) => getQuestion(config, qk, previewSetId),
     answers: {},
     result: screen?.type === 'result' ? sampleResult() : null,
     timerActive: false,
@@ -131,6 +131,13 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
           ))}
         </div>
         <div className="topbar-actions">
+          {config.sets && (
+            <label className="set-preview">set&nbsp;
+              <select value={previewSetId} onChange={(e) => setPreviewSetId(e.target.value)}>
+                {config.sets.map((s) => <option key={s.id} value={s.id}>{s.id}</option>)}
+              </select>
+            </label>
+          )}
           {status && <span className="topbar-status">{status}</span>}
           <button className={`btn ghost ${preview ? 'on' : ''}`} onClick={() => setPreview((p) => !p)}>{preview ? 'Editing' : 'Preview'}</button>
           <button className="btn" onClick={onSave}>Save draft</button>
