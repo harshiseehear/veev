@@ -60,7 +60,7 @@
       "id": "set1",
       "questions": {
         "q1": {
-          "prompt": "En quelle annee les Canadiens de Montreal ont-ils ete fondes ?",
+          "prompt": "Q1: En quelle annee les Canadiens de Montreal ont-ils ete fondes ?",
           "correct": "B",
           "options": [
             {
@@ -175,7 +175,7 @@
       "id": "set2",
       "questions": {
         "q1": {
-          "prompt": "Les Canadiens ont remporte le plus de coupes Stanley de la LNH. Combien en ont-ils remporte ?",
+          "prompt": "Q1: Les Canadiens ont remporte le plus de coupes Stanley de la LNH. Combien en ont-ils remporte ?",
           "correct": "D",
           "options": [
             {
@@ -290,7 +290,7 @@
       "id": "set3",
       "questions": {
         "q1": {
-          "prompt": "Avant le Centre Bell, dans quel arena les Canadiens ont-ils joue pendant des decennies ?",
+          "prompt": "Q1: Avant le Centre Bell, dans quel arena les Canadiens ont-ils joue pendant des decennies ?",
           "correct": "A",
           "options": [
             {
@@ -456,7 +456,7 @@
           "id": "logo",
           "type": "image",
           "src": "/assets/uber/uber_eats_logo.png",
-          "x": 143,
+          "x": 146,
           "y": 344,
           "w": 788,
           "h": 412,
@@ -469,8 +469,8 @@
           "id": "tagline",
           "type": "text",
           "text": "Répondez aux\nquestions.\nGagnez presque\npresque tout.",
-          "x": 149,
-          "y": 832,
+          "x": 146,
+          "y": 872,
           "w": 788,
           "h": 400,
           "z": 2,
@@ -488,7 +488,7 @@
           "type": "button",
           "action": "start",
           "text": "Jouez maintenant",
-          "x": 271,
+          "x": 275,
           "y": 1399,
           "w": 531,
           "h": 159,
@@ -517,16 +517,16 @@
         {
           "id": "prompt",
           "type": "prompt",
-          "x": 146,
-          "y": 280,
-          "w": 788,
-          "h": 620,
+          "x": 153,
+          "y": 174,
+          "w": 775,
+          "h": 729,
           "z": 2,
           "style": {
             "fontFamily": "Uber Move",
             "fontWeight": 700,
-            "fontStyle": "italic",
-            "fontSize": 68,
+            "fontStyle": "normal",
+            "fontSize": 88,
             "color": "#000000",
             "textAlign": "left",
             "lineHeight": 1.2
@@ -538,10 +538,10 @@
           "questionId": "q1",
           "x": 146,
           "y": 940,
-          "w": 788,
-          "h": 800,
+          "w": 804,
+          "h": 830,
           "z": 2,
-          "gap": 32,
+          "gap": 38,
           "justify": "flex-start",
           "showLetters": true,
           "optionStyle": {
@@ -554,11 +554,15 @@
             "textAlign": "left",
             "paddingX": 43,
             "paddingY": 28,
-            "height": 140
+            "height": 158
           },
           "selectedStyle": {
             "background": "#d4f5e2",
             "color": "#000000"
+          },
+          "style": {
+            "fontSize": 34,
+            "fontWeight": 400
           }
         },
         {

@@ -37,6 +37,21 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== sid ? s : { ...s, elements: s.elements.filter((el) => el.id !== eid) }) }))
   const addElement = (el) =>
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => s.id !== screenId ? s : { ...s, elements: [...s.elements, el] }) }))
+  // copy an element's styling (style + option styling) to the same-id element on every other screen
+  const copyStyleToOthers = (elId) => {
+    const src = screen.elements.find((e) => e.id === elId)
+    if (!src) return 0
+    const bits = {}
+    ;['style', 'optionStyle', 'selectedStyle', 'gap', 'showLetters', 'justify'].forEach((k) => { if (src[k] !== undefined) bits[k] = src[k] })
+    const targets = config.screens.filter((s) => s.id !== screen.id && s.elements.some((el) => el.id === elId && el.type === src.type))
+    setConfig((prev) => ({
+      ...prev,
+      screens: prev.screens.map((s) => s.id === screen.id ? s : ({
+        ...s, elements: s.elements.map((el) => (el.id === elId && el.type === src.type) ? { ...el, ...JSON.parse(JSON.stringify(bits)) } : el),
+      })),
+    }))
+    return targets.length
+  }
   const reorder = (eid, dir) =>
     setConfig((prev) => ({ ...prev, screens: prev.screens.map((s) => {
       if (s.id !== screenId) return s
@@ -160,6 +175,7 @@ export default function Editor({ config, setConfig, token, slug, onSave, onPubli
           addElement={addElement}
           reorder={reorder}
           selectElement={setSelectedId}
+          copyStyle={copyStyleToOthers}
         />
       </div>
     </div>

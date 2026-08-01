@@ -39,8 +39,9 @@ export default function Inspector(props) {
   )
 }
 
-function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, removeElement, addElement, reorder, selectElement }) {
+function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, removeElement, addElement, reorder, selectElement, copyStyle }) {
   const families = [...new Set((config.theme?.fonts || []).map((f) => f.family))]
+  const [copied, setCopied] = useState('')
   const s = selectedEl?.style || {}
   const addNew = (type) => {
     const id = `${type}-${Math.random().toString(36).slice(2, 6)}`
@@ -126,6 +127,12 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
               <OptionStyle el={selectedEl} patchElement={patchElement} />
             </>
           )}
+          {copyStyle && (
+            <button className="btn" style={{ marginTop: 8 }} onClick={() => setCopied(`Copied style to ${copyStyle(selectedEl.id)} other page(s) — same element id (${selectedEl.id})`)}>
+              ⧉ Copy style → other pages
+            </button>
+          )}
+          {copied && <div className="muted">{copied}</div>}
           <button className="danger" onClick={removeElement}>Delete element</button>
         </>
       )}
