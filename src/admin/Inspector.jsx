@@ -122,6 +122,9 @@ function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyl
           <div className="insp-h sub">Colour</div>
           <Color label="Text colour" value={s.color} onChange={(v) => patchElementStyle({ color: v })} />
           <Color label="Background" value={s.background} onChange={(v) => patchElementStyle({ background: v })} />
+          <div className="row-btns">
+            <button className={`chip ${s.background === 'transparent' || s.background === '' ? 'on' : ''}`} onClick={() => patchElementStyle({ background: 'transparent' })}>No fill (transparent)</button>
+          </div>
           <Num label="Corner radius" value={s.borderRadius} onChange={(v) => patchElementStyle({ borderRadius: v })} />
 
           {['options', 'resultList'].includes(selectedEl.type) && (
