@@ -70,8 +70,11 @@
 
 .qedit { border: 1px solid #23233a; border-radius: 9px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
 .override { border: 1px dashed #3a3a56; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
-.set-preview { font-size: 12px; color: #b8b8cc; display: flex; align-items: center; }
-.set-preview select { background: #1a1a28; border: 1px solid #2c2c44; color: #eee; border-radius: 6px; padding: 5px 6px; margin-left: 4px; }
+.set-tabs { display: flex; gap: 4px; align-items: center; padding: 2px 6px; border-radius: 8px; background: #16161f; border: 1px solid #262640; }
+.set-tab { padding: 5px 11px; border-radius: 7px; background: transparent; border: 1px solid transparent; color: #b8b8cc; cursor: pointer; font-size: 12px; }
+.set-tab.active { background: #241a38; border-color: #06C167; color: #fff; }
+.copy-wrap { display: flex; flex-direction: column; gap: 6px; }
+.copy-panel { border: 1px solid #33334f; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 8px; background: #14141f; }
 .optrow { display: grid; grid-template-columns: 54px 1fr auto; gap: 6px; }
 .optrow input { background: #1a1a28; border: 1px solid #2c2c44; color: #eee; border-radius: 6px; padding: 6px; font-size: 12px; }
 .optrow .x { background: #3a1420; border: none; color: #ff9bb5; border-radius: 6px; cursor: pointer; }
