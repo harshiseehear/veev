@@ -36,33 +36,41 @@ export default function QuizPlayer({ config, preview = false }) {
 
   const clearTimers = () => { clearTimeout(autoResetRef.current); clearTimeout(transitionRef.current) }
 
-  const reset = () => {
-    clearTimers()
-    setIndex(0); setAnswers({}); setActiveSetId(pickActiveSet(config)); setFading(false); setOutgoingId(null); setPhase('idle')
-    loggedRef.current = false; flowIdRef.current = ''
-  }
-
   // Two-phase crossfade (matches original veev): phase 'out' fades the current
   // elements out while the background holds; then phase 'in' fades the new
   // background + new elements in together over the old background.
-  const crossTo = (nextIndex) => {
+  // afterIndexSet runs the moment the index flips (mid-transition), so callers can
+  // clear state after the outgoing screen has finished fading out.
+  const crossTo = (nextIndex, afterIndexSet) => {
     setOutgoingId(screenId)
     setPhase('out')
     clearTimeout(transitionRef.current)
     transitionRef.current = setTimeout(() => {
       setIndex(nextIndex)
+      afterIndexSet?.()
       setPhase('in')
       setTimerKey((k) => k + 1)
       clearTimeout(transitionRef.current)
       transitionRef.current = setTimeout(() => { setPhase('idle'); setOutgoingId(null) }, transitionMs)
     }, transitionMs)
   }
-  const goTo = (nextIndex) => {
-    if (style === 'crossfade') return crossTo(nextIndex)
+  const goTo = (nextIndex, afterIndexSet) => {
+    if (style === 'crossfade') return crossTo(nextIndex, afterIndexSet)
     setFading(true)
-    transitionRef.current = setTimeout(() => { setIndex(nextIndex); setFading(false); setTimerKey((k) => k + 1) }, transitionMs)
+    transitionRef.current = setTimeout(() => { setIndex(nextIndex); afterIndexSet?.(); setFading(false); setTimerKey((k) => k + 1) }, transitionMs)
   }
   const advance = () => goTo(Math.min(index + 1, flow.length - 1))
+
+  // Return to welcome using the SAME transition as every other page change
+  // (fade / slide-fade / crossfade). Answers/flags clear when the index flips to
+  // 0 — after the result has finished fading out — so nothing empties mid-fade.
+  const resetToWelcome = () => {
+    clearTimeout(autoResetRef.current)
+    goTo(0, () => {
+      setAnswers({}); setActiveSetId(pickActiveSet(config))
+      loggedRef.current = false; flowIdRef.current = ''
+    })
+  }
 
   const makeRow = (event, suggestionClicked = '') =>
     buildAnalyticsRow(config, {
@@ -73,7 +81,7 @@ export default function QuizPlayer({ config, preview = false }) {
   // inactivity auto-reset on question/result screens
   useEffect(() => {
     clearTimeout(autoResetRef.current)
-    if ((isQuestion || isResult) && !preview) autoResetRef.current = setTimeout(reset, autoResetMs)
+    if ((isQuestion || isResult) && !preview) autoResetRef.current = setTimeout(resetToWelcome, autoResetMs)
     return () => clearTimeout(autoResetRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, isQuestion, isResult])
@@ -110,13 +118,13 @@ export default function QuizPlayer({ config, preview = false }) {
       setAnswers({}); setActiveSetId(pickActiveSet(config)); flowIdRef.current = createFlowId(); loggedRef.current = false
       goTo(Math.min(1, flow.length - 1))
     } else if (action === 'reset') {
-      reset()
+      resetToWelcome()
     }
   }
 
   const onResultClick = (fullLabel) => {
     if (!preview) api.sendAnalytics(config.slug, makeRow('suggestion_clicked', fullLabel))
-    reset()
+    resetToWelcome()
   }
 
   const buildCtx = (scr, interactive) => {
