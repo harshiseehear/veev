@@ -18,6 +18,7 @@ export default function QuizPlayer({ config, preview = false }) {
   const loggedRef = useRef(false)
   const autoResetRef = useRef(null)
   const transitionRef = useRef(null)
+  const timerResetRef = useRef(null) // center timer: hands the frozen width from the outgoing screen to the incoming one
 
   const screenId = flow[index]
   const screen = useMemo(() => (config.screens || []).find((s) => s.id === screenId) || config.screens?.[0], [config, screenId])
@@ -135,7 +136,8 @@ export default function QuizPlayer({ config, preview = false }) {
       timerKey,
       autoResetMs,
       transitionMs,
-      transitioning: phase === 'out',
+      transitionPhase: phase,
+      timerResetRef,
     }
   }
   const ctx = buildCtx(screen, true)

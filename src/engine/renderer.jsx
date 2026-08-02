@@ -146,30 +146,81 @@ function ElementContent({ el, ctx }) {
 }
 
 // Timer bar. Default variant (uber): a single fill that shrinks left->right over
-// the auto-reset time, on a track. variant 'center' (veev): a track-less white
-// fill that drains from BOTH sides toward centre, and when a choice is made
-// (ctx.transitioning) grows back to full over the transition time.
+// the auto-reset time, on a track (keyframe-driven, restarts on each question).
 function TimerBar({ el, ctx }) {
   const s = el.style || {}
-  const center = s.variant === 'center'
+  if (s.variant === 'center') return <CenterTimerBar el={el} ctx={ctx} />
+  const radius = `${s.borderRadius || 999}px`
+  return (
+    <div style={{ width: '100%', height: '100%', borderRadius: radius, background: s.trackColor || 'rgba(255,255,255,0.3)', overflow: 'hidden', position: 'relative' }}>
+      {ctx.timerActive && (
+        <div key={ctx.timerKey} style={{ height: '100%', width: '100%', background: s.fillColor || '#fff', borderRadius: radius, animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />
+      )}
+    </div>
+  )
+}
+
+// variant 'center' (veev): a track-less white fill that drains from BOTH sides
+// toward centre over the auto-reset time. When a choice is made it stops draining
+// and grows smoothly back to full, spanning the whole two-phase transition (the
+// elements fading out AND the new ones fading in), then starts draining again.
+// Fully width-transition-driven (no keyframe) so the grow reads as one continuous
+// motion instead of an instant snap. The frozen width is handed from the outgoing
+// screen to the incoming one via ctx.timerResetRef.
+function CenterTimerBar({ el, ctx }) {
+  const s = el.style || {}
   const radius = `${s.borderRadius || 999}px`
   const fillRef = useRef(null)
+  const T = ctx.transitionMs || 500
+
+  // Grow in: on a new question (timerKey change → mounts during the fade-in), start
+  // from the width the outgoing screen handed off (default full) and grow to 100%
+  // over one transition, so the grow finishes as the new screen finishes fading in.
   useEffect(() => {
     const fill = fillRef.current
-    if (!fill || !center || !ctx.transitioning) return
-    const parentW = fill.parentElement?.offsetWidth || 1
-    const curPct = (fill.getBoundingClientRect().width / parentW) * 100
-    fill.style.animation = 'none'
-    fill.style.width = `${curPct}%`
-    void fill.offsetWidth // reflow so the transition starts from the captured width
-    fill.style.transition = `width ${ctx.transitionMs || 500}ms ease-out`
+    if (!fill || !ctx.timerActive) return
+    const start = ctx.timerResetRef?.current
+    if (ctx.timerResetRef) ctx.timerResetRef.current = null
+    fill.style.transition = 'none'
+    fill.style.width = `${start == null ? 100 : start}%`
+    void fill.offsetWidth
+    if (start == null) return // first entry: already full, just drain at idle
+    fill.style.transition = `width ${T}ms linear`
     fill.style.width = '100%'
-  }, [ctx.transitioning]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Drain: once the transition settles, run the both-sides drain from full.
+  useEffect(() => {
+    const fill = fillRef.current
+    if (!fill || !ctx.timerActive || ctx.transitionPhase !== 'idle') return
+    fill.style.transition = 'none'
+    fill.style.width = '100%'
+    void fill.offsetWidth
+    fill.style.transition = `width ${ctx.autoResetMs || 30000}ms linear`
+    fill.style.width = '0%'
+  }, [ctx.transitionPhase, ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Freeze + hand off: on pick (phase 'out') stop the drain at its current width and
+  // grow toward full over the FULL transition (2T); we only see the first half here,
+  // then stash the mid-point so the incoming screen continues from exactly there.
+  useEffect(() => {
+    const fill = fillRef.current
+    if (!fill || ctx.transitionPhase !== 'out') return
+    const parentW = fill.parentElement?.offsetWidth || 1
+    const cur = (fill.getBoundingClientRect().width / parentW) * 100
+    fill.style.transition = 'none'
+    fill.style.width = `${cur}%`
+    void fill.offsetWidth
+    fill.style.transition = `width ${2 * T}ms linear`
+    fill.style.width = '100%'
+    if (ctx.timerResetRef) ctx.timerResetRef.current = (cur + 100) / 2
+  }, [ctx.transitionPhase]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div style={{ width: '100%', height: '100%', borderRadius: radius, background: center ? 'transparent' : (s.trackColor || 'rgba(255,255,255,0.3)'), overflow: 'hidden', position: 'relative' }}>
-      {ctx.timerActive && (center
-        ? <div key={ctx.timerKey} ref={fillRef} style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '100%', transform: 'translateX(-50%)', background: s.fillColor || '#ffffff', borderRadius: radius, animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />
-        : <div key={ctx.timerKey} ref={fillRef} style={{ height: '100%', width: '100%', background: s.fillColor || '#fff', borderRadius: radius, animation: `qw-timer-shrink ${ctx.autoResetMs || 30000}ms linear forwards` }} />)}
+    <div style={{ width: '100%', height: '100%', borderRadius: radius, background: 'transparent', overflow: 'hidden', position: 'relative' }}>
+      {ctx.timerActive && (
+        <div key={ctx.timerKey} ref={fillRef} style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '100%', transform: 'translateX(-50%)', background: s.fillColor || '#ffffff', borderRadius: radius }} />
+      )}
     </div>
   )
 }
