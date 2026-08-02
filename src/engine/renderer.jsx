@@ -200,23 +200,21 @@ function CenterTimerBar({ el, ctx }) {
     fill.style.width = '0%'
   }, [ctx.transitionPhase, ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Freeze + hand off: on pick (phase 'out') stop the drain at its current width and
-  // grow toward full over the FULL transition (2T); we only see the first half here,
-  // then stash the mid-point so the incoming screen continues from exactly there.
+  // Freeze + hand off: on pick (phase 'out') stop the drain and HOLD at the current
+  // width while the old screen fades out, then hand that exact width to the incoming
+  // screen so it grows to full only during the fade-in — reaching full precisely when
+  // the new page/questions finish loading.
   useEffect(() => {
     const fill = fillRef.current
     if (!fill || ctx.transitionPhase !== 'out') return
     // Use offsetWidth for both (layout px, unaffected by the Stage's CSS scale) so the
     // captured percentage is correct — mixing it with getBoundingClientRect (scaled)
-    // would misread the width and make the bar jump before growing.
+    // would misread the width and make the bar jump.
     const parentW = fill.parentElement?.offsetWidth || 1
     const cur = (fill.offsetWidth / parentW) * 100
     fill.style.transition = 'none'
     fill.style.width = `${cur}%`
-    void fill.offsetWidth
-    fill.style.transition = `width ${2 * T}ms linear`
-    fill.style.width = '100%'
-    if (ctx.timerResetRef) ctx.timerResetRef.current = (cur + 100) / 2
+    if (ctx.timerResetRef) ctx.timerResetRef.current = cur
   }, [ctx.transitionPhase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
