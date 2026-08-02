@@ -161,60 +161,42 @@ function TimerBar({ el, ctx }) {
 }
 
 // variant 'center' (veev): a track-less white fill that drains from BOTH sides
-// toward centre over the auto-reset time. When a choice is made it stops draining
-// and grows smoothly back to full, spanning the whole two-phase transition (the
-// elements fading out AND the new ones fading in), then starts draining again.
-// Fully width-transition-driven (no keyframe) so the grow reads as one continuous
-// motion instead of an instant snap. The frozen width is handed from the outgoing
-// screen to the incoming one via ctx.timerResetRef.
+// toward centre over the auto-reset time. Mirrors the original veev exactly: on a
+// pick it EXPANDS to full during the fade-out (OG timerExpand, ease-out) starting
+// from the captured drained width, so it is already full the instant the new page
+// loads; the new screen's timer then drains fresh from 100% as it fades in.
 function CenterTimerBar({ el, ctx }) {
   const s = el.style || {}
   const radius = `${s.borderRadius || 999}px`
   const fillRef = useRef(null)
   const T = ctx.transitionMs || 500
 
-  // Grow in: on a new question (timerKey change → mounts during the fade-in), start
-  // from the width the outgoing screen handed off (default full) and grow to 100%
-  // over one transition, so the grow finishes as the new screen finishes fading in.
+  // New question: mount fresh at full and drain from 100% (OG: timerDrain from 100%).
   useEffect(() => {
     const fill = fillRef.current
     if (!fill || !ctx.timerActive) return
-    const start = ctx.timerResetRef?.current
-    if (ctx.timerResetRef) ctx.timerResetRef.current = null
-    fill.style.transition = 'none'
-    fill.style.width = `${start == null ? 100 : start}%`
-    void fill.offsetWidth
-    if (start == null) return // first entry: already full, just drain at idle
-    fill.style.transition = `width ${T}ms linear`
-    fill.style.width = '100%'
-  }, [ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Drain: once the transition settles, run the both-sides drain from full.
-  useEffect(() => {
-    const fill = fillRef.current
-    if (!fill || !ctx.timerActive || ctx.transitionPhase !== 'idle') return
     fill.style.transition = 'none'
     fill.style.width = '100%'
     void fill.offsetWidth
     fill.style.transition = `width ${ctx.autoResetMs || 30000}ms linear`
     fill.style.width = '0%'
-  }, [ctx.transitionPhase, ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ctx.timerKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Freeze + hand off: on pick (phase 'out') stop the drain and HOLD at the current
-  // width while the old screen fades out, then hand that exact width to the incoming
-  // screen so it grows to full only during the fade-in — reaching full precisely when
-  // the new page/questions finish loading.
+  // On pick (phase 'out'): stop draining and expand to full over ONE transition with
+  // ease-out — starting from the exact drained width — so it reaches full precisely as
+  // the fade-out ends and the new page/questions load (OG captureTimerState + timerExpand).
   useEffect(() => {
     const fill = fillRef.current
     if (!fill || ctx.transitionPhase !== 'out') return
-    // Use offsetWidth for both (layout px, unaffected by the Stage's CSS scale) so the
-    // captured percentage is correct — mixing it with getBoundingClientRect (scaled)
-    // would misread the width and make the bar jump.
+    // offsetWidth for both (layout px, unaffected by the Stage's CSS scale) so the
+    // captured percentage is correct — getBoundingClientRect (scaled) would misread it.
     const parentW = fill.parentElement?.offsetWidth || 1
     const cur = (fill.offsetWidth / parentW) * 100
     fill.style.transition = 'none'
     fill.style.width = `${cur}%`
-    if (ctx.timerResetRef) ctx.timerResetRef.current = cur
+    void fill.offsetWidth
+    fill.style.transition = `width ${T}ms ease-out`
+    fill.style.width = '100%'
   }, [ctx.transitionPhase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
