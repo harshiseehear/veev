@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
 import { api } from '../api.js'
 import Login from './Login.jsx'
+import Masthead from './Masthead.jsx'
 import Editor from './Editor.jsx'
-import Resizer from './Resizer.jsx'
-import './admin.css'
+import './theme.css'
 
 const AUTH_KEY = 'qw-auth'
 
@@ -20,16 +20,13 @@ function AdminShell({ auth, onLogout }) {
   const [slug, setSlug] = useState(null)
   const [config, setConfig] = useState(null)
   const [status, setStatus] = useState('')
-  const [railW, setRailW] = useState(() => Number(localStorage.getItem('qw-railw')) || 232)
-  useEffect(() => { localStorage.setItem('qw-railw', String(railW)) }, [railW])
 
   const refreshProjects = useCallback(async () => {
     const list = await api.listProjects().catch(() => [])
     setProjects(list)
-    if (!slug && list.length) setSlug(list[0].slug)
-  }, [slug])
-
-  useEffect(() => { refreshProjects() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    setSlug((cur) => cur || (list[0]?.slug ?? null))
+  }, [])
+  useEffect(() => { refreshProjects() }, [refreshProjects])
 
   useEffect(() => {
     if (!slug) return
@@ -38,59 +35,26 @@ function AdminShell({ auth, onLogout }) {
   }, [slug, auth.token])
 
   const flash = (msg) => { setStatus(msg); setTimeout(() => setStatus(''), 2500) }
-
-  const save = async () => {
-    await api.saveConfig(slug, config, auth.token)
-    flash('Draft saved')
-  }
-  const publish = async () => {
-    await api.saveConfig(slug, config, auth.token)
-    await api.publishConfig(slug, auth.token)
-    await refreshProjects()
-    flash(`Published to /${slug}`)
-  }
+  const save = async () => { await api.saveConfig(slug, config, auth.token); flash('Draft saved ✓') }
+  const publish = async () => { await api.saveConfig(slug, config, auth.token); await api.publishConfig(slug, auth.token); await refreshProjects(); flash(`Published → /${slug}`) }
   const newProject = async () => {
-    const name = prompt('Project name?')
-    if (!name) return
-    const s = prompt('Slug (lowercase, e.g. "veld")?', name.toLowerCase().replace(/[^a-z0-9-]/g, '-'))
-    if (!s) return
+    const name = prompt('Project name?'); if (!name) return
+    const s = prompt('Slug (lowercase, e.g. "veld")?', name.toLowerCase().replace(/[^a-z0-9-]/g, '-')); if (!s) return
     const useTemplate = confirm('Start from a copy of the current project? (Cancel = blank quiz)')
-    try {
-      await api.createProject({ slug: s, name, template: useTemplate ? slug : null }, auth.token)
-      await refreshProjects()
-      setSlug(s)
-      flash('Project created')
-    } catch (e) { alert(e.message) }
+    try { await api.createProject({ slug: s, name, template: useTemplate ? slug : null }, auth.token); await refreshProjects(); setSlug(s); flash('Project created ✓') }
+    catch (e) { alert(e.message) }
   }
 
   return (
-    <div className="admin">
-      <aside className="admin-rail" style={{ width: railW }}>
-        <div className="rail-top">
-          <div className="rail-brand">Kiosk</div>
-          <div className="rail-user">{auth.user}</div>
-        </div>
-        <div className="rail-section">Projects</div>
-        <div className="rail-projects">
-          {projects.map((p) => (
-            <button key={p.slug} className={`rail-project ${slug === p.slug ? 'active' : ''}`} onClick={() => setSlug(p.slug)}>
-              <span>{p.name}</span>
-              <span className="rail-slug">/{p.slug}</span>
-              <span className={`dot ${p.published ? 'ok' : 'off'}`} title={p.published ? 'published' : 'draft'} />
-            </button>
-          ))}
-        </div>
-        <button className="rail-new" onClick={newProject}>+ New project</button>
-        <div className="rail-spacer" />
-        <a className="rail-link" href={slug ? `/${slug}` : '/'} target="_blank" rel="noreferrer">Open live /{slug} ↗</a>
-        <button className="rail-logout" onClick={onLogout}>Sign out</button>
-      </aside>
-      <Resizer onDelta={(dx) => setRailW((w) => Math.max(180, Math.min(480, w + dx)))} />
-      <main className="admin-main">
-        {config
-          ? <Editor key={slug} config={config} setConfig={setConfig} token={auth.token} slug={slug} onSave={save} onPublish={publish} status={status} />
-          : <div className="admin-empty">{slug ? 'Loading…' : 'Select or create a project.'}</div>}
-      </main>
+    <div className="k-app">
+      <Masthead
+        projects={projects} slug={slug} config={config}
+        onPick={setSlug} onNew={newProject} onSave={save} onPublish={publish}
+        status={status} user={auth.user} onLogout={onLogout}
+      />
+      {config
+        ? <Editor key={slug} config={config} setConfig={setConfig} token={auth.token} slug={slug} />
+        : <div className="k-empty">{slug ? 'Loading…' : 'Select or create a project.'}</div>}
     </div>
   )
 }

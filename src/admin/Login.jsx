@@ -10,25 +10,24 @@ export default function Login({ onLogin }) {
   const submit = async (e) => {
     e.preventDefault()
     setBusy(true); setError('')
-    try {
-      const result = await api.login(username, password)
-      onLogin(result)
-    } catch {
-      setError('Invalid username or password.')
-    } finally {
-      setBusy(false)
-    }
+    try { onLogin(await api.login(username, password)) }
+    catch { setError('Invalid username or password.') }
+    finally { setBusy(false) }
   }
 
   return (
-    <div className="login-wrap">
-      <form className="login-card" onSubmit={submit}>
-        <h1>Kiosk</h1>
-        <p className="muted">Admin sign in</p>
-        <label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus /></label>
-        <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>
-        {error && <div className="login-error">{error}</div>}
-        <button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+    <div className="k-login">
+      <form className="k-login-card" onSubmit={submit}>
+        <div className="k-login-head">
+          <h1>KIOSK</h1>
+          <p>Editor · sign in</p>
+        </div>
+        <div className="k-login-body">
+          <label><span>Username</span><input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus /></label>
+          <label><span>Password</span><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>
+          {error && <div className="k-login-err">{error}</div>}
+          <button className="k-btn primary wide" type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        </div>
       </form>
     </div>
   )

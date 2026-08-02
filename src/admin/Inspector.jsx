@@ -1,404 +1,43 @@
 import { useState } from 'react'
-import { api } from '../api.js'
+import DesignPanel from './panels/DesignPanel.jsx'
+import ContentPanel from './panels/ContentPanel.jsx'
+import LogicPanel from './panels/LogicPanel.jsx'
+import AssetsPanel from './panels/AssetsPanel.jsx'
+import ProjectPanel from './panels/ProjectPanel.jsx'
+import AiPanel from './panels/AiPanel.jsx'
 
-const clone = (o) => JSON.parse(JSON.stringify(o))
-// set a style key, or remove it when the value is blank (so it falls back to the page style)
-const withVal = (obj, key, val) => { const next = { ...(obj || {}) }; if (val === undefined || val === '' || val === null) delete next[key]; else next[key] = val; return next }
-const TABS = ['Element', 'Content', 'Rules', 'Assets', 'Settings', 'AI']
+// Right inspector — icon tab row (render-settings style) routing to one panel.
+// Adding a tab is a single entry here; panels are self-contained.
+const TABS = [
+  { id: 'design',  glyph: '◧', name: 'DESIGN' },
+  { id: 'content', glyph: '☰', name: 'CONTENT' },
+  { id: 'assets',  glyph: '▦', name: 'ASSETS' },
+  { id: 'logic',   glyph: '⚙', name: 'LOGIC' },
+  { id: 'project', glyph: '◉', name: 'PROJECT' },
+  { id: 'ai',      glyph: '✦', name: 'AI' },
+]
 
-// small controlled inputs
-const Num = ({ label, value, onChange, step = 1 }) => (
-  <label className="fld"><span>{label}</span><input type="number" step={step} value={value ?? ''} onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))} /></label>
-)
-const Txt = ({ label, value, onChange, area }) => (
-  <label className="fld"><span>{label}</span>{area ? <textarea rows={3} value={value ?? ''} onChange={(e) => onChange(e.target.value)} /> : <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />}</label>
-)
-// colour with an alpha slider — produces #RRGGBBAA when alpha < 100%
-const baseHex = (v) => (/^#[0-9a-fA-F]{8}$/.test(v || '') ? v.slice(0, 7) : /^#[0-9a-fA-F]{6}$/.test(v || '') ? v : '#000000')
-const hexAlpha = (v) => (/^#[0-9a-fA-F]{8}$/.test(v || '') ? Math.round((parseInt(v.slice(7, 9), 16) / 255) * 100) : 100)
-const withAlpha = (hex, a) => (a >= 100 ? hex : hex + Math.round((a / 100) * 255).toString(16).padStart(2, '0'))
-const Color = ({ label, value, onChange }) => {
-  const hex = baseHex(value)
-  const a = hexAlpha(value)
+export default function Inspector({ edit, config, setConfig, slug, token, width }) {
+  const [tab, setTab] = useState('design')
+  const common = { config, setConfig, slug, token }
   return (
-    <label className="fld"><span>{label}</span>
-      <span className="color-row">
-        <input type="color" value={hex} onChange={(e) => onChange(withAlpha(e.target.value, a))} />
-        <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} placeholder="transparent" />
-      </span>
-      <span className="color-row"><input type="range" min="0" max="100" value={a} onChange={(e) => onChange(withAlpha(hex, Number(e.target.value)))} style={{ flex: 1 }} /><span className="muted" style={{ minWidth: 40, textAlign: 'right' }}>{a}%</span></span>
-    </label>
-  )
-}
-
-export default function Inspector(props) {
-  const { config, setConfig, screen, selectedEl } = props
-  const [tab, setTab] = useState('Element')
-  const update = (fn) => setConfig((prev) => { const next = clone(prev); fn(next); return next })
-
-  return (
-    <aside className="inspector" style={{ width: props.width }}>
-      <div className="insp-tabs">
-        {TABS.map((t) => <button key={t} className={`insp-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>{t}</button>)}
-      </div>
-      <div className="insp-body">
-        {tab === 'Element' && <ElementTab {...props} />}
-        {tab === 'Content' && <ContentTab config={config} update={update} activeSetId={props.activeSetId} setActiveSetId={props.setActiveSetId} activeQid={props.activeQid} />}
-        {tab === 'Rules' && <RulesTab config={config} setConfig={setConfig} />}
-        {tab === 'Assets' && <AssetsTab {...props} update={update} />}
-        {tab === 'Settings' && <SettingsTab config={config} update={update} screen={screen} />}
-        {tab === 'AI' && <AiTab {...props} />}
-      </div>
-    </aside>
-  )
-}
-
-function ElementTab({ config, screen, selectedEl, patchElement, patchElementStyle, patchOptionStyle, removeElement, addElement, reorder, selectElement, copyStyle, pasteStyle, hasClip, isSetScope, activeSetId, activeQid, selectedIds, centerGroupOnCanvas, alignGroup }) {
-  const families = [...new Set((config.theme?.fonts || []).map((f) => f.family))]
-  const [copied, setCopied] = useState('')
-  const s = selectedEl?.style || {}
-
-  if (selectedIds && selectedIds.length > 1) {
-    return (
-      <div className="insp-scroll">
-        <div className="insp-h">{selectedIds.length} elements selected</div>
-        <p className="muted">Drag any one to move them together; arrow-keys nudge the group. Shift-click on the canvas to add/remove.</p>
-        <div className="insp-h sub">Center the group on the canvas</div>
-        <div className="row-btns">
-          <button className="chip" onClick={() => centerGroupOnCanvas('h')}>⯐ Center H</button>
-          <button className="chip" onClick={() => centerGroupOnCanvas('v')}>⯐ Center V</button>
-        </div>
-        <div className="insp-h sub">Align to each other</div>
-        <div className="row-btns">
-          <button className="chip" onClick={() => alignGroup('left')}>Left</button>
-          <button className="chip" onClick={() => alignGroup('hcenter')}>Center</button>
-          <button className="chip" onClick={() => alignGroup('right')}>Right</button>
-        </div>
-        <div className="row-btns">
-          <button className="chip" onClick={() => alignGroup('top')}>Top</button>
-          <button className="chip" onClick={() => alignGroup('vmiddle')}>Middle</button>
-          <button className="chip" onClick={() => alignGroup('bottom')}>Bottom</button>
-        </div>
-      </div>
-    )
-  }
-  const addNew = (type) => {
-    const id = `${type}-${Math.random().toString(36).slice(2, 6)}`
-    const base = { id, type, x: 120, y: 200, w: 500, h: 200, z: 5, style: { fontFamily: families[0] || 'sans-serif', fontWeight: 700, fontSize: 48, color: '#ffffff', textAlign: 'center' } }
-    if (type === 'text') base.text = 'New text'
-    if (type === 'button') { base.text = 'Button'; base.action = 'reset'; base.style.background = '#ffffff'; base.style.color = '#000'; base.style.borderRadius = 999 }
-    if (type === 'image') { base.src = ''; base.style = { objectFit: 'contain' } }
-    addElement(base)
-  }
-  return (
-    <div className="insp-scroll">
-      <div className="layers">
-        <div className="insp-h">Layers · {screen?.id}</div>
-        {[...(screen?.elements || [])].sort((a, b) => (b.z || 0) - (a.z || 0)).map((el) => (
-          <button key={el.id} className={`layer ${selectedEl?.id === el.id ? 'sel' : ''}`} onClick={() => selectElement(el.id)}>
-            <span className="layer-type">{el.type}</span><span className="layer-id">{el.id}</span>
-            <span className="layer-eye" onClick={(e) => { e.stopPropagation(); patchElementAny(el, { hidden: !el.hidden }) }}>{el.hidden ? '🚫' : '👁'}</span>
+    <aside className="k-inspector" style={{ width }}>
+      <div className="k-tabs">
+        {TABS.map((t) => (
+          <button key={t.id} className={`k-tab ${tab === t.id ? 'on' : ''}`} title={t.name} onClick={() => setTab(t.id)}>
+            <span className="k-tab-glyph">{t.glyph}</span>
+            <span className="k-tab-name">{t.name}</span>
           </button>
         ))}
-        <div className="add-el">
-          {['text', 'button', 'image'].map((t) => <button key={t} className="chip" onClick={() => addNew(t)}>+ {t}</button>)}
-        </div>
       </div>
-
-      {!selectedEl ? <p className="muted pad">Select an element on the canvas to edit it. Drag to move, drag the pink corner to resize, arrow-keys to nudge.</p> : (
-        <>
-          <div className="insp-h">{selectedEl.type} · {selectedEl.id}</div>
-          {isSetScope && <div className="scope-note">✎ Styling <b>{activeSetId}</b> · {activeQid} — each set keeps its own style. Position/size are shared across sets.</div>}
-          <div className="grid2">
-            <Num label="X" value={selectedEl.x} onChange={(v) => patchElement({ x: v })} />
-            <Num label="Y" value={selectedEl.y} onChange={(v) => patchElement({ y: v })} />
-            <Num label="W" value={selectedEl.w} onChange={(v) => patchElement({ w: v })} />
-            <Num label="H" value={selectedEl.h} onChange={(v) => patchElement({ h: v })} />
-            <Num label="Z (layer)" value={selectedEl.z} onChange={(v) => patchElement({ z: v })} />
-          </div>
-          <div className="row-btns">
-            <button className="chip" onClick={() => reorder(selectedEl.id, 'front')}>Bring front</button>
-            <button className="chip" onClick={() => reorder(selectedEl.id, 'back')}>Send back</button>
-            <button className="chip" onClick={() => patchElement({ hidden: !selectedEl.hidden })}>{selectedEl.hidden ? 'Show' : 'Hide'}</button>
-          </div>
-          <div className="row-btns">
-            <button className="chip" onClick={() => patchElement({ x: Math.round(((config.theme?.canvasWidth || 1080) - selectedEl.w) / 2) })}>⯐ Center H</button>
-            <button className="chip" onClick={() => patchElement({ y: Math.round(((config.theme?.canvasHeight || 1920) - selectedEl.h) / 2) })}>⯐ Center V</button>
-          </div>
-
-          {['text', 'button'].includes(selectedEl.type) && <Txt label="Text" area value={selectedEl.text} onChange={(v) => patchElement({ text: v })} />}
-          {selectedEl.type === 'button' && (
-            <label className="fld"><span>Action</span><select value={selectedEl.action || 'reset'} onChange={(e) => patchElement({ action: e.target.value })}><option value="start">start</option><option value="reset">reset</option></select></label>
-          )}
-          {selectedEl.type === 'button' && (
-            <label className="fld"><span>Icon</span><select value={selectedEl.icon || ''} onChange={(e) => patchElement({ icon: e.target.value || undefined })}><option value="">none (show text)</option><option value="arrow">→ arrow</option></select></label>
-          )}
-          {selectedEl.type === 'button' && selectedEl.icon && (
-            <Num label="Icon size (% of box)" value={selectedEl.iconScale} onChange={(v) => patchElement({ iconScale: v })} />
-          )}
-          {selectedEl.type === 'image' && <Txt label="Image src" value={selectedEl.src} onChange={(v) => patchElement({ src: v })} />}
-          {selectedEl.type === 'image' && (
-            <label className="fld"><span>Fit</span><select value={s.objectFit || 'contain'} onChange={(e) => patchElementStyle({ objectFit: e.target.value })}><option value="contain">contain (whole image)</option><option value="cover">cover (fill, crop)</option><option value="fill">fill (stretch)</option></select></label>
-          )}
-          {['prompt', 'pickLabel'].includes(selectedEl.type) && <p className="muted">Text comes from the question (Content tab). Style it below.</p>}
-
-          {selectedEl.type !== 'image' && selectedEl.type !== 'timer' && (
-            <>
-              <div className="insp-h sub">Type</div>
-              <div className="row-btns">
-                <button className={`chip ${(s.fontWeight >= 700) ? 'on' : ''}`} onClick={() => patchElementStyle({ fontWeight: (s.fontWeight >= 700) ? 400 : 700 })}><b>B</b>&nbsp;Bold</button>
-                <button className={`chip ${s.fontStyle === 'italic' ? 'on' : ''}`} onClick={() => patchElementStyle({ fontStyle: s.fontStyle === 'italic' ? 'normal' : 'italic' })}><i>I</i>&nbsp;Italic</button>
-              </div>
-              <label className="fld"><span>Font</span><select value={s.fontFamily || ''} onChange={(e) => patchElementStyle({ fontFamily: e.target.value })}>
-                <option value="">(inherit)</option>{families.map((f) => <option key={f} value={f}>{f}</option>)}<option value="sans-serif">sans-serif</option></select></label>
-              <div className="grid2">
-                <Num label="Size" value={s.fontSize} onChange={(v) => patchElementStyle({ fontSize: v })} />
-                <Num label="Weight" value={s.fontWeight} step={100} onChange={(v) => patchElementStyle({ fontWeight: v })} />
-                <Num label="Line H" value={s.lineHeight} step={0.05} onChange={(v) => patchElementStyle({ lineHeight: v })} />
-                <Num label="Letter" value={s.letterSpacing} step={0.5} onChange={(v) => patchElementStyle({ letterSpacing: v })} />
-              </div>
-              <label className="fld"><span>Align</span><select value={s.textAlign || 'center'} onChange={(e) => patchElementStyle({ textAlign: e.target.value })}><option>left</option><option>center</option><option>right</option></select></label>
-              <label className="fld"><span>Transform</span><select value={s.textTransform || 'none'} onChange={(e) => patchElementStyle({ textTransform: e.target.value })}><option value="none">none</option><option value="uppercase">uppercase</option><option value="lowercase">lowercase</option></select></label>
-            </>
-          )}
-          <div className="insp-h sub">Colour</div>
-          <Color label="Text colour" value={s.color} onChange={(v) => patchElementStyle({ color: v })} />
-          <Color label="Background" value={s.background} onChange={(v) => patchElementStyle({ background: v })} />
-          <div className="row-btns">
-            <button className={`chip ${s.background === 'transparent' || s.background === '' ? 'on' : ''}`} onClick={() => patchElementStyle({ background: 'transparent' })}>No fill (transparent)</button>
-          </div>
-          <Num label="Corner radius" value={s.borderRadius} onChange={(v) => patchElementStyle({ borderRadius: v })} />
-
-          {['options', 'resultList'].includes(selectedEl.type) && (
-            <>
-              <div className="insp-h sub">Option cards</div>
-              <Num label="Gap" value={selectedEl.gap} onChange={(v) => patchElement({ gap: v })} />
-              {selectedEl.type === 'options' && (
-                <label className="fld chk"><input type="checkbox" checked={!!selectedEl.showLetters} onChange={(e) => patchElement({ showLetters: e.target.checked })} /> Show A) B) letters</label>
-              )}
-              <OptionStyle el={selectedEl} patchOptionStyle={patchOptionStyle} patchElement={patchElement} />
-            </>
-          )}
-          {selectedEl.type === 'answerSummary' && (
-            <>
-              <div className="insp-h sub">Answer cards</div>
-              <div className="grid2">
-                <Num label="Card height" value={s.height} onChange={(v) => patchElementStyle({ height: v })} />
-                <Num label="Gap" value={selectedEl.gap} onChange={(v) => patchElement({ gap: v })} />
-                <Num label="Font size" value={s.fontSize} onChange={(v) => patchElementStyle({ fontSize: v })} />
-                <Num label="Pad X" value={s.paddingX} onChange={(v) => patchElementStyle({ paddingX: v })} />
-                <Num label="Radius" value={s.borderRadius} onChange={(v) => patchElementStyle({ borderRadius: v })} />
-              </div>
-              <Color label="Correct bg" value={s.correctBg} onChange={(v) => patchElementStyle({ correctBg: v })} />
-              <Color label="Correct text" value={s.correctColor} onChange={(v) => patchElementStyle({ correctColor: v })} />
-              <Color label="Wrong bg" value={s.wrongBg} onChange={(v) => patchElementStyle({ wrongBg: v })} />
-              <Color label="Wrong text" value={s.wrongColor} onChange={(v) => patchElementStyle({ wrongColor: v })} />
-              <p className="muted">Tip: if 5 taller cards run past the box, drag the element taller (H) too.</p>
-            </>
-          )}
-          <div className="row-btns" style={{ marginTop: 8 }}>
-            <button className="btn" onClick={() => setCopied(copyStyle())}>⧉ Copy element</button>
-            <button className="btn" disabled={!hasClip} onClick={() => setCopied(pasteStyle())}>⤵ Paste element</button>
-          </div>
-          {copied && <div className="muted">{copied}</div>}
-          <button className="danger" onClick={removeElement}>Delete element</button>
-        </>
-      )}
-    </div>
-  )
-  function patchElementAny(el, patch) { patchElement(patch) /* selection follows */ }
-}
-
-function OptionStyle({ el, patchElement, patchOptionStyle }) {
-  const os = el.optionStyle || {}
-  const set = (patch) => patchOptionStyle(patch)
-  const sel = el.selectedStyle || {}
-  const setSel = (patch) => patchElement({ selectedStyle: { ...sel, ...patch } })
-  return (
-    <div className="grid2">
-      <Num label="Card H" value={os.height} onChange={(v) => set({ height: v })} />
-      <Num label="Pad X" value={os.paddingX} onChange={(v) => set({ paddingX: v })} />
-      <Num label="Font size" value={os.fontSize} onChange={(v) => set({ fontSize: v })} />
-      <Num label="Radius" value={os.borderRadius} onChange={(v) => set({ borderRadius: v })} />
-      <label className="fld span2"><span>Card bg</span><input type="color" value={/^#/.test(os.background || '') ? os.background : '#ffffff'} onChange={(e) => set({ background: e.target.value })} /></label>
-      <label className="fld span2"><span>Card text</span><input type="color" value={/^#/.test(os.color || '') ? os.color : '#000000'} onChange={(e) => set({ color: e.target.value })} /></label>
-      {el.type === 'options' && <label className="fld span2"><span>Selected bg</span><input type="color" value={/^#/.test(sel.background || '') ? sel.background : '#e7c9ff'} onChange={(e) => setSel({ background: e.target.value })} /></label>}
-    </div>
-  )
-}
-
-function ContentTab({ config, update, activeSetId, setActiveSetId, activeQid }) {
-  const sets = config.sets
-  const setIdx = sets ? Math.max(0, sets.findIndex((s) => s.id === activeSetId)) : -1
-  const questions = sets ? sets[setIdx]?.questions : config.questions
-  const path = (mut) => update((next) => { const q = (next.sets ? next.sets[setIdx].questions : next.questions); mut(q) })
-  const newSetId = () => { const ids = new Set((sets || []).map((s) => s.id)); let n = (sets?.length || 0) + 1; while (ids.has(`set${n}`)) n++; return `set${n}` }
-  const duplicateSet = () => { const id = newSetId(); update((next) => { const copy = clone(next.sets[setIdx]); copy.id = id; next.sets.splice(setIdx + 1, 0, copy) }); setActiveSetId && setActiveSetId(id) }
-  const removeSet = () => { if ((sets?.length || 0) <= 1) return; const remaining = sets.filter((_, i) => i !== setIdx); update((next) => { next.sets.splice(setIdx, 1) }); setActiveSetId && setActiveSetId((remaining[setIdx - 1] || remaining[0]).id) }
-  const q = questions?.[activeQid]
-  return (
-    <div className="insp-scroll">
-      {sets && (
-        <>
-          <div className="muted">Editing set <b>{activeSetId}</b> — switch sets with the tabs at the top right. One of {sets.length} sets shows at random per play.</div>
-          <div className="row-btns">
-            <button className="chip" onClick={duplicateSet}>+ Duplicate set</button>
-            <button className="chip" disabled={sets.length <= 1} onClick={removeSet}>🗑 Remove set</button>
-          </div>
-        </>
-      )}
-      {!q ? (
-        <p className="muted pad">Select a question page (e.g. q1) from the tabs at the top to edit its content{sets ? ` for ${activeSetId}` : ''}.</p>
-      ) : (
-        <div className="qedit">
-          <div className="insp-h">{sets ? `${activeSetId} · ${activeQid}` : activeQid}</div>
-          <Txt label="Prompt" area value={q.prompt} onChange={(v) => path((qs) => { qs[activeQid].prompt = v })} />
-          {!sets && <Txt label="Pick label" value={q.pickLabel} onChange={(v) => path((qs) => { qs[activeQid].pickLabel = v })} />}
-          {!sets && <Num label="Max select" value={q.maxSelect} onChange={(v) => path((qs) => { qs[activeQid].maxSelect = v })} />}
-          {sets && (
-            <label className="fld"><span>Correct answer</span><select value={q.correct || ''} onChange={(e) => path((qs) => { qs[activeQid].correct = e.target.value })}>{(q.options || []).map((o) => <option key={o.value} value={o.value}>{o.value}</option>)}</select></label>
-          )}
-          {(q.options || []).map((o, i) => (
-            <div className="optrow" key={i}>
-              <input className="optval" value={o.value} onChange={(e) => path((qs) => { qs[activeQid].options[i].value = e.target.value })} />
-              <input className="optlabel" value={o.label} onChange={(e) => path((qs) => { qs[activeQid].options[i].label = e.target.value })} />
-              <button className="x" onClick={() => path((qs) => { qs[activeQid].options.splice(i, 1) })}>×</button>
-            </div>
-          ))}
-          <button className="chip" onClick={() => path((qs) => { qs[activeQid].options = [...(qs[activeQid].options || []), { value: String.fromCharCode(65 + (qs[activeQid].options?.length || 0)), label: 'New option' }] })}>+ option</button>
-        </div>
-      )}
-    </div>
-  )
-}
-function RulesTab({ config, setConfig }) {
-  const [text, setText] = useState(JSON.stringify(config.resultLogic || {}, null, 2))
-  const [err, setErr] = useState('')
-  const apply = () => {
-    try { const parsed = JSON.parse(text); setConfig((prev) => ({ ...prev, resultLogic: parsed })); setErr('Applied ✓') }
-    catch (e) { setErr('Invalid JSON: ' + e.message) }
-  }
-  return (
-    <div className="insp-scroll">
-      <div className="insp-h">Result logic ({config.resultLogic?.type})</div>
-      <p className="muted">Recommendation quizzes map answers → a device/track → a flavour table. Trivia quizzes score correct answers. Edit the logic below.</p>
-      <textarea className="json" value={text} onChange={(e) => setText(e.target.value)} spellCheck={false} />
-      <button className="btn primary" onClick={apply}>Apply logic</button>
-      {err && <div className="muted">{err}</div>}
-    </div>
-  )
-}
-
-function AssetsTab({ config, slug, token, update, addElement, screen }) {
-  const [assets, setAssets] = useState(null)
-  const [busy, setBusy] = useState(false)
-  const [msg, setMsg] = useState('')
-  const load = () => api.listAssets(slug).then(setAssets).catch(() => setAssets([]))
-  if (assets === null) load()
-  const upload = async (e) => {
-    const file = e.target.files?.[0]; if (!file) return
-    setBusy(true)
-    try { await api.uploadAsset(slug, file, token); await load() } finally { setBusy(false); e.target.value = '' }
-  }
-  const addImageEl = (url) => {
-    const cw = config.theme?.canvasWidth || 1080, ch = config.theme?.canvasHeight || 1920
-    const w = Math.round(cw * 0.5), h = Math.round(ch * 0.25)
-    addElement({ id: `image-${Math.random().toString(36).slice(2, 6)}`, type: 'image', src: url, x: Math.round((cw - w) / 2), y: Math.round((ch - h) / 2), w, h, z: 6, style: { objectFit: 'contain' } })
-    setMsg('Added movable image element to ' + screen?.id + ' — select it on the canvas to move/resize')
-  }
-  const setAsBg = (url) => { update((next) => { const s = next.screens.find((x) => x.id === screen.id); if (s) s.background = { ...s.background, type: 'image', src: url } }); setMsg('Set as ' + screen?.id + ' background') }
-  const isImg = (n) => /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(n)
-  return (
-    <div className="insp-scroll">
-      <div className="insp-h">Assets · {slug}</div>
-      <label className="upload">{busy ? 'Uploading…' : '⬆ Upload image / font'}<input type="file" hidden onChange={upload} /></label>
-      <div className="asset-grid">
-        {(assets || []).map((a) => (
-          <div key={a.name} className="asset" title={a.name}>
-            {isImg(a.name) ? <img src={a.url} alt="" /> : <span className="asset-file">{a.name.split('/').pop()}</span>}
-            <button className="chip" onClick={() => navigator.clipboard?.writeText(a.url)}>copy url</button>
-            {isImg(a.name) && <button className="chip" onClick={() => addImageEl(a.url)}>＋ image element</button>}
-            {isImg(a.name) && <button className="chip" onClick={() => setAsBg(a.url)}>set as bg</button>}
-          </div>
-        ))}
+      <div className="k-insp-body">
+        {tab === 'design' && <DesignPanel edit={edit} config={config} />}
+        {tab === 'content' && <ContentPanel {...common} previewSetId={edit.previewSetId} setPreviewSetId={edit.setPreviewSetId} activeQid={edit.activeQid} />}
+        {tab === 'assets' && <AssetsPanel {...common} screen={edit.screen} addElement={edit.addElement} />}
+        {tab === 'logic' && <LogicPanel {...common} />}
+        {tab === 'project' && <ProjectPanel {...common} screen={edit.screen} />}
+        {tab === 'ai' && <AiPanel {...common} />}
       </div>
-      {msg && <div className="muted">{msg}</div>}
-      <p className="muted">“＋ image element” adds a draggable/resizable image to the current screen. “set as bg” makes it the full-screen background. Backgrounds aren’t elements — to transform an image, add it as an element.</p>
-    </div>
-  )
-}
-
-function SettingsTab({ config, update, screen }) {
-  return (
-    <div className="insp-scroll">
-      <div className="insp-h">Project</div>
-      <Txt label="Name" value={config.name} onChange={(v) => update((n) => { n.name = v })} />
-      <Txt label="Language" value={config.language} onChange={(v) => update((n) => { n.language = v })} />
-      <div className="insp-h sub">Analytics</div>
-      <Txt label="Google Sheet Web App URL" value={config.analytics?.sheetWebAppUrl} onChange={(v) => update((n) => { n.analytics = { ...n.analytics, sheetWebAppUrl: v } })} />
-      <div className="insp-h sub">Timings</div>
-      <div className="grid2">
-        <Num label="Transition ms" value={config.timings?.transitionMs} onChange={(v) => update((n) => { n.timings = { ...n.timings, transitionMs: v } })} />
-        <Num label="Auto-reset ms" value={config.timings?.autoResetMs} onChange={(v) => update((n) => { n.timings = { ...n.timings, autoResetMs: v } })} />
-      </div>
-      <label className="fld"><span>Transition style</span>
-        <select value={config.timings?.transitionStyle || ''} onChange={(e) => update((n) => { n.timings = { ...n.timings, transitionStyle: e.target.value || undefined } })}>
-          <option value="">fade (default)</option>
-          <option value="slideFade">slide-fade (elements only, static bg)</option>
-          <option value="crossfade">crossfade (dissolve, bg stays then new fades in)</option>
-        </select>
-      </label>
-      <div className="insp-h sub">Banner</div>
-      <label className="fld chk"><input type="checkbox" checked={!!config.banner?.enabled} onChange={(e) => update((n) => { n.banner = { ...n.banner, enabled: e.target.checked } })} /> Show banner</label>
-      <Txt label="Banner image src" value={config.banner?.src} onChange={(v) => update((n) => { n.banner = { ...n.banner, src: v } })} />
-      <Num label="Banner height %" value={config.banner?.heightPct} onChange={(v) => update((n) => { n.banner = { ...n.banner, heightPct: v } })} />
-      <div className="insp-h sub">This screen ({screen?.id}) background</div>
-      <label className="fld"><span>Type</span><select value={screen?.background?.type || 'color'} onChange={(e) => update((n) => { const s = n.screens.find((x) => x.id === screen.id); s.background = { ...s.background, type: e.target.value } })}><option value="color">color</option><option value="image">image</option></select></label>
-      {screen?.background?.type === 'image'
-        ? <Txt label="Background src" value={screen?.background?.src} onChange={(v) => update((n) => { const s = n.screens.find((x) => x.id === screen.id); s.background = { ...s.background, src: v } })} />
-        : <Color label="Background colour" value={screen?.background?.color} onChange={(v) => update((n) => { const s = n.screens.find((x) => x.id === screen.id); s.background = { ...s.background, color: v } })} />}
-      <div className="insp-h sub">Fonts</div>
-      {(config.theme?.fonts || []).map((f, i) => (
-        <div className="optrow" key={i}>
-          <input className="optval" value={f.family} onChange={(e) => update((n) => { n.theme.fonts[i].family = e.target.value })} />
-          <input className="optlabel" value={f.url} onChange={(e) => update((n) => { n.theme.fonts[i].url = e.target.value })} />
-          <button className="x" onClick={() => update((n) => { n.theme.fonts.splice(i, 1) })}>×</button>
-        </div>
-      ))}
-      <button className="chip" onClick={() => update((n) => { n.theme = n.theme || {}; n.theme.fonts = [...(n.theme.fonts || []), { family: 'New Font', url: '', weight: 400 }] })}>+ font</button>
-    </div>
-  )
-}
-
-function AiTab({ config, setConfig, slug, token }) {
-  const [prompt, setPrompt] = useState('')
-  const [docText, setDocText] = useState('')
-  const [docName, setDocName] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [log, setLog] = useState([])
-  const onFile = async (e) => {
-    const f = e.target.files?.[0]; if (!f) return
-    setDocName(f.name); setDocText(await f.text())
-  }
-  const send = async () => {
-    setBusy(true)
-    try {
-      const res = await api.ai({ slug, name: config.name, prompt, docText, config }, token)
-      if (res.ok && res.config) { setConfig(res.config); setLog((l) => [{ role: 'ai', text: `✓ ${res.message} (${res.model || 'model'})` }, { role: 'you', text: prompt || docName }, ...l]); setPrompt('') }
-      else setLog((l) => [{ role: 'err', text: res.message || 'No changes.' }, ...l])
-    } catch (e) { setLog((l) => [{ role: 'err', text: e.message }, ...l]) }
-    finally { setBusy(false) }
-  }
-  return (
-    <div className="insp-scroll">
-      <div className="insp-h">AI assistant · {config.name}</div>
-      <p className="muted">Describe a change, or upload a client brief (.txt/.md/.csv). Sonnet edits <b>this</b> project’s config; review, then Save/Publish.</p>
-      <textarea className="ai-prompt" rows={4} placeholder="e.g. Make all question titles 10% bigger and move the CTA up 60px" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-      <label className="upload sm">{docName || '📎 Attach brief'}<input type="file" hidden accept=".txt,.md,.csv,.json" onChange={onFile} /></label>
-      <button className="btn primary" disabled={busy} onClick={send}>{busy ? 'Thinking…' : 'Ask AI to edit'}</button>
-      <div className="ai-log">
-        {log.map((m, i) => <div key={i} className={`ai-msg ${m.role}`}>{m.text}</div>)}
-      </div>
-    </div>
+    </aside>
   )
 }
