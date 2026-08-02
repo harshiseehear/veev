@@ -19,7 +19,7 @@ export default function ContentPanel({ config, setConfig, previewSetId, setPrevi
   return (
     <>
       {sets && (
-        <Panel title="Sets" sub={`${sets.length} · random per play`}>
+        <Panel title="Sets" sub={`${sets.length} · random per play`} tone="lime">
           <Note>Editing set <b>{previewSetId}</b> — switch sets in the left rail. One of {sets.length} shows at random per play-through.</Note>
           <Row>
             <Chip onClick={duplicateSet}>+ Duplicate set</Chip>
@@ -30,7 +30,7 @@ export default function ContentPanel({ config, setConfig, previewSetId, setPrevi
       {!q ? (
         <Panel title="Content" sub="no question"><Note>Select a question page (e.g. q1) in the left rail to edit its content{sets ? ` for ${previewSetId}` : ''}.</Note></Panel>
       ) : (
-        <Panel title={sets ? `${previewSetId} · ${activeQid}` : activeQid} tone="ink">
+        <Panel title={sets ? `${previewSetId} · ${activeQid}` : activeQid} tone="orange">
           <Txt label="Prompt" area value={q.prompt} onChange={(v) => path((qs) => { qs[activeQid].prompt = v })} />
           {!sets && <Txt label="Pick label" value={q.pickLabel} onChange={(v) => path((qs) => { qs[activeQid].pickLabel = v })} />}
           {!sets && <Num label="Max select" value={q.maxSelect} onChange={(v) => path((qs) => { qs[activeQid].maxSelect = v })} />}

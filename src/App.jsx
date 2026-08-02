@@ -1,30 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route, Link, useParams } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { api } from './api.js'
 import FontLoader from './FontLoader.jsx'
 import QuizPlayer from './engine/QuizPlayer.jsx'
 import AdminApp from './admin/AdminApp.jsx'
-
-function Landing() {
-  const [projects, setProjects] = useState([])
-  useEffect(() => { api.listProjects().then(setProjects).catch(() => setProjects([])) }, [])
-  return (
-    <div className="landing">
-      <h1>Kiosk</h1>
-      <p className="muted">Modular kiosk quiz platform. Live quizzes:</p>
-      <div className="landing-grid">
-        {projects.map((p) => (
-          <Link key={p.slug} className="landing-card" to={`/${p.slug}`}>
-            <span className="landing-slug">/{p.slug}</span>
-            <span className="landing-name">{p.name}</span>
-            <span className={`badge ${p.published ? 'ok' : 'off'}`}>{p.published ? 'published' : 'draft'}</span>
-          </Link>
-        ))}
-      </div>
-      <Link className="admin-link" to="/admin">Open Admin →</Link>
-    </div>
-  )
-}
 
 function PublicPlay() {
   const { slug } = useParams()
@@ -47,8 +26,10 @@ function PublicPlay() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/admin/*" element={<AdminApp />} />
+      {/* Root sends you to the editor; unauthenticated → login, then /control. */}
+      <Route path="/" element={<Navigate to="/control" replace />} />
+      <Route path="/control/*" element={<AdminApp />} />
+      {/* Public quiz players — /veev, /uber, … — unchanged. */}
       <Route path="/:slug" element={<PublicPlay />} />
     </Routes>
   )

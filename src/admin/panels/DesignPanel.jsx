@@ -20,7 +20,7 @@ export default function DesignPanel({ edit, config }) {
 
   return (
     <>
-      <Panel title={el.type} sub={el.id} tone="ink">
+      <Panel title={el.type} sub={el.id} tone="mango">
         {isSetScope && <div className="k-scope">Styling <b>{previewSetId}</b> · {activeQid} — each set keeps its own look. Position/size are shared across sets.</div>}
         <Grid>
           <Num label="X" value={el.x} onChange={(v) => edit.patchSel({ x: v })} />
@@ -156,7 +156,7 @@ function OptionStyle({ el, edit }) {
 
 function GroupPanel({ edit }) {
   return (
-    <Panel title={`${edit.selectedIds.length} selected`} tone="ink">
+    <Panel title={`${edit.selectedIds.length} selected`} tone="orange">
       <Note>Drag any one to move them together; arrow-keys nudge the group. Shift-click on the canvas to add/remove.</Note>
       <Section>Center on canvas</Section>
       <Row>

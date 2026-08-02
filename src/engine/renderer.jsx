@@ -216,7 +216,7 @@ function ElementBox({ el, ctx, editable, selected, onPointerDown }) {
       style={{
         position: 'absolute', left: el.x, top: el.y, width: el.w, height: el.h, zIndex: el.z || 1,
         display: el.hidden ? 'none' : 'block',
-        outline: selected ? '2px solid #2b6ce6' : editable ? '1px dashed rgba(43,108,230,0.4)' : 'none',
+        outline: selected ? '2px solid #ff8a1e' : editable ? '1px dashed rgba(255,138,30,0.5)' : 'none',
         cursor: editable ? 'move' : 'default',
       }}
     >
@@ -226,7 +226,7 @@ function ElementBox({ el, ctx, editable, selected, onPointerDown }) {
       {editable && selected && (
         <div
           onMouseDown={(e) => { e.stopPropagation(); onPointerDown(e, el.id, 'resize') }}
-          style={{ position: 'absolute', right: -9, bottom: -9, width: 18, height: 18, background: '#2b6ce6', borderRadius: 4, cursor: 'nwse-resize', zIndex: 9999 }}
+          style={{ position: 'absolute', right: -9, bottom: -9, width: 18, height: 18, background: '#ff8a1e', borderRadius: 4, cursor: 'nwse-resize', zIndex: 9999 }}
         />
       )}
     </div>
@@ -290,10 +290,10 @@ export function Stage({ config, screen, ctx, editable = false, selectedIds = [],
           )
         })()}
         {editable && guides?.v && (
-          <div style={{ position: 'absolute', left: cw / 2 - 1, top: 0, width: 2, height: ch, background: '#2b6ce6', zIndex: 9998, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', left: cw / 2 - 1, top: 0, width: 2, height: ch, background: '#ff8a1e', zIndex: 9998, pointerEvents: 'none' }} />
         )}
         {editable && guides?.h && (
-          <div style={{ position: 'absolute', top: ch / 2 - 1, left: 0, height: 2, width: cw, background: '#2b6ce6', zIndex: 9998, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: ch / 2 - 1, left: 0, height: 2, width: cw, background: '#ff8a1e', zIndex: 9998, pointerEvents: 'none' }} />
         )}
       </div>
     </div>

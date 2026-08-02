@@ -27,16 +27,4 @@ button { font-family: inherit; }
 .qw-slidefade-in { animation: qw-slidefade-in var(--qw-fade, 400ms) ease forwards; }
 .qw-slidefade-out { animation: qw-slidefade-out var(--qw-fade, 400ms) ease forwards; }
 
-/* ---- Landing ---- */
-.landing { max-width: 860px; margin: 0 auto; padding: 64px 24px; }
-.landing h1 { font-size: 40px; margin: 0 0 6px; }
-.muted { color: #9a9ab0; }
-.landing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 28px 0; }
-.landing-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 14px; background: #16161f; border: 1px solid #262636; text-decoration: none; color: inherit; transition: border-color .15s, transform .1s; }
-.landing-card:hover { border-color: #ff3d7f; transform: translateY(-2px); }
-.landing-slug { font-family: ui-monospace, monospace; color: #ff7db0; font-size: 14px; }
-.landing-name { font-size: 18px; font-weight: 600; }
-.badge { align-self: flex-start; font-size: 11px; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
-.badge.ok { background: #12351f; color: #4ade80; }
-.badge.off { background: #3a2a12; color: #fbbf24; }
-.admin-link { color: #ff7db0; text-decoration: none; font-weight: 600; }
+/* Root (/) redirects to /control; there is no public landing page. */
