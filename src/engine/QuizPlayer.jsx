@@ -147,20 +147,17 @@ export default function QuizPlayer({ config, preview = false }) {
   // in = new bg + new elements fade in together over the old bg; then old removed.
   if (style === 'crossfade') {
     const outScreen = outgoingId ? (config.screens || []).find((s) => s.id === outgoingId) : null
-    if (phase === 'out') {
-      return (
-        <div className="qw-player">
-          <Stage config={config} screen={screen} ctx={ctx} elFade={{ key: screenId, className: 'qw-fade-out', durationMs: transitionMs }} />
-        </div>
-      )
-    }
+    // One persistent keyed layer for the current screen across idle -> out (same
+    // screenId, so it is NOT remounted and the timer keeps its drained width and
+    // animates the grow). At 'in' the screenId changes -> the layer remounts for
+    // the new screen while the old screen holds underneath as a static background.
     return (
       <div className="qw-player" style={{ position: 'relative' }}>
         {phase === 'in' && outScreen && (
           <div style={{ position: 'absolute', inset: 0 }}><Stage config={config} screen={outScreen} ctx={buildCtx(outScreen, false)} bgOnly /></div>
         )}
         <div key={screenId} className={phase === 'in' ? 'qw-fade-in' : ''} style={{ position: 'absolute', inset: 0, '--qw-fade': `${transitionMs}ms` }}>
-          <Stage config={config} screen={screen} ctx={ctx} />
+          <Stage config={config} screen={screen} ctx={ctx} elFade={phase === 'out' ? { key: screenId, className: 'qw-fade-out', durationMs: transitionMs } : null} />
         </div>
       </div>
     )

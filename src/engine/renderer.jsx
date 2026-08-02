@@ -206,8 +206,11 @@ function CenterTimerBar({ el, ctx }) {
   useEffect(() => {
     const fill = fillRef.current
     if (!fill || ctx.transitionPhase !== 'out') return
+    // Use offsetWidth for both (layout px, unaffected by the Stage's CSS scale) so the
+    // captured percentage is correct — mixing it with getBoundingClientRect (scaled)
+    // would misread the width and make the bar jump before growing.
     const parentW = fill.parentElement?.offsetWidth || 1
-    const cur = (fill.getBoundingClientRect().width / parentW) * 100
+    const cur = (fill.offsetWidth / parentW) * 100
     fill.style.transition = 'none'
     fill.style.width = `${cur}%`
     void fill.offsetWidth
@@ -292,13 +295,14 @@ export function Stage({ config, screen, ctx, editable = false, selectedIds = [],
           const box = (el) => (
             <ElementBox key={el.id} el={el} ctx={ctx} editable={editable} selected={selectedIds.includes(el.id)} onPointerDown={onPointerDown} />
           )
-          if (!elFade) return merged.map(box)
-          // A center-variant timer is exempt from the fade so it can grow to full
-          // during the transition instead of fading out; everything else fades.
+          // Always use the SAME tree shape whether or not the fade layer is active:
+          // a wrapper layer holding the faded elements, plus the exempt (center-variant
+          // timer) elements as stable siblings. This keeps the timer element mounted
+          // across idle->out so it can grow from its drained width instead of snapping.
           const exempt = (el) => el.type === 'timer' && el.style?.variant === 'center'
           return (
             <>
-              <div key={elFade.key} className={elFade.className} style={{ position: 'absolute', inset: 0, zIndex: 2, '--qw-fade': `${elFade.durationMs}ms` }}>
+              <div className={elFade ? elFade.className : undefined} style={{ position: 'absolute', inset: 0, zIndex: 2, ...(elFade ? { '--qw-fade': `${elFade.durationMs}ms` } : null) }}>
                 {merged.filter((e) => !exempt(e)).map(box)}
               </div>
               {merged.filter(exempt).map(box)}
